@@ -207,43 +207,43 @@ echo ""
 
 
 discover_project_repositories() {
-    echo "🔍 Discovering project repositories (PROJECT-BASED)..." >&2
+    echo "🔍 Discovering project repositories (PROJECT-BASED)..." 
     
     local repos_file="$TEMP_DIR/project_repositories.json"
     local filtered_repos="$TEMP_DIR/project_repositories.txt"
     
     local code=404
     
-    echo "Discovering repositories via REST API..." >&2
+    echo "Discovering repositories via REST API..." 
     
     code=$(jfrog_api_call "GET" "/artifactory/api/repositories" "$repos_file" "curl" "" "all repositories")
     
     if ! is_success "$code"; then
-        echo "Trying alternate repository endpoint..." >&2
+        echo "Trying alternate repository endpoint..." 
         code=$(jfrog_api_call "GET" "/artifactory/api/repositories/list" "$repos_file" "curl" "" "repository list")
     fi
     
     if is_success "$code" && [[ -s "$repos_file" ]]; then
-        echo "Filtering repositories for project '$PROJECT_KEY'..." >&2
+        echo "Filtering repositories for project '$PROJECT_KEY'..." 
         
         if jq --arg project "$PROJECT_KEY" '[.[] | select(.key | contains($project)) | select((.key | test("release-bundles-v2$")) | not)]' "$repos_file" > "${repos_file}.filtered" 2>/dev/null && [[ -s "${repos_file}.filtered" ]]; then
             mv "${repos_file}.filtered" "$repos_file"
-            echo "✅ Filtered by repository key containing '$PROJECT_KEY'" >&2
+            echo "✅ Filtered by repository key containing '$PROJECT_KEY'" 
             
-            echo "📦 Found repositories:" >&2
+            echo "📦 Found repositories:" 
             jq -r '.[].key' "$repos_file" 2>/dev/null | head -10 | while read -r repo; do
-                echo "   - $repo" >&2
+                echo "   - $repo" 
             done
         else
             if jq --arg project "$PROJECT_KEY" '[.[] | select(.key | startswith($project)) | select((.key | test("release-bundles-v2$")) | not)]' "$repos_file" > "${repos_file}.filtered" 2>/dev/null && [[ -s "${repos_file}.filtered" ]]; then
                 mv "${repos_file}.filtered" "$repos_file"
-                echo "✅ Filtered by repository key prefix '$PROJECT_KEY'" >&2
+                echo "✅ Filtered by repository key prefix '$PROJECT_KEY'" 
             else
                 if jq --arg project "$PROJECT_KEY" '[.[] | select(.projectKey == $project) | select((.key | test("release-bundles-v2$")) | not)]' "$repos_file" > "${repos_file}.filtered" 2>/dev/null && [[ -s "${repos_file}.filtered" ]]; then
                     mv "${repos_file}.filtered" "$repos_file"
-                    echo "✅ Filtered by projectKey field" >&2
+                    echo "✅ Filtered by projectKey field" 
                 else
-                    echo "❌ No repositories found matching '$PROJECT_KEY'" >&2
+                    echo "❌ No repositories found matching '$PROJECT_KEY'" 
                     echo "[]" > "$repos_file"
                 fi
             fi
@@ -251,9 +251,9 @@ discover_project_repositories() {
     fi
     
     if is_success "$code" && [[ -s "$repos_file" ]]; then
-        echo "🚨 DEBUG: Repositories discovered for deletion:" >&2
-        jq -r '.[] | .key' "$repos_file" | head -20 | while read -r repo; do echo "    - $repo" >&2; done
-        echo "    (showing first 20 of $(jq length "$repos_file") total)" >&2
+        echo "🚨 DEBUG: Repositories discovered for deletion:" 
+        jq -r '.[] | .key' "$repos_file" | head -20 | while read -r repo; do echo "    - $repo" ; done
+        echo "    (showing first 20 of $(jq length "$repos_file") total)" 
         jq -r '.[] | .key' "$repos_file" > "$filtered_repos"
         
         jq -n --argfile r "$repos_file" '
@@ -315,7 +315,7 @@ discover_project_repositories() {
         local sum_counts
         sum_counts=$(jq -r '([.local,.remote,.virtual] | map(tonumber) | add) // 0' "$TEMP_DIR/repository_breakdown.json" 2>/dev/null || echo "0")
         if [[ "$existing_count" -gt 0 && "${sum_counts:-0}" -eq 0 ]]; then
-            echo "ℹ️  Repo type fields missing; using API intersection fallback..." >&2
+            echo "ℹ️  Repo type fields missing; using API intersection fallback..." 
             local local_json remote_json virtual_json
             local local_keys remote_keys virtual_keys
             local local_count remote_count virtual_count
@@ -345,7 +345,7 @@ discover_project_repositories() {
 
         sum_counts=$(jq -r '([.local,.remote,.virtual] | map(tonumber) | add) // 0' "$TEMP_DIR/repository_breakdown.json" 2>/dev/null || echo "0")
         if [[ "$existing_count" -gt 0 && "${sum_counts:-0}" -eq 0 ]]; then
-            echo "ℹ️  Typed list intersection yielded 0; querying each repo for rclass..." >&2
+            echo "ℹ️  Typed list intersection yielded 0; querying each repo for rclass..." 
             local _local=0 _remote=0 _virtual=0
             while IFS= read -r repo_key; do
                 [[ -z "$repo_key" ]] && continue
@@ -379,7 +379,7 @@ discover_project_repositories() {
 
         sum_counts=$(jq -r '([.local,.remote,.virtual] | map(tonumber) | add) // 0' "$TEMP_DIR/repository_breakdown.json" 2>/dev/null || echo "0")
         if [[ "$existing_count" -gt 0 && "${sum_counts:-0}" -eq 0 ]]; then
-            echo "ℹ️  Using key-suffix heuristic for repo breakdown..." >&2
+            echo "ℹ️  Using key-suffix heuristic for repo breakdown..." 
             local heuristic_local heuristic_remote heuristic_virtual
             heuristic_local=$(grep -E -c '(^local-| -local$|\-local$)' "$filtered_repos" 2>/dev/null || echo 0)
             heuristic_remote=$(grep -E -c '(^remote-| -remote$|\-remote$)' "$filtered_repos" 2>/dev/null || echo 0)
@@ -388,24 +388,24 @@ discover_project_repositories() {
         fi
         
         local count=$(wc -l < "$filtered_repos" 2>/dev/null || echo "0")
-        echo "📦 Found $count repositories in project '$PROJECT_KEY'" >&2
+        echo "📦 Found $count repositories in project '$PROJECT_KEY'" 
         
         if [[ "$count" -gt 0 ]]; then
-            echo "Project repositories:" >&2
-            cat "$filtered_repos" | sed 's/^/  - /' >&2
+            echo "Project repositories:" 
+            cat "$filtered_repos" | sed 's/^/  - /' 
         fi
         
         GLOBAL_REPO_COUNT=$count
         return 0
     else
-        echo "❌ Project repository discovery failed (HTTP $code)" >&2
+        echo "❌ Project repository discovery failed (HTTP $code)" 
         GLOBAL_REPO_COUNT=0
         return 0
     fi
 }
 
 discover_project_users() {
-    echo "🔍 Discovering project users/admins (PROJECT-BASED)..." >&2
+    echo "🔍 Discovering project users/admins (PROJECT-BASED)..." 
     
     local users_file="$TEMP_DIR/project_users.json"
     local filtered_users="$TEMP_DIR/project_users.txt"
@@ -416,108 +416,108 @@ discover_project_users() {
         jq -r '.members[]? | .name' "$users_file" > "$filtered_users" 2>/dev/null || touch "$filtered_users"
         
         local count=$(wc -l < "$filtered_users" 2>/dev/null || echo "0")
-        echo "👥 Found $count users/admins in project '$PROJECT_KEY'" >&2
+        echo "👥 Found $count users/admins in project '$PROJECT_KEY'" 
         
         if [[ "$count" -gt 0 ]]; then
-            echo "Project users/admins:" >&2
-            cat "$filtered_users" | sed 's/^/  - /' >&2
-            echo "Detailed roles:" >&2
-            jq -r '.members[]? | "  - \(.name) (roles: \(.roles | join(", ")))"' "$users_file" 2>/dev/null || true >&2
+            echo "Project users/admins:" 
+            cat "$filtered_users" | sed 's/^/  - /' 
+            echo "Detailed roles:" 
+            jq -r '.members[]? | "  - \(.name) (roles: \(.roles | join(", ")))"' "$users_file" 2>/dev/null || true 
         fi
         
         GLOBAL_USER_COUNT=$count
         return 0
     else
-        echo "❌ Project user discovery failed (HTTP $code)" >&2
+        echo "❌ Project user discovery failed (HTTP $code)" 
         GLOBAL_USER_COUNT=0
         return 0
     fi
 }
 
 discover_project_applications() {
-    echo "🔍 Discovering project applications (PROJECT-BASED)..." >&2
+    echo "🔍 Discovering project applications (PROJECT-BASED)..." 
     
     local apps_file="$TEMP_DIR/project_applications.json"
     local filtered_apps="$TEMP_DIR/project_applications.txt"
     
     # Debug the URL construction
-    echo "🔍 DEBUG: JFROG_URL='$JFROG_URL'" >&2
+    echo "🔍 DEBUG: JFROG_URL='$JFROG_URL'" 
     local url_no_slash="${JFROG_URL%/}"
-    echo "🔍 DEBUG: url_no_slash='$url_no_slash'" >&2
+    echo "🔍 DEBUG: url_no_slash='$url_no_slash'" 
     local full_url="${url_no_slash}/apptrust/api/v1/applications?project_key=${PROJECT_KEY}"
     
     # Try direct curl to test if jfrog_api_call is the issue
-    echo "🔍 DEBUG: Testing direct curl..." >&2
+    echo "🔍 DEBUG: Testing direct curl..." 
     curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" -H "Content-Type: application/json" \
-         -w "Direct curl HTTP: %{http_code}" -o /dev/null "$full_url" >&2 || echo "Direct curl failed" >&2
-    echo "🔍 DEBUG: full_url='$full_url'" >&2
+         -w "Direct curl HTTP: %{http_code}" -o /dev/null "$full_url"  || echo "Direct curl failed" 
+    echo "🔍 DEBUG: full_url='$full_url'" 
     
     # Use direct curl since jfrog_api_call mangles the URL
-    echo "🔍 DEBUG: Using direct curl instead of jfrog_api_call..." >&2
+    echo "🔍 DEBUG: Using direct curl instead of jfrog_api_call..." 
     local code=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" -H "Content-Type: application/json" \
                      -w "%{http_code}" -o "$apps_file" "$full_url")
     
     # If empty response with 200, try without project_key filter (get all apps and filter locally)
     if [[ "$code" -eq 200 ]] && [[ ! -s "$apps_file" ]]; then
-        echo "🔍 DEBUG: Project-specific query returned empty, trying fallback to all applications..." >&2
+        echo "🔍 DEBUG: Project-specific query returned empty, trying fallback to all applications..." 
         local all_apps_file="$TEMP_DIR/all_applications.json"
         local code2=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" -H "Content-Type: application/json" \
                           -w "%{http_code}" -o "$all_apps_file" "${url_no_slash}/apptrust/api/v1/applications")
         
         if [[ "$code2" -eq 200 ]] && [[ -s "$all_apps_file" ]]; then
-            echo "🔍 DEBUG: All applications API returned data, filtering for project '$PROJECT_KEY'..." >&2
-            echo "🔍 DEBUG: All apps content (first 500 chars): $(head -c 500 "$all_apps_file")" >&2
+            echo "🔍 DEBUG: All applications API returned data, filtering for project '$PROJECT_KEY'..." 
+            echo "🔍 DEBUG: All apps content (first 500 chars): $(head -c 500 "$all_apps_file")" 
             
             # Filter for our project and copy to the main apps file
             jq --arg project "$PROJECT_KEY" '[.[] | select(.project_key == $project)]' "$all_apps_file" > "$apps_file" 2>/dev/null || touch "$apps_file"
             
             if [[ -s "$apps_file" ]]; then
-                echo "🔍 DEBUG: Successfully filtered applications for project '$PROJECT_KEY'" >&2
+                echo "🔍 DEBUG: Successfully filtered applications for project '$PROJECT_KEY'" 
             else
-                echo "🔍 DEBUG: No applications found for project '$PROJECT_KEY' after filtering" >&2
+                echo "🔍 DEBUG: No applications found for project '$PROJECT_KEY' after filtering" 
             fi
         else
-            echo "🔍 DEBUG: Fallback to all applications also failed (HTTP $code2)" >&2
+            echo "🔍 DEBUG: Fallback to all applications also failed (HTTP $code2)" 
         fi
     fi
     
-    echo "🔍 DEBUG: Applications API returned HTTP $code" >&2
+    echo "🔍 DEBUG: Applications API returned HTTP $code" 
     if [[ -s "$apps_file" ]]; then
-        echo "🔍 DEBUG: Response file size: $(wc -c < "$apps_file") bytes" >&2
-        echo "🔍 DEBUG: Response content (first 500 chars): $(head -c 500 "$apps_file")" >&2
+        echo "🔍 DEBUG: Response file size: $(wc -c < "$apps_file") bytes" 
+        echo "🔍 DEBUG: Response content (first 500 chars): $(head -c 500 "$apps_file")" 
     else
-        echo "🔍 DEBUG: Response file is empty" >&2
+        echo "🔍 DEBUG: Response file is empty" 
     fi
     
     if is_success "$code" && [[ -s "$apps_file" ]]; then
         # Try different JSON parsing approaches
-        echo "🔍 DEBUG: Attempting to parse applications..." >&2
+        echo "🔍 DEBUG: Attempting to parse applications..." 
         
         # First try the original approach
         jq -r '.[] | .application_key' "$apps_file" > "$filtered_apps" 2>/dev/null || touch "$filtered_apps"
         local parsed_count=$(wc -l < "$filtered_apps" 2>/dev/null || echo "0")
-        echo "🔍 DEBUG: Original parsing found $parsed_count applications" >&2
+        echo "🔍 DEBUG: Original parsing found $parsed_count applications" 
         
         # If that didn't work, try alternative JSON structures
         if [[ "$parsed_count" -eq 0 ]]; then
-            echo "🔍 DEBUG: Trying alternative JSON parsing..." >&2
+            echo "🔍 DEBUG: Trying alternative JSON parsing..." 
             # Try if it's wrapped in a data field
             jq -r '.data[]? | .application_key' "$apps_file" > "$filtered_apps" 2>/dev/null || touch "$filtered_apps"
             parsed_count=$(wc -l < "$filtered_apps" 2>/dev/null || echo "0")
-            echo "🔍 DEBUG: Data wrapper parsing found $parsed_count applications" >&2
+            echo "🔍 DEBUG: Data wrapper parsing found $parsed_count applications" 
             
             # Try if it's a single object instead of array
             if [[ "$parsed_count" -eq 0 ]]; then
                 jq -r '.application_key' "$apps_file" > "$filtered_apps" 2>/dev/null || touch "$filtered_apps"
                 parsed_count=$(wc -l < "$filtered_apps" 2>/dev/null || echo "0")
-                echo "🔍 DEBUG: Single object parsing found $parsed_count applications" >&2
+                echo "🔍 DEBUG: Single object parsing found $parsed_count applications" 
             fi
             
             # Try different field names
             if [[ "$parsed_count" -eq 0 ]]; then
                 jq -r '.[] | .name' "$apps_file" > "$filtered_apps" 2>/dev/null || touch "$filtered_apps"
                 parsed_count=$(wc -l < "$filtered_apps" 2>/dev/null || echo "0")
-                echo "🔍 DEBUG: Name field parsing found $parsed_count applications" >&2
+                echo "🔍 DEBUG: Name field parsing found $parsed_count applications" 
             fi
         fi
         if [[ ! -s "$filtered_apps" ]]; then
@@ -530,24 +530,24 @@ discover_project_applications() {
         fi
         
         local count=$(wc -l < "$filtered_apps" 2>/dev/null || echo "0")
-        echo "🚀 Found $count applications in project '$PROJECT_KEY'" >&2
+        echo "🚀 Found $count applications in project '$PROJECT_KEY'" 
         
         if [[ "$count" -gt 0 ]]; then
-            echo "Project applications:" >&2
-            cat "$filtered_apps" | sed 's/^/  - /' >&2
+            echo "Project applications:" 
+            cat "$filtered_apps" | sed 's/^/  - /' 
         fi
         
         GLOBAL_APP_COUNT=$count
         return 0
     else
-        echo "❌ Project application discovery failed (HTTP $code)" >&2
+        echo "❌ Project application discovery failed (HTTP $code)" 
         GLOBAL_APP_COUNT=0
         return 0
     fi
 }
 
 discover_project_builds() {
-    echo "🔍 Discovering project builds (PROJECT-BASED)..." >&2
+    echo "🔍 Discovering project builds (PROJECT-BASED)..." 
     
     local builds_file="$TEMP_DIR/project_builds.json"
     local filtered_builds="$TEMP_DIR/project_builds.txt"
@@ -556,7 +556,7 @@ discover_project_builds() {
     
     local count=0
     if is_success "$code" && [[ -s "$builds_file" ]]; then
-        echo "✅ Successfully discovered builds for project '$PROJECT_KEY'" >&2
+        echo "✅ Successfully discovered builds for project '$PROJECT_KEY'" 
         
         jq -r '.builds[]?.uri' "$builds_file" 2>/dev/null | sed 's|^/||' > "$filtered_builds" 2>/dev/null || true
         count=$(wc -l < "$filtered_builds" 2>/dev/null || echo 0)
@@ -565,11 +565,11 @@ discover_project_builds() {
     # No fallback to string matching - if project API returns no builds, 
     # there are genuinely no builds for this project
     
-    echo "🏗️ Found $count builds in project '$PROJECT_KEY'" >&2
+    echo "🏗️ Found $count builds in project '$PROJECT_KEY'" 
     
     if [[ "$count" -gt 0 ]]; then
-        echo "Project builds:" >&2
-        cat "$filtered_builds" | sed 's/^/  - /' >&2
+        echo "Project builds:" 
+        cat "$filtered_builds" | sed 's/^/  - /' 
     fi
     
     GLOBAL_BUILD_COUNT=$count
@@ -577,7 +577,7 @@ discover_project_builds() {
 }
 
 discover_project_stages() {
-    echo "🔍 Discovering project stages (PROJECT-BASED)..." >&2
+    echo "🔍 Discovering project stages (PROJECT-BASED)..." 
     
     local stages_file="$TEMP_DIR/project_stages.txt"
     
@@ -590,7 +590,7 @@ discover_project_stages() {
         # Filter for project-scoped stages only (exclude global stages)
         jq -r --arg project "$PROJECT_KEY" '.[]? | select(.scope == "project") | select(.project_key == $project) | .name' "$project_stages_file" 2>/dev/null > "$stages_file" || touch "$stages_file"
         count=$(wc -l < "$stages_file" 2>/dev/null || echo 0)
-        echo "✅ Found $count stages via v1 project API" >&2
+        echo "✅ Found $count stages via v1 project API" 
     fi
     
     if [[ "$count" -eq 0 ]]; then
@@ -601,12 +601,12 @@ discover_project_stages() {
             # Filter for project-scoped stages only (exclude global stages)
             jq -r --arg project "$PROJECT_KEY" '.[]? | select(.scope == "project") | select(.project_key == $project) | .name' "$project_stages_v2_file" 2>/dev/null > "$stages_file" || touch "$stages_file"
             count=$(wc -l < "$stages_file" 2>/dev/null || echo 0)
-            echo "✅ Found $count stages via v2 project API" >&2
+            echo "✅ Found $count stages via v2 project API" 
         fi
     fi
     
     if [[ "$count" -eq 0 ]]; then
-        echo "ℹ️ Fallback: Getting all stages and filtering..." >&2
+        echo "ℹ️ Fallback: Getting all stages and filtering..." 
         local all_stages_file="$TEMP_DIR/all_stages.json"
         local code3=$(jfrog_api_call "GET" "/access/api/v2/stages" "$all_stages_file" "curl" "" "all stages")
         
@@ -619,16 +619,16 @@ discover_project_stages() {
             count=$(wc -l < "$stages_file" 2>/dev/null || echo 0)
             
             if [[ "$count" -gt 0 ]]; then
-                echo "✅ Found $count project stages via all-stages filtering" >&2
+                echo "✅ Found $count project stages via all-stages filtering" 
             fi
         fi
     fi
     
-    echo "🏷️ Found $count stages in project '$PROJECT_KEY'" >&2
+    echo "🏷️ Found $count stages in project '$PROJECT_KEY'" 
     
     if [[ "$count" -gt 0 ]]; then
-        echo "Project stages:" >&2
-        cat "$stages_file" | sed 's/^/  - /' >&2
+        echo "Project stages:" 
+        cat "$stages_file" | sed 's/^/  - /' 
     fi
     
     GLOBAL_STAGE_COUNT=$count
@@ -636,7 +636,7 @@ discover_project_stages() {
 }
 
 discover_project_oidc() {
-    echo "🔍 Discovering OIDC integrations..." >&2
+    echo "🔍 Discovering OIDC integrations..." 
     
     local oidc_file="$TEMP_DIR/project_oidc.txt"
     
@@ -653,11 +653,11 @@ discover_project_oidc() {
         touch "$oidc_file"
     fi
     
-    echo "🔐 Found $count OIDC integrations containing '$PROJECT_KEY'" >&2
+    echo "🔐 Found $count OIDC integrations containing '$PROJECT_KEY'" 
     
     if [[ "$count" -gt 0 ]]; then
-        echo "OIDC integrations:" >&2
-        cat "$oidc_file" | sed 's/^/  - /' >&2
+        echo "OIDC integrations:" 
+        cat "$oidc_file" | sed 's/^/  - /' 
     fi
     
     GLOBAL_OIDC_COUNT=$count
@@ -781,7 +781,7 @@ run_discovery_preview() {
     if is_success "$code_users" && [[ -s "$all_users_file" ]]; then
         jq -r '.[]? | .name' "$all_users_file" 2>/dev/null | grep -E "@bookverse\\.com$" | sort -u > "$domain_users_file" 2>/dev/null || true
         domain_users_count=$(wc -l < "$domain_users_file" 2>/dev/null || echo 0)
-        echo "👥 Found $domain_users_count global domain users (@bookverse.com)" >&2
+        echo "👥 Found $domain_users_count global domain users (@bookverse.com)" 
     else
         : > "$domain_users_file"
         domain_users_count=0
@@ -888,8 +888,8 @@ run_discovery_preview() {
         local lifecycle_code
         lifecycle_code=$(jfrog_api_call "GET" "/access/api/v2/lifecycle/?project_key=$PROJECT_KEY" "$lifecycle_file" "curl" "" "get lifecycle for stage usage")
         if ! is_success "$lifecycle_code"; then
-            echo "⚠️ Lifecycle API call failed (HTTP $lifecycle_code), stages will show in_use:false" >&2
-            [[ -f "$lifecycle_file" ]] && echo "Response: $(cat "$lifecycle_file")" >&2
+            echo "⚠️ Lifecycle API call failed (HTTP $lifecycle_code), stages will show in_use:false" 
+            [[ -f "$lifecycle_file" ]] && echo "Response: $(cat "$lifecycle_file")" 
         fi
 
         if [[ -s "$lifecycle_file" ]] && jq -e . "$lifecycle_file" >/dev/null 2>&1; then
@@ -952,7 +952,7 @@ run_discovery_preview() {
             repo_breakdown_json='{"local":0,"remote":0,"virtual":0}'
         fi
     fi
-    echo "📊 Repo breakdown used in report: $repo_breakdown_json" >&2
+    echo "📊 Repo breakdown used in report: $repo_breakdown_json" 
 
     jq -n \
         --arg timestamp "$timestamp" \
@@ -1049,7 +1049,7 @@ run_discovery_preview() {
             "status": "ready_for_cleanup"
         }' > "$shared_report_file"
     
-    echo "📋 Shared report saved to: $shared_report_file" >&2
+    echo "📋 Shared report saved to: $shared_report_file" 
     
     GLOBAL_PREVIEW_FILE="$preview_file"
     GLOBAL_TOTAL_ITEMS="$total_items"
