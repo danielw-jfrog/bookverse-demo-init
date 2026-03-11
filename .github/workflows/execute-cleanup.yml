@@ -156,6 +156,7 @@ jobs:
           JFROG_URL: ${{ vars.JFROG_URL }}
           JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
           PROJECT_KEY: 'bookverse'
+          GH_REPOSITORY_OWNER: ${{ vars.GITHUB_REPOSITORY_OWNER }}
         run: |
           set -euo pipefail
           # Delete application versions first (highest level dependencies)
