@@ -11,9 +11,12 @@ FIXME: Give an executive summary here.
 Quick Start
 -----------
 
-1. Fork bookverse-demo-init repository (this one) to your user or organization.
+1. Fork `bookverse-demo-init` repository (this one) to your user or organization.  This repository contains all of the
+   actions and script necessary to setup and cleanup the workflows and JFrog Platform.  Only forking this repository is
+   required as the first action to run will fork the remaining git repositories.
 
 1. Set necessary secrets for the workflows.
+   FIXME: Add GitHub Token (PAT) requirements here.
 
 1. Run the `Step 1: Initialize Repositories` action.
    FIXME: Add recommended first settings here.
@@ -29,78 +32,6 @@ Quick Start
 
 
 
----
-
-
-
-
-## 🚀 Initial Setup
-
-The BookVerse platform setup is streamlined using GitHub Actions workflows. Follow these steps to get started:
-
-### Overview
-
-The setup process consists of three main steps:
-1. **Fork Service Repositories** - Get your own copies of all service repositories
-2. **🔄 Switch Platform Workflow** - Configure all repositories and generate evidence keys (primary method)
-3. **🚀 Setup Platform Workflow** - Provision JFrog Platform infrastructure
-
----
-
-### Step 1: Fork Service Repositories
-
-Before you can deploy the BookVerse platform, you need to fork the service repositories from the upstream organization to your own GitHub organization or user account.
-
-**Why Fork?**
-The BookVerse demo consists of multiple service repositories that need to be under your control to:
-- Configure repository secrets and variables
-- Set up CI/CD workflows with your JFrog Platform
-- Customize settings for your environment
-- Maintain your own codebase
-
-**Quick Fork Setup:**
-
-Use the automated forking script to fork all service repositories at once:
-
-```bash
-# Navigate to the bookverse-demo-init repository
-cd bookverse-demo-init
-
-# Authenticate with GitHub CLI (if not already done)
-gh auth login
-
-# Fork all repositories to your GitHub account/organization
-./scripts/create-clean-repos.sh --target-org YOUR_ORG --upstream-org yonatanp-jfrog --clone-local
-```
-
-**Script Options:**
-- `--target-org ORG`: Your GitHub organization or username (default: auto-detected from current repo)
-- `--upstream-org ORG`: Upstream organization to fork from (default: `yonatanp-jfrog`)
-- `--dry-run`: Preview what would be forked without making changes
-- `--clone-local`: Automatically clone forked repos locally after forking
-- `--help`: Show detailed usage information
-
-**Examples:**
-```bash
-# Fork to your personal GitHub account
-./scripts/create-clean-repos.sh --target-org yourusername --clone-local
-
-# Fork to an organization (dry run first to preview)
-./scripts/create-clean-repos.sh --target-org your-org --dry-run
-
-# Fork and clone locally in one step
-./scripts/create-clean-repos.sh --target-org your-org --upstream-org yonatanp-jfrog --clone-local
-```
-
-**What Gets Forked?**
-
-The script forks these service repositories:
-- `bookverse-inventory` - Product catalog and inventory management
-- `bookverse-recommendations` - AI-powered recommendation engine
-- `bookverse-checkout` - Order processing and payment management
-- `bookverse-platform` - Platform coordination and API gateway
-- `bookverse-web` - Frontend web application
-- `bookverse-helm` - Kubernetes deployment charts
 
 ---
 
