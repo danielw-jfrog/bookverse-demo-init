@@ -63,7 +63,7 @@
 # Version: 1.0.0
 # =============================================================================
 
-name: '🚀 Setup Platform'
+name: 'Step 2: Setup Platform'
 
 # 🔄 Concurrency Control: Ensures only one platform setup runs at a time
 # Prevents conflicting platform provisioning and ensures safe setup operations
