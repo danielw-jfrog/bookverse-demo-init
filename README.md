@@ -50,9 +50,7 @@ Quick Start
    * JFrog Platform Host: `https://<JPD_URL>`  This will be the URL for your JFrog Platform.
      e.g. _https://example.jfrog.io_
 
-   * Admin Token: Leave empty as it has been configured in a secret.
-
-   * Confirm Switch: Leave empty as 
+   * Confirm Switch: Leave empty as not needed for initial_setup.
 
    * Generate Evidence Keys: `true`
 

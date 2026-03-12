@@ -15,10 +15,6 @@ on:
         description: 'JFrog Platform Host (e.g., https://mycompany.jfrog.io)'
         required: true
         type: string
-      admin_token:
-        description: 'JFrog Admin Token for the new platform (optional if JFROG_ADMIN_TOKEN secret is set)'
-        required: false
-        type: string
       confirm_switch:
         description: 'Type "SWITCH" to confirm (required for platform_switch mode)'
         required: false
@@ -91,9 +87,7 @@ jobs:
 
       - name: Mask sensitive inputs
         run: |
-          if [[ -n "${{ github.event.inputs.admin_token }}" ]]; then
-            echo "::add-mask::${{ github.event.inputs.admin_token }}"
-          fi
+          # FIXME: Doesn't this happen automatically?
           if [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
             echo "::add-mask::${{ secrets.JFROG_ADMIN_TOKEN }}"
           fi
@@ -128,16 +122,14 @@ jobs:
           export UPDATE_CODE_URLS='${{ github.event.inputs.update_code_urls }}'
           export JFROG_CLI_AVOID_NEW_VERSION_WARNING=true
           
-          if [[ -n "${{ github.event.inputs.admin_token }}" ]]; then
-            export NEW_JFROG_ADMIN_TOKEN='${{ github.event.inputs.admin_token }}'
-            echo "🔐 Using admin_token from workflow input"
-          elif [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
+          # FIXME: Why aren't these environs being set using the env: values in the action?
+          if [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
             export NEW_JFROG_ADMIN_TOKEN='${{ secrets.JFROG_ADMIN_TOKEN }}'
-            echo "🔐 Using JFROG_ADMIN_TOKEN from repository secrets"
           else
-            echo "❌ No JFROG_ADMIN_TOKEN found in secrets or workflow inputs"
+            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
             exit 1
           fi
+          
           export NO_COLOR=1
           LOG_FILE="switch-platform.log"
           echo "LOG_FILE=$LOG_FILE" >> "$GITHUB_ENV"
@@ -190,16 +182,16 @@ jobs:
       - name: Validate New Platform
         run: |
           export NEW_JFROG_URL='${{ github.event.inputs.jpd_host }}'
-          if [[ -n "${{ github.event.inputs.admin_token }}" ]]; then
-            export NEW_JFROG_ADMIN_TOKEN='${{ github.event.inputs.admin_token }}'
-          elif [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
+          
+          if [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
             export NEW_JFROG_ADMIN_TOKEN='${{ secrets.JFROG_ADMIN_TOKEN }}'
           else
-            echo "❌ No JFROG_ADMIN_TOKEN found in secrets or workflow inputs"
+            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
             exit 1
           fi
-          echo "🔍 Validating new platform connectivity..."
           
+          echo "🔍 Validating new platform connectivity..."
+          # FIXME: Shouldn't this use the JF CLI?
           if curl -s --fail --header "Authorization: Bearer $NEW_JFROG_ADMIN_TOKEN" \
               "${NEW_JFROG_URL}/artifactory/api/system/ping" > /dev/null; then
             echo "✅ New platform validation successful"
@@ -239,12 +231,12 @@ jobs:
           fi
           
           export NEW_JFROG_URL='${{ github.event.inputs.jpd_host }}'
-          if [[ -n "${{ github.event.inputs.admin_token }}" ]]; then
-            export NEW_JFROG_ADMIN_TOKEN='${{ github.event.inputs.admin_token }}'
-          elif [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
+          
+          # FIXME: This should be handled once at the top level of the action.
+          if [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
             export NEW_JFROG_ADMIN_TOKEN='${{ secrets.JFROG_ADMIN_TOKEN }}'
           else
-            echo "❌ No JFROG_ADMIN_TOKEN found in secrets or workflow inputs"
+            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
             exit 1
           fi
           
