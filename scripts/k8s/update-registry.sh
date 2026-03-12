@@ -44,7 +44,7 @@
 # ⚙️ PARAMETERS:
 #     [Environment Variables Required]
 #     NEW_JFROG_URL          : New JFrog Platform URL for migration
-#     NEW_JFROG_ADMIN_TOKEN  : Admin token for new platform access
+#     JFROG_ADMIN_TOKEN  : Admin token for new platform access
 #     
 #     [Environment Variables Optional]
 #     K8S_NAMESPACE          : Kubernetes namespace (default: bookverse-prod)
@@ -56,7 +56,7 @@
 # 🌍 ENVIRONMENT VARIABLES:
 #     [Required Configuration]
 #     NEW_JFROG_URL          : Target JFrog Platform URL for migration
-#     NEW_JFROG_ADMIN_TOKEN  : Admin authentication token for platform access
+#     JFROG_ADMIN_TOKEN  : Admin authentication token for platform access
 #     
 #     [Optional Configuration]
 #     K8S_NAMESPACE          : Target Kubernetes namespace for updates
@@ -99,18 +99,18 @@
 # 💡 EXAMPLES:
 #     [Basic Registry Migration]
 #     export NEW_JFROG_URL="https://newplatform.jfrog.io"
-#     export NEW_JFROG_ADMIN_TOKEN="your-admin-token"
+#     export JFROG_ADMIN_TOKEN="your-admin-token"
 #     ./scripts/k8s/update-registry.sh
 #     
 #     [Custom Namespace Migration]
 #     export NEW_JFROG_URL="https://production.jfrog.io"
-#     export NEW_JFROG_ADMIN_TOKEN="prod-token"
+#     export JFROG_ADMIN_TOKEN="prod-token"
 #     export K8S_NAMESPACE="bookverse-production"
 #     ./scripts/k8s/update-registry.sh
 #     
 #     [Direct Password Migration]
 #     export NEW_JFROG_URL="https://platform.jfrog.io"
-#     export NEW_JFROG_ADMIN_TOKEN="admin-token"
+#     export JFROG_ADMIN_TOKEN="admin-token"
 #     export SKIP_TOKEN_GENERATION="true"
 #     export K8S_PASSWORD="existing-password"
 #     ./scripts/k8s/update-registry.sh
@@ -210,7 +210,7 @@ Updates existing Kubernetes cluster to use a new JFrog Platform registry.
 
 Environment variables (required):
   NEW_JFROG_URL           New JFrog Platform URL (e.g., https://acme.jfrog.io)
-  NEW_JFROG_ADMIN_TOKEN   Admin token for the new platform
+  JFROG_ADMIN_TOKEN   Admin token for the new platform
   
 Environment variables (optional):
   K8S_NAMESPACE           Kubernetes namespace (default: bookverse-prod)
@@ -226,11 +226,11 @@ Options:
 
 Examples:
   export NEW_JFROG_URL='https://acme.jfrog.io'
-  export NEW_JFROG_ADMIN_TOKEN='your-admin-token'
+  export JFROG_ADMIN_TOKEN='your-admin-token'
   ./scripts/k8s/update-registry.sh --restart-deployments
 
   export NEW_JFROG_URL='https://acme.jfrog.io'
-  export NEW_JFROG_ADMIN_TOKEN='your-admin-token'
+  export JFROG_ADMIN_TOKEN='your-admin-token'
   export SKIP_TOKEN_GENERATION=true
   export K8S_PASSWORD='existing-user-password-or-token'
   ./scripts/k8s/update-registry.sh --dry-run
@@ -273,8 +273,8 @@ if [[ -z "${NEW_JFROG_URL:-}" ]]; then
     exit 1
 fi
 
-if [[ -z "${NEW_JFROG_ADMIN_TOKEN:-}" ]]; then
-    log_error "NEW_JFROG_ADMIN_TOKEN environment variable is required"
+if [[ -z "${JFROG_ADMIN_TOKEN:-}" ]]; then
+    log_error "JFROG_ADMIN_TOKEN environment variable is required"
     exit 1
 fi
 
@@ -302,7 +302,7 @@ generate_access_token() {
     
     local token_response
     if ! token_response=$(curl -s -X POST \
-        --header "Authorization: Bearer ${NEW_JFROG_ADMIN_TOKEN}" \
+        --header "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" \
         --header "Content-Type: application/json" \
         --data "{
             \"username\": \"${K8S_USERNAME}\",

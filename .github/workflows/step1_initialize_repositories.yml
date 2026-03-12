@@ -50,6 +50,7 @@ on:
         default: false
 
 env:
+  JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   COMPONENTS: "checkout demo-assets helm infra inventory platform recommendations web"
 
@@ -84,12 +85,11 @@ jobs:
           else
             echo "✅ Initial setup mode detected. Skipping migration confirmation."
           fi
-
-      - name: Mask sensitive inputs
-        run: |
-          # FIXME: Doesn't this happen automatically?
-          if [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
-            echo "::add-mask::${{ secrets.JFROG_ADMIN_TOKEN }}"
+          
+          # Validate the JFrog Admin Token
+          if [[ -z "${JFROG_ADMIN_TOKEN}" ]]; then
+            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
+            exit 1
           fi
 
       - name: Verify Git Repository Forks

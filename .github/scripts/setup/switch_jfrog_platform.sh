@@ -48,7 +48,7 @@ trap on_error ERR
 
 
 NEW_JFROG_URL="${NEW_JFROG_URL}"
-NEW_JFROG_ADMIN_TOKEN="${NEW_JFROG_ADMIN_TOKEN}"
+JFROG_ADMIN_TOKEN="${JFROG_ADMIN_TOKEN}"
 
 # Setup mode detection: "initial_setup" or "platform_switch" (default)
 SETUP_MODE="${SETUP_MODE:-platform_switch}"
@@ -104,8 +104,8 @@ validate_inputs() {
         exit 1
     fi
     
-    if [[ -z "$NEW_JFROG_ADMIN_TOKEN" ]]; then
-        log_error "NEW_JFROG_ADMIN_TOKEN is required"
+    if [[ -z "$JFROG_ADMIN_TOKEN" ]]; then
+        log_error "JFROG_ADMIN_TOKEN is required"
         exit 1
     fi
     
@@ -230,7 +230,7 @@ test_platform_authentication() {
     if [[ -o xtrace ]]; then was_xtrace=1; set +x; fi
     log_info "Command: curl -s --max-time 10 --header 'Authorization: Bearer ***' --write-out '%{http_code}' '$NEW_JFROG_URL/artifactory/api/system/ping'"
     response=$(curl -s --max-time 10 \
-        --header "Authorization: Bearer $NEW_JFROG_ADMIN_TOKEN" \
+        --header "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
         --write-out "%{http_code}" \
         "$NEW_JFROG_URL/artifactory/api/system/ping")
     if [[ $was_xtrace -eq 1 ]]; then set -x; fi
@@ -263,7 +263,7 @@ test_platform_services() {
     if [[ -o xtrace ]]; then was_xtrace=1; set +x; fi
     log_info "Command: curl -s --fail --max-time 10 --header 'Authorization: Bearer ***' '$NEW_JFROG_URL/artifactory/api/system/ping'"
     if ! curl -s --fail --max-time 10 \
-        --header "Authorization: Bearer $NEW_JFROG_ADMIN_TOKEN" \
+        --header "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
         "$NEW_JFROG_URL/artifactory/api/system/ping" > /dev/null; then
         log_error "Artifactory service is not available"
         if [[ $was_xtrace -eq 1 ]]; then set -x; fi
@@ -277,7 +277,7 @@ test_platform_services() {
     
     log_info "Command: curl -s --fail --max-time 10 --header 'Authorization: Bearer ***' '$NEW_JFROG_URL/access/api/v1/system/ping'"
     if ! curl -s --fail --max-time 10 \
-        --header "Authorization: Bearer $NEW_JFROG_ADMIN_TOKEN" \
+        --header "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
         "$NEW_JFROG_URL/access/api/v1/system/ping" > /dev/null; then
         log_warning "Access service is not available (may be expected for some deployments)"
     fi
@@ -371,7 +371,7 @@ update_repository_secrets_and_variables() {
     local output
     local was_xtrace=0
     if [[ -o xtrace ]]; then was_xtrace=1; set +x; fi
-    if ! output=$(gh secret set JFROG_ADMIN_TOKEN --repo "$full_repo" --body "$NEW_JFROG_ADMIN_TOKEN" 2>&1); then
+    if ! output=$(gh secret set JFROG_ADMIN_TOKEN --repo "$full_repo" --body "$JFROG_ADMIN_TOKEN" 2>&1); then
         log_warning "  → Failed to update JFROG_ADMIN_TOKEN: ${output}"
         repo_ok=0
     fi
@@ -467,7 +467,7 @@ generate_evidence_keys() {
     trap "rm -rf '$temp_dir'" EXIT
     
     log_info "  → Generating $EVIDENCE_KEY_TYPE key pair..."
-    if ! jf evd generate-key-pair --key-alias "$EVIDENCE_KEY_ALIAS" --key-file-name "$EVIDENCE_KEY_ALIAS" --key-file-path "$temp_dir" --url "$NEW_JFROG_URL" --access-token "$NEW_JFROG_ADMIN_TOKEN" 2>&1; then
+    if ! jf evd generate-key-pair --key-alias "$EVIDENCE_KEY_ALIAS" --key-file-name "$EVIDENCE_KEY_ALIAS" --key-file-path "$temp_dir" --url "$NEW_JFROG_URL" --access-token "$JFROG_ADMIN_TOKEN" 2>&1; then
         log_warning "  ⚠️  Failed to generate keys with JFrog CLI, trying alternative method..."
         # Fallback to OpenSSL if JFrog CLI fails
         if ! command -v openssl &> /dev/null; then
@@ -544,7 +544,7 @@ upload_evidence_key_to_jfrog() {
     local http_code
     response=$(curl -s -w "%{http_code}" \
         -X POST \
-        -H "Authorization: Bearer $NEW_JFROG_ADMIN_TOKEN" \
+        -H "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
         -H "Content-Type: application/json" \
         -d "$payload" \
         "$NEW_JFROG_URL/artifactory/api/security/keys/trusted" 2>/dev/null)
