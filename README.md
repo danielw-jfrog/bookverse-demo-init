@@ -1,7 +1,7 @@
 BookVerse Example
 =================
 
-FIXME: Give an executive summary here.
+[//]: <> (FIXME: Give an executive summary here.)
 
 [What is BookVerse Example?](docs/what_is_bookverse_example.md)
 
@@ -15,15 +15,43 @@ Quick Start
    actions and script necessary to setup and cleanup the workflows and JFrog Platform.  Only forking this repository is
    required as the first action to run will fork the remaining git repositories.
 
-1. Set necessary secrets for the workflows.
-   FIXME: Add GitHub Token (PAT) requirements here.
+1. Set necessary secrets for the workflows.  These secrets can be set on the `Settings` -> `Secrets and variables` ->
+   `Actions` page in the `Repository Secrets` section.
 
-1. Run the `Step 1: Initialize Repositories` action.
-   FIXME: Add recommended first settings here.
+   * `JFROG_ADMIN_TOKEN` - An admin level token for the JFrog Platform installation that will be used.
 
-1. Run the `Step 2: Setup Platform` action.  FIXME: This should be renamed.
+   * `GH_TOKEN` - A GitHub Personal Access Token (PAT) classic with `repo`, `workflow`, and `admin:repo_hook`
+                  permissions.  This is required to fork the other repositories and setup the project.
 
-1. Run the `Step 3: Initial Build Actions` action.  FIXME: This should be created to run each of the build actions in each of the sub projects.
+1. Run the `Step 1: Initialize Repositories` action.  This can be found on the `Actions` tab.  Use the settings below to
+   configure the initial setup run.
+
+   * Setup Mode: `initial_setup`
+
+   * JFrog Platform Host: `https://<JPD_URL>`  This will be the URL for your JFrog Platform.
+     e.g. `https://example.jfrog.io`
+
+[//]: <> (FIXME: Should the Platform Host / URL be moved to a secret?)
+
+   * Admin Token: Leave empty as it has been configured in a secret.
+
+[//]: <> (FIXME: Should this value be removed and the secret forced?)
+
+   * Generate Evidence Keys: `true`
+
+   * Evidence Key Type: `rsa`  Can be `rsa`, `ec`, or `ed25519`.
+
+   * Evidence Key Alias: `bookverse-signing-key`
+
+   * Update Code URLs: `false` Set this to false to skip this step for the initial run.
+
+[//]: <> (FIXME: What does this do?  Should it be removed?)
+
+1. Run the `Step 2: Setup Platform` action.
+
+1. Run the `Step 3: Initial Build Actions` action.
+
+[//]: <> (FIXME: This should be created to run each of the build actions in each of the sub projects.)
 
 
 
@@ -33,64 +61,7 @@ Quick Start
 
 
 
----
 
-### Step 2: Configure with Switch Platform Workflow ⭐
-
-**The 🔄 Switch Platform workflow is the primary method for configuring BookVerse.** It automatically configures all repositories, generates evidence keys, and sets up everything you need.
-
-**2a. Configure GitHub Repository Secrets**
-
-Before running the Switch Platform workflow, set up repository secrets in the `bookverse-demo-init` repository:
-
-1. Navigate to: `https://github.com/YOUR-ORG/bookverse-demo-init/settings/secrets/actions`
-2. Add the following secrets:
-   - **`JFROG_ADMIN_TOKEN`**: Your JFrog Platform admin token (required)
-   - **`GH_TOKEN`**: GitHub Personal Access Token (optional - see note below)
-
-**About GitHub Tokens:**
-
-- **`GITHUB_TOKEN`**: Automatically provided by GitHub Actions for each workflow run. It has permissions to the repository where the workflow runs. The Switch Platform workflow uses this by default if `GH_TOKEN` is not set.
-  
-- **`GH_TOKEN`**: Used by the GitHub CLI (`gh`) for authentication. If you need broader permissions (e.g., to update variables/secrets across multiple repositories in your organization), you can create a Personal Access Token (PAT) with `repo`, `workflow`, and `admin:repo_hook` scopes and set it as the `GH_TOKEN` secret.
-
-**When to set `GH_TOKEN`:**
-- ✅ **Required** if the workflow needs to update repositories outside the current repository
-- ✅ **Required** if you need organization-level permissions
-- ✅ **Optional** if all operations are within the same repository (uses `GITHUB_TOKEN` by default)
-
-**How to create a GitHub PAT for `GH_TOKEN`:**
-1. Go to: `https://github.com/settings/tokens`
-2. Click "Generate new token" → "Generate new token (classic)"
-3. Set expiration and select scopes: `repo`, `workflow`, `admin:repo_hook`
-4. Copy the token and add it as the `GH_TOKEN` secret in your repository
-
-**2b. Run Switch Platform Workflow**
-
-The Switch Platform workflow will configure all repositories and generate evidence keys automatically:
-
-1. Navigate to: `https://github.com/YOUR-ORG/bookverse-demo-init/actions`
-2. Select **"🔄 Switch Platform"** workflow
-3. Click **"Run workflow"**
-4. Configure the workflow inputs:
-   - **Setup Mode**: `initial_setup` ⭐ (for first-time setup)
-   - **JFrog Platform Host**: `https://your-instance.jfrog.io`
-   - **Admin Token**: (leave empty - uses `JFROG_ADMIN_TOKEN` secret)
-   - **Generate Evidence Keys**: `true` ✅ (recommended for initial setup)
-   - **Evidence Key Type**: `rsa` (or `ec`, `ed25519`)
-   - **Evidence Key Alias**: `bookverse-signing-key`
-   - **Update Code URLs**: `false` (skip for initial setup)
-   - **Update K8s**: `false` (unless you have Kubernetes configured)
-5. Click **"Run workflow"**
-
-**What the Switch Platform workflow does:**
-- ✅ Configures `JFROG_URL`, `DOCKER_REGISTRY`, `PROJECT_KEY` variables in all service repos
-- ✅ Sets `JFROG_ADMIN_TOKEN` secret in all service repos
-- ✅ Generates evidence keys (RSA/EC/ED25519) automatically
-- ✅ Distributes `EVIDENCE_PRIVATE_KEY` secret to all repos
-- ✅ Sets `EVIDENCE_PUBLIC_KEY` and `EVIDENCE_KEY_ALIAS` variables in all repos
-- ✅ Uploads public keys to JFrog Platform
-- ✅ Validates platform connectivity and authentication
 
 ---
 
