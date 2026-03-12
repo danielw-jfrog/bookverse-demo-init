@@ -15,12 +15,12 @@ Quick Start
    actions and script necessary to setup and cleanup the workflows and JFrog Platform.  Only forking this repository is
    required as the first action to run will fork the remaining git repositories.
 
-1. Set necessary secrets for the workflows.  These secrets can be set on the `Settings` -> `Secrets and variables` ->
-   `Actions` page in the `Repository Secrets` section.
+1. Set necessary secrets for the workflows.  These secrets can be set on the *Settings -> Secrets and variables ->
+   Actions* page in the *Repository Secrets* section.
 
    * `JFROG_ADMIN_TOKEN` - An admin level token for the JFrog Platform installation that will be used.
 
-   * `GH_TOKEN` - A GitHub Personal Access Token (PAT) classic with `repo`, `workflow`, and `admin:repo_hook`
+   * `GH_TOKEN` - A GitHub Personal Access Token (PAT) classic with *repo*, *workflow*, and *admin:repo_hook*
                   permissions.  This is required to fork the other repositories and setup the project.
 
 1. Run the `Step 1: Initialize Repositories` action.  This can be found on the `Actions` tab.  Use the settings below to
