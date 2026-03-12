@@ -1,3 +1,0 @@
-- bookverse-infra: No repo secrets or variables were setup.
-    - This includes the evidence private key and there is evidence assigned to the Infra scripts after the artifacts are built.
-    - JFROG_URL and JF_PROJECT repository variables are not set
