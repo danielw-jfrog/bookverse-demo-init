@@ -109,14 +109,6 @@ jobs:
               gh repo fork bookverse-example/bookverse-${item} --fork-name bookverse-${item}
             fi
           done
-          #gh repo fork bookverse-example/bookverse-checkout --fork-name bookverse-checkout
-          #gh repo fork bookverse-example/bookverse-demo-assets --fork-name bookverse-demo-assets
-          #gh repo fork bookverse-example/bookverse-helm --fork-name bookverse-helm
-          #gh repo fork bookverse-example/bookverse-infra --fork-name bookverse-infra
-          #gh repo fork bookverse-example/bookverse-inventory --fork-name bookverse-inventory
-          #gh repo fork bookverse-example/bookverse-platform --fork-name bookverse-platform
-          #gh repo fork bookverse-example/bookverse-recommendations --fork-name bookverse-recommendations
-          #gh repo fork bookverse-example/bookverse-web --fork-name bookverse-web
 
       - name: Switch/Setup JFrog Platform
         run: |
