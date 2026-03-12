@@ -209,6 +209,7 @@ check_same_platform() {
     fi
 }
 
+# FIXME: Why isn't this using the CLI?
 test_platform_connectivity() {
     log_info "Testing platform connectivity..."
     
@@ -220,6 +221,7 @@ test_platform_connectivity() {
     log_success "Platform is reachable"
 }
 
+# FIXME: Why isn't this using the CLI?
 test_platform_authentication() {
     log_info "Testing platform authentication..."
     
@@ -253,6 +255,7 @@ test_platform_authentication() {
     log_success "Authentication successful"
 }
 
+# FIXME: Is this needed?  It looks redundant to the above.
 test_platform_services() {
     log_info "Testing platform services..."
     
@@ -351,6 +354,8 @@ verify_variable_with_retry() {
     return 1
 }
 
+# NOTE: Looks like the repo name is the first argument here.
+# FIXME: What's the "xtrace" stuff for?
 update_repository_secrets_and_variables() {
     local repo="$1"
     local full_repo="$GITHUB_ORG/$repo"
@@ -681,7 +686,7 @@ final_verification_pass() {
     FAILED_REPOS=("${still_failed[@]}")
 }
 
-
+# FIXME: Should probably split the "initial_setup" and "JPD Switch" functionality to two separate scripts.
 main() {
     if [[ "$SETUP_MODE" == "initial_setup" ]]; then
         echo "🚀 BookVerse Platform - Initial Setup"

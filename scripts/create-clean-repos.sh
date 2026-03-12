@@ -1,5 +1,12 @@
 #!/bin/bash
 
+### NOTE ###
+#
+# This script is likely no longer needed.  Will be removed soon, once all functionality is verified to be elsewhere.
+#
+############
+
+
 # =============================================================================
 # BookVerse Platform - Repository Forking and Setup Script
 # =============================================================================
