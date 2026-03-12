@@ -10,7 +10,7 @@ on:
         options:
           - initial_setup
           - platform_switch
-        default: 'platform_switch'
+        default: 'initial_setup'
       jpd_host:
         description: 'JFrog Platform Host (e.g., https://mycompany.jfrog.io)'
         required: true
@@ -46,7 +46,7 @@ on:
         description: 'Update hardcoded URLs in source code (skip for initial_setup)'
         required: false
         type: boolean
-        default: true
+        default: false
       update_k8s:
         description: 'Update Kubernetes cluster registry (requires kubectl access)'
         required: false
