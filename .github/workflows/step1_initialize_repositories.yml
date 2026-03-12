@@ -50,6 +50,7 @@ on:
         default: false
 
 env:
+  NEW_JFROG_URL: ${{ github.event.inputs.jpd_host }}
   JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   COMPONENTS: "checkout demo-assets helm infra inventory platform recommendations web"
@@ -83,7 +84,12 @@ jobs:
             fi
             echo "✅ Platform switch confirmed. Proceeding with platform migration..."
           else
-            echo "✅ Initial setup mode detected. Skipping migration confirmation."
+            echo 
+          
+          # Validate the JFrog URL
+          if [[ -z "${NEW_JFROG_URL}" ]]; then
+            echo "ERROR: NEW_JFROG_URL secret not set."
+            exit 1
           fi
           
           # Validate the JFrog Admin Token
@@ -114,21 +120,12 @@ jobs:
 
       - name: Switch/Setup JFrog Platform
         run: |
-          export NEW_JFROG_URL='${{ github.event.inputs.jpd_host }}'
           export SETUP_MODE='${{ github.event.inputs.setup_mode }}'
           export GENERATE_EVIDENCE_KEYS='${{ github.event.inputs.generate_evidence_keys }}'
           export EVIDENCE_KEY_TYPE='${{ github.event.inputs.evidence_key_type }}'
           export EVIDENCE_KEY_ALIAS='${{ github.event.inputs.evidence_key_alias }}'
           export UPDATE_CODE_URLS='${{ github.event.inputs.update_code_urls }}'
           export JFROG_CLI_AVOID_NEW_VERSION_WARNING=true
-          
-          # FIXME: Why aren't these environs being set using the env: values in the action?
-          if [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
-            export NEW_JFROG_ADMIN_TOKEN='${{ secrets.JFROG_ADMIN_TOKEN }}'
-          else
-            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
-            exit 1
-          fi
           
           export NO_COLOR=1
           LOG_FILE="switch-platform.log"
@@ -181,18 +178,9 @@ jobs:
           
       - name: Validate New Platform
         run: |
-          export NEW_JFROG_URL='${{ github.event.inputs.jpd_host }}'
-          
-          if [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
-            export NEW_JFROG_ADMIN_TOKEN='${{ secrets.JFROG_ADMIN_TOKEN }}'
-          else
-            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
-            exit 1
-          fi
-          
           echo "🔍 Validating new platform connectivity..."
           # FIXME: Shouldn't this use the JF CLI?
-          if curl -s --fail --header "Authorization: Bearer $NEW_JFROG_ADMIN_TOKEN" \
+          if curl -s --fail --header "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" \
               "${NEW_JFROG_URL}/artifactory/api/system/ping" > /dev/null; then
             echo "✅ New platform validation successful"
           else
@@ -228,16 +216,6 @@ jobs:
             echo "   Make sure your cluster is accessible and kubeconfig is configured"
             echo "   Skipping K8s update - you'll need to update manually"
             exit 0
-          fi
-          
-          export NEW_JFROG_URL='${{ github.event.inputs.jpd_host }}'
-          
-          # FIXME: This should be handled once at the top level of the action.
-          if [[ -n "${{ secrets.JFROG_ADMIN_TOKEN }}" ]]; then
-            export NEW_JFROG_ADMIN_TOKEN='${{ secrets.JFROG_ADMIN_TOKEN }}'
-          else
-            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
-            exit 1
           fi
           
           if ./scripts/k8s/update-registry.sh --restart-deployments; then
