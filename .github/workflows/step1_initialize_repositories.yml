@@ -57,6 +57,7 @@ env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   COMPONENTS: "checkout demo-assets helm infra inventory platform recommendations web"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "TRUE"
+  EVIDENCE_KEY_ALIAS: ${{ github.event.inputs.evidence_key_alias }}
 
 concurrency:
   group: switch-platform-${{ github.ref }}
@@ -119,18 +120,31 @@ jobs:
               gh repo fork bookverse-example/bookverse-${item} --fork-name bookverse-${item}
             fi
           done
+          # FIXME: SET JF_URL and JF_ADMIN_TOKEN on forks
 
       - name: Verify JFrog Platform Connectivity
         run: |
           echo "Checking JFrog Platform access from the JF CLI."
           jf rt ping
 
+      - name: Generate Evidence Keys
+        if: ${{ github.event.inputs.generate_evidence_keys }}
+        run: |
+          echo "Generating evidence keys"
+          pwd
+          jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys" --upload-public-key "true"
+          echo "Storing evidence keys into component github repository secrets"
+          for item in ${COMPONENT}; do
+            gh secret set "EVIDENCE_PRIVATE_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.key)" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+            gh secret set "EVIDENCE_PUBLIC_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.pub)" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+            gh secret set "EVIDENCE_KEY_ALIAS" --body "${EVIDENCE_KEY_ALIAS}" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+          done
+
       - name: Switch/Setup JFrog Platform
         run: |
           export SETUP_MODE='${{ github.event.inputs.setup_mode }}'
           export GENERATE_EVIDENCE_KEYS='${{ github.event.inputs.generate_evidence_keys }}'
           export EVIDENCE_KEY_TYPE='${{ github.event.inputs.evidence_key_type }}'
-          export EVIDENCE_KEY_ALIAS='${{ github.event.inputs.evidence_key_alias }}'
           export UPDATE_CODE_URLS='${{ github.event.inputs.update_code_urls }}'
           export JFROG_CLI_AVOID_NEW_VERSION_WARNING=true
           

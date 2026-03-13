@@ -92,48 +92,6 @@ AUTH_FAILED=0
 SERVICES_FAILED=0
 
 
-validate_inputs() {
-    # NOTE: Validating Inputs in Workflow directly, not needed here.
-    #log_info "Validating inputs..."
-    #
-    #if [[ -n "$NEW_JFROG_URL" ]]; then
-    #    log_info "NEW_JFROG_URL length: ${#NEW_JFROG_URL}"
-    #    log_info "NEW_JFROG_URL starts with: ${NEW_JFROG_URL:0:8}..."
-    #    log_info "NEW_JFROG_URL ends with: ...${NEW_JFROG_URL: -10}"
-    #else
-    #    log_error "NEW_JFROG_URL is required"
-    #    exit 1
-    #fi
-    #
-    #if [[ -z "$JFROG_ADMIN_TOKEN" ]]; then
-    #    log_error "JFROG_ADMIN_TOKEN is required"
-    #    exit 1
-    #fi
-    #
-    #if [[ -z "$GH_TOKEN" ]]; then
-    #    log_error "GH_TOKEN is required for updating repositories"
-    #    exit 1
-    #fi
-    #
-    #log_success "All required inputs provided"
-    log_info "skip validate_inputs"
-}
-
-validate_host_format() {
-    # NOTE: No reason to not support self-hosted JPDs.
-    #log_info "Validating host format..."
-    #
-    #NEW_JFROG_URL=$(echo "$NEW_JFROG_URL" | sed 's:/*$::')
-    #
-    #if [[ ! "$NEW_JFROG_URL" =~ ^https://[a-zA-Z0-9.-]+\.jfrog\.io$ ]]; then
-    #    log_error "Invalid host format. Expected: https://host.jfrog.io"
-    #    log_error "Received: $NEW_JFROG_URL"
-    #    exit 1
-    #fi
-    #
-    #log_success "Host format is valid: $NEW_JFROG_URL"
-    log_info "skip validate_host_format"
-}
 
 detect_setup_mode() {
     log_info "Detecting setup mode..."
@@ -213,85 +171,6 @@ check_same_platform() {
     fi
 }
 
-test_platform_connectivity() {
-    # NOTE: Moving to a CLI check in the workflow directly
-    #log_info "Testing platform connectivity..."
-    #
-    #if ! curl -s --fail --max-time 10 "$NEW_JFROG_URL" > /dev/null; then
-    #    log_error "Cannot reach JPD platform: $NEW_JFROG_URL"
-    #    exit 1
-    #fi
-    #
-    #log_success "Platform is reachable"
-    log_info "skip test_platform_connectivity"
-}
-
-test_platform_authentication() {
-    # NOTE: Moving to a CLI check in the workflow directly
-    #log_info "Testing platform authentication..."
-    #
-    #local response
-    #local was_xtrace=0
-    #if [[ -o xtrace ]]; then was_xtrace=1; set +x; fi
-    #log_info "Command: curl -s --max-time 10 --header 'Authorization: Bearer ***' --write-out '%{http_code}' '$NEW_JFROG_URL/artifactory/api/system/ping'"
-    #response=$(curl -s --max-time 10 \
-    #    --header "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
-    #    --write-out "%{http_code}" \
-    #    "$NEW_JFROG_URL/artifactory/api/system/ping")
-    #if [[ $was_xtrace -eq 1 ]]; then set -x; fi
-    #
-    #local http_code="${response: -3}"
-    #local body="${response%???}"
-    #
-    #if [[ "$http_code" != "200" ]]; then
-    #    log_error "Authentication failed (HTTP $http_code)"
-    #    log_error "Response: $body"
-    #    echo
-    #    log_info "Reproduce locally:"
-    #    echo "curl -i -s --max-time 10 --header 'Authorization: Bearer ***' '$NEW_JFROG_URL/artifactory/api/system/ping'"
-    #    if [[ "${CONTINUE_ON_AUTH_FAILURE:-0}" == "1" ]]; then
-    #        AUTH_FAILED=1
-    #        log_warning "Continuing despite authentication failure to update GitHub repo secrets/variables"
-    #        return 0
-    #    fi
-    #    exit 1
-    #fi
-    #
-    #log_success "Authentication successful"
-    log_info "skip test_platform_authentication"
-}
-
-test_platform_services() {
-    # NOTE: This is redundant.  If access is offline or inaccessible, then the JPD is broken and it's not this scripts issue
-    #log_info "Testing platform services..."
-    #
-    #local was_xtrace=0
-    #if [[ -o xtrace ]]; then was_xtrace=1; set +x; fi
-    #log_info "Command: curl -s --fail --max-time 10 --header 'Authorization: Bearer ***' '$NEW_JFROG_URL/artifactory/api/system/ping'"
-    #if ! curl -s --fail --max-time 10 \
-    #    --header "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
-    #    "$NEW_JFROG_URL/artifactory/api/system/ping" > /dev/null; then
-    #    log_error "Artifactory service is not available"
-    #    if [[ $was_xtrace -eq 1 ]]; then set -x; fi
-    #    if [[ "${CONTINUE_ON_AUTH_FAILURE:-0}" == "1" ]]; then
-    #        SERVICES_FAILED=1
-    #        log_warning "Continuing despite service check failure to update GitHub repo secrets/variables"
-    #        return 0
-    #    fi
-    #    exit 1
-    #fi
-    #
-    #log_info "Command: curl -s --fail --max-time 10 --header 'Authorization: Bearer ***' '$NEW_JFROG_URL/access/api/v1/system/ping'"
-    #if ! curl -s --fail --max-time 10 \
-    #    --header "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
-    #    "$NEW_JFROG_URL/access/api/v1/system/ping" > /dev/null; then
-    #    log_warning "Access service is not available (may be expected for some deployments)"
-    #fi
-    #if [[ $was_xtrace -eq 1 ]]; then set -x; fi
-    #
-    #log_success "Core services are available"
-    log_info "skip test_platform_services"
-}
 
 
 extract_docker_registry() {
@@ -299,20 +178,6 @@ extract_docker_registry() {
     echo "$NEW_JFROG_URL" | sed 's|https://||'
 }
 
-validate_gh_auth() {
-    # NOTE: This is already validated by the calling workflow, not needed here.
-    #log_info "Validating GitHub CLI authentication..."
-    #gh config set prompt disabled true >/dev/null 2>&1 || true
-    #if gh auth status >/dev/null 2>&1; then
-    #    local gh_user
-    #    gh_user=$(gh api user --jq .login 2>/dev/null || echo "unknown")
-    #    log_success "GitHub CLI authenticated as: ${gh_user}"
-    #else
-    #    log_error "GitHub CLI not authenticated. Set GH_TOKEN with required scopes (repo, actions, admin:repo_hook)."
-    #    exit 1
-    #fi
-    log_info "skip validate_gh_auth"
-}
 
 trim_whitespace() {
     local s="$1"
@@ -423,26 +288,27 @@ update_repository_secrets_and_variables() {
     fi
 
     # Update evidence keys if provided
-    if [[ -n "${EVIDENCE_PRIVATE_KEY:-}" ]] && [[ -n "${EVIDENCE_PUBLIC_KEY:-}" ]]; then
-        log_info "  → Updating evidence keys..."
-        if printf "%s" "${EVIDENCE_PRIVATE_KEY}" | gh secret set EVIDENCE_PRIVATE_KEY --repo "$full_repo" 2>&1 >/dev/null; then
-            log_success "    ✅ EVIDENCE_PRIVATE_KEY updated"
-        else
-            log_warning "    ⚠️  Failed to update EVIDENCE_PRIVATE_KEY"
-        fi
-        
-        if gh variable set EVIDENCE_PUBLIC_KEY --body "${EVIDENCE_PUBLIC_KEY}" --repo "$full_repo" 2>&1 >/dev/null; then
-            log_success "    ✅ EVIDENCE_PUBLIC_KEY updated"
-        else
-            log_warning "    ⚠️  Failed to update EVIDENCE_PUBLIC_KEY"
-        fi
-        
-        if gh variable set EVIDENCE_KEY_ALIAS --body "${EVIDENCE_KEY_ALIAS}" --repo "$full_repo" 2>&1 >/dev/null; then
-            log_success "    ✅ EVIDENCE_KEY_ALIAS updated"
-        else
-            log_warning "    ⚠️  Failed to update EVIDENCE_KEY_ALIAS"
-        fi
-    fi
+    #if [[ -n "${EVIDENCE_PRIVATE_KEY:-}" ]] && [[ -n "${EVIDENCE_PUBLIC_KEY:-}" ]]; then
+    #    log_info "  → Updating evidence keys..."
+    #    if printf "%s" "${EVIDENCE_PRIVATE_KEY}" | gh secret set EVIDENCE_PRIVATE_KEY --repo "$full_repo" 2>&1 >/dev/null; then
+    #        log_success "    ✅ EVIDENCE_PRIVATE_KEY updated"
+    #    else
+    #        log_warning "    ⚠️  Failed to update EVIDENCE_PRIVATE_KEY"
+    #    fi
+    #    
+    #    if gh variable set EVIDENCE_PUBLIC_KEY --body "${EVIDENCE_PUBLIC_KEY}" --repo "$full_repo" 2>&1 >/dev/null; then
+    #        log_success "    ✅ EVIDENCE_PUBLIC_KEY updated"
+    #    else
+    #        log_warning "    ⚠️  Failed to update EVIDENCE_PUBLIC_KEY"
+    #    fi
+    #    
+    #    if gh variable set EVIDENCE_KEY_ALIAS --body "${EVIDENCE_KEY_ALIAS}" --repo "$full_repo" 2>&1 >/dev/null; then
+    #        log_success "    ✅ EVIDENCE_KEY_ALIAS updated"
+    #    else
+    #        log_warning "    ⚠️  Failed to update EVIDENCE_KEY_ALIAS"
+    #    fi
+    #fi
+    log_info "skip upload evidence keys section"
 
     if [[ $repo_ok -eq 1 ]]; then
         log_success "  → $repo updated successfully"
@@ -456,121 +322,124 @@ update_repository_secrets_and_variables() {
 }
 
 generate_evidence_keys() {
-    if [[ "$GENERATE_EVIDENCE_KEYS" != "true" ]]; then
-        return 0
-    fi
-    export JFROG_CLI_AVOID_NEW_VERSION_WARNING=true
-    log_info "Generating evidence keys..."
-    log_info "  Key type: $EVIDENCE_KEY_TYPE"
-    log_info "  Key alias: $EVIDENCE_KEY_ALIAS"
-    log_info "  Skip CLI Version Check: $JFROG_CLI_AVOID_NEW_VERSION_WARNING"
-    
-    if ! command -v jf &> /dev/null; then
-        log_error "JFrog CLI (jf) is required for key generation but not installed"
-        log_info "Install from: https://jfrog.com/getcli/"
-        log_info "Skipping evidence key generation"
-        return 1
-    fi
-    
-    local temp_dir
-    temp_dir=$(mktemp -d)
-    trap "rm -rf '$temp_dir'" EXIT
-    
-    log_info "  → Generating $EVIDENCE_KEY_TYPE key pair..."
-    if ! jf evd generate-key-pair --key-alias "$EVIDENCE_KEY_ALIAS" --key-file-name "$EVIDENCE_KEY_ALIAS" --key-file-path "$temp_dir" --url "$NEW_JFROG_URL" --access-token "$JFROG_ADMIN_TOKEN" 2>&1; then
-        log_warning "  ⚠️  Failed to generate keys with JFrog CLI, trying alternative method..."
-        # Fallback to OpenSSL if JFrog CLI fails
-        if ! command -v openssl &> /dev/null; then
-            log_error "OpenSSL is required for key generation but not installed"
-            return 1
-        fi
-        
-        case "$EVIDENCE_KEY_TYPE" in
-            rsa)
-                openssl genrsa -out "$temp_dir/private.pem" 2048
-                openssl rsa -in "$temp_dir/private.pem" -pubout -out "$temp_dir/public.pem"
-                ;;
-            ec)
-                openssl ecparam -genkey -name secp256r1 -noout -out "$temp_dir/private.pem"
-                openssl ec -in "$temp_dir/private.pem" -pubout -out "$temp_dir/public.pem"
-                ;;
-            ed25519)
-                openssl genpkey -algorithm ED25519 -out "$temp_dir/private.pem"
-                openssl pkey -in "$temp_dir/private.pem" -pubout -out "$temp_dir/public.pem"
-                ;;
-            *)
-                log_error "Unsupported key type: $EVIDENCE_KEY_TYPE"
-                return 1
-                ;;
-        esac
-    else
-        # JFrog CLI uses the provided base name for output files
-        if [[ -f "$temp_dir/${EVIDENCE_KEY_ALIAS}.key" ]] && [[ -f "$temp_dir/${EVIDENCE_KEY_ALIAS}.pub" ]]; then
-            mv "$temp_dir/${EVIDENCE_KEY_ALIAS}.key" "$temp_dir/private.pem" 2>/dev/null || true
-            mv "$temp_dir/${EVIDENCE_KEY_ALIAS}.pub" "$temp_dir/public.pem" 2>/dev/null || true
-        fi
-    fi
-    
-    if [[ ! -f "$temp_dir/private.pem" ]] || [[ ! -f "$temp_dir/public.pem" ]]; then
-        log_error "Failed to generate key files"
-        return 1
-    fi
-    
-    export EVIDENCE_PRIVATE_KEY=$(cat "$temp_dir/private.pem")
-    export EVIDENCE_PUBLIC_KEY=$(cat "$temp_dir/public.pem")
-    
-    log_success "  ✅ Evidence keys generated successfully"
-    
-    # Upload to JFrog Platform
-    upload_evidence_key_to_jfrog "$temp_dir/public.pem" "$EVIDENCE_KEY_ALIAS"
-    
-    return 0
+    #if [[ "$GENERATE_EVIDENCE_KEYS" != "true" ]]; then
+    #    return 0
+    #fi
+    #export JFROG_CLI_AVOID_NEW_VERSION_WARNING=true
+    #log_info "Generating evidence keys..."
+    #log_info "  Key type: $EVIDENCE_KEY_TYPE"
+    #log_info "  Key alias: $EVIDENCE_KEY_ALIAS"
+    #log_info "  Skip CLI Version Check: $JFROG_CLI_AVOID_NEW_VERSION_WARNING"
+    #
+    #if ! command -v jf &> /dev/null; then
+    #    log_error "JFrog CLI (jf) is required for key generation but not installed"
+    #    log_info "Install from: https://jfrog.com/getcli/"
+    #    log_info "Skipping evidence key generation"
+    #    return 1
+    #fi
+    #
+    #local temp_dir
+    #temp_dir=$(mktemp -d)
+    #trap "rm -rf '$temp_dir'" EXIT
+    #
+    #log_info "  → Generating $EVIDENCE_KEY_TYPE key pair..."
+    #if ! jf evd generate-key-pair --key-alias "$EVIDENCE_KEY_ALIAS" --key-file-name "$EVIDENCE_KEY_ALIAS" --key-file-path "$temp_dir" --url "$NEW_JFROG_URL" --access-token "$JFROG_ADMIN_TOKEN" 2>&1; then
+    #    log_warning "  ⚠️  Failed to generate keys with JFrog CLI, trying alternative method..."
+    #    # Fallback to OpenSSL if JFrog CLI fails
+    #    if ! command -v openssl &> /dev/null; then
+    #        log_error "OpenSSL is required for key generation but not installed"
+    #        return 1
+    #    fi
+    #    
+    #    case "$EVIDENCE_KEY_TYPE" in
+    #        rsa)
+    #            openssl genrsa -out "$temp_dir/private.pem" 2048
+    #            openssl rsa -in "$temp_dir/private.pem" -pubout -out "$temp_dir/public.pem"
+    #            ;;
+    #        ec)
+    #            openssl ecparam -genkey -name secp256r1 -noout -out "$temp_dir/private.pem"
+    #            openssl ec -in "$temp_dir/private.pem" -pubout -out "$temp_dir/public.pem"
+    #            ;;
+    #        ed25519)
+    #            openssl genpkey -algorithm ED25519 -out "$temp_dir/private.pem"
+    #            openssl pkey -in "$temp_dir/private.pem" -pubout -out "$temp_dir/public.pem"
+    #            ;;
+    #        *)
+    #            log_error "Unsupported key type: $EVIDENCE_KEY_TYPE"
+    #            return 1
+    #            ;;
+    #    esac
+    #else
+    #    # JFrog CLI uses the provided base name for output files
+    #    if [[ -f "$temp_dir/${EVIDENCE_KEY_ALIAS}.key" ]] && [[ -f "$temp_dir/${EVIDENCE_KEY_ALIAS}.pub" ]]; then
+    #        mv "$temp_dir/${EVIDENCE_KEY_ALIAS}.key" "$temp_dir/private.pem" 2>/dev/null || true
+    #        mv "$temp_dir/${EVIDENCE_KEY_ALIAS}.pub" "$temp_dir/public.pem" 2>/dev/null || true
+    #    fi
+    #fi
+    #
+    #if [[ ! -f "$temp_dir/private.pem" ]] || [[ ! -f "$temp_dir/public.pem" ]]; then
+    #    log_error "Failed to generate key files"
+    #    return 1
+    #fi
+    #
+    #export EVIDENCE_PRIVATE_KEY=$(cat "$temp_dir/private.pem")
+    #export EVIDENCE_PUBLIC_KEY=$(cat "$temp_dir/public.pem")
+    #
+    #log_success "  ✅ Evidence keys generated successfully"
+    #
+    ## Upload to JFrog Platform
+    #upload_evidence_key_to_jfrog "$temp_dir/public.pem" "$EVIDENCE_KEY_ALIAS"
+    #
+    #return 0
+    log_info "skip generate_evidence_keys"
 }
 
 upload_evidence_key_to_jfrog() {
-    local public_key_file="$1"
-    local alias="$2"
-    
-    log_info "  → Uploading public key to JFrog Platform..."
-    
-    local public_key_content
-    public_key_content=$(cat "$public_key_file")
-    
-    local payload
-    payload=$(jq -n \
-        --arg alias "$alias" \
-        --arg public_key "$public_key_content" \
-        '{
-            "alias": $alias,
-            "public_key": $public_key
-        }' 2>/dev/null)
-    
-    if [[ -z "$payload" ]]; then
-        log_warning "    ⚠️  jq not available, skipping JFrog upload"
-        return 0
-    fi
-    
-    local response
-    local http_code
-    response=$(curl -s -w "%{http_code}" \
-        -X POST \
-        -H "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d "$payload" \
-        "$NEW_JFROG_URL/artifactory/api/security/keys/trusted" 2>/dev/null)
-    
-    http_code="${response: -3}"
-    
-    if [[ "$http_code" == "200" ]] || [[ "$http_code" == "201" ]]; then
-        log_success "    ✅ Public key uploaded to JFrog Platform"
-        return 0
-    elif [[ "$http_code" == "409" ]]; then
-        log_info "    ℹ️  Key '$alias' already exists in JFrog Platform"
-        return 0
-    else
-        log_warning "    ⚠️  Failed to upload public key (HTTP $http_code)"
-        return 1
-    fi
+    # FIXME: Is this needed?  It seems to be uploading the public key again, but into the Artifactory "api/security/keys/trusted" API instead of Evidence
+    #local public_key_file="$1"
+    #local alias="$2"
+    #
+    #log_info "  → Uploading public key to JFrog Platform..."
+    #
+    #local public_key_content
+    #public_key_content=$(cat "$public_key_file")
+    #
+    #local payload
+    #payload=$(jq -n \
+    #    --arg alias "$alias" \
+    #    --arg public_key "$public_key_content" \
+    #    '{
+    #        "alias": $alias,
+    #        "public_key": $public_key
+    #    }' 2>/dev/null)
+    #
+    #if [[ -z "$payload" ]]; then
+    #    log_warning "    ⚠️  jq not available, skipping JFrog upload"
+    #    return 0
+    #fi
+    #
+    #local response
+    #local http_code
+    #response=$(curl -s -w "%{http_code}" \
+    #    -X POST \
+    #    -H "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
+    #    -H "Content-Type: application/json" \
+    #    -d "$payload" \
+    #    "$NEW_JFROG_URL/artifactory/api/security/keys/trusted" 2>/dev/null)
+    #
+    #http_code="${response: -3}"
+    #
+    #if [[ "$http_code" == "200" ]] || [[ "$http_code" == "201" ]]; then
+    #    log_success "    ✅ Public key uploaded to JFrog Platform"
+    #    return 0
+    #elif [[ "$http_code" == "409" ]]; then
+    #    log_info "    ℹ️  Key '$alias' already exists in JFrog Platform"
+    #    return 0
+    #else
+    #    log_warning "    ⚠️  Failed to upload public key (HTTP $http_code)"
+    #    return 1
+    #fi
+    log_info "skip upload_evidence_key_to_jfrog"
 }
 
 update_all_repositories() {
@@ -705,27 +574,8 @@ main() {
         echo "🔄 JFrog Platform Deployment (JPD) Switch"
         echo "=========================================="
     fi
-    echo ""
-    
-    validate_inputs
-    echo ""
-    
-    validate_host_format
-    echo ""
     
     detect_setup_mode
-    
-    test_platform_connectivity
-    echo ""
-    
-    test_platform_authentication  
-    echo ""
-    
-    test_platform_services
-    echo ""
-    
-    validate_gh_auth
-    echo ""
     
     # Generate evidence keys if requested
     if [[ "$GENERATE_EVIDENCE_KEYS" == "true" ]]; then
