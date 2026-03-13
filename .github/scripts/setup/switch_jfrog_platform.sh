@@ -116,6 +116,7 @@ validate_inputs() {
     #fi
     #
     #log_success "All required inputs provided"
+    log_info "skip validate_inputs"
 }
 
 validate_host_format() {
@@ -131,6 +132,7 @@ validate_host_format() {
     #fi
     #
     #log_success "Host format is valid: $NEW_JFROG_URL"
+    log_info "skip validate_host_format"
 }
 
 detect_setup_mode() {
@@ -221,6 +223,7 @@ test_platform_connectivity() {
     #fi
     #
     #log_success "Platform is reachable"
+    log_info "skip test_platform_connectivity"
 }
 
 test_platform_authentication() {
@@ -255,6 +258,7 @@ test_platform_authentication() {
     #fi
     #
     #log_success "Authentication successful"
+    log_info "skip test_platform_authentication"
 }
 
 test_platform_services() {
@@ -286,6 +290,7 @@ test_platform_services() {
     #if [[ $was_xtrace -eq 1 ]]; then set -x; fi
     #
     #log_success "Core services are available"
+    log_info "skip test_platform_services"
 }
 
 
@@ -306,6 +311,7 @@ validate_gh_auth() {
     #    log_error "GitHub CLI not authenticated. Set GH_TOKEN with required scopes (repo, actions, admin:repo_hook)."
     #    exit 1
     #fi
+    log_info "skip validate_gh_auth"
 }
 
 trim_whitespace() {
