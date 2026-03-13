@@ -51,7 +51,9 @@ on:
 
 env:
   NEW_JFROG_URL: ${{ github.event.inputs.jpd_host }}
+  JF_URL: ${{ github.event.inputs.jpd_host }}
   JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
+  JF_ACCESS_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   COMPONENTS: "checkout demo-assets helm infra inventory platform recommendations web"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "TRUE"
@@ -73,9 +75,6 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v4
         with:
           version: 2.88.0
-        env:
-          JF_URL: ${NEW_JFROG_URL}
-          JF_ACCESS_TOKEN: ${JFROG_ADMIN_TOKEN}
 
       - name: Validate Confirmation
         run: |
@@ -123,6 +122,7 @@ jobs:
 
       - name: Verify JFrog Platform Connectivity
         run: |
+          echo "Checking JFrog Platform access from the JF CLI."
           jf rt ping
 
       - name: Switch/Setup JFrog Platform
