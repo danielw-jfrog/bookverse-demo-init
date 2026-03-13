@@ -128,7 +128,7 @@ jobs:
         run: |
           echo "Generating evidence keys"
           pwd
-          jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys" --upload-public-key "true"
+          jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys"
           echo "Storing evidence keys into component github repository secrets"
           for item in ${COMPONENT}; do
             gh secret set "EVIDENCE_PRIVATE_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.key)" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
