@@ -54,6 +54,7 @@ env:
   COMPONENTS: "checkout demo-assets helm infra inventory platform recommendations web"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "TRUE"
   EVIDENCE_KEY_ALIAS: ${{ github.event.inputs.evidence_key_alias }}
+  PROJECT_KEY: bookverse
 
 concurrency:
   group: switch-platform-${{ github.ref }}
@@ -128,12 +129,32 @@ jobs:
         run: |
           echo "Generating evidence keys"
           pwd
+          # FIXME: Should these be recreated if they already exist?  Or pull pre-existing ones?
           jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys"
           echo "Storing evidence keys into component github repository secrets"
           for item in ${COMPONENT}; do
+            echo "  Setting evidence key secrets for repo ${{ github.repository_owner }}/bookverse-${item}"
             gh secret set "EVIDENCE_PRIVATE_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.key)" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
-            gh secret set "EVIDENCE_PUBLIC_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.pub)" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
-            gh secret set "EVIDENCE_KEY_ALIAS" --body "${EVIDENCE_KEY_ALIAS}" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+            # FIXME: Should the following be secrets or variables?
+            gh variable set "EVIDENCE_PUBLIC_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.pub)" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+            gh variable set "EVIDENCE_KEY_ALIAS" --body "${EVIDENCE_KEY_ALIAS}" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+          done
+
+      - name: Update GitHub Repository Secrets and Variables
+        run: |
+          echo "Updating GitHub Repository Secrets and Variables"
+          # FIXME: There was some retry logic around this.  Should it be retried?  Seems like bigger scope problems if this needs to be retried.
+          for item in ${COMPONENT}; do
+            echo "Storing secrets and variables for repo ${{ github.repository_owner }}/bookverse-${item}"
+            # Skip a couple of values if the demo-init repo
+            if [[ ${item} != "demo-init" ]]; then
+              gh secret set "JFROG_ADMIN_TOKEN" --body "${JFROG_ADMIN_TOKEN}" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+            fi
+            # FIXME: Should this be made a secret and move into the skip section above?
+            gh variable set "JFROG_URL" --body "${NEW_JFROG_URL}" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+            # FIXME: Should these be secrets or variables?  I'm leaning toward secrets, though it makes it hard to view the values as a user later.
+            gh variable set "DOCKER_REGISTRY" --body "$(echo $NEW_JFROG_URL | sed 's|https://||')" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
+            gh variable set "PROJECT_KEY" --body "${PROJECT_KEY}" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
           done
 
       - name: Switch/Setup JFrog Platform

@@ -233,59 +233,59 @@ verify_variable_with_retry() {
 # FIXME: What's the "xtrace" stuff for?
 update_repository_secrets_and_variables() {
     local repo="$1"
-    local full_repo="$GITHUB_ORG/$repo"
+    #local full_repo="$GITHUB_ORG/$repo"
     
-    log_info "Updating $full_repo..."
+    #log_info "Updating $full_repo..."
     
-    local docker_registry
-    docker_registry=$(extract_docker_registry)
+    #local docker_registry
+    #docker_registry=$(extract_docker_registry)
 
-    local repo_ok=1
+    #local repo_ok=1
 
-    log_info "  → Updating secrets..."
-    local output
-    local was_xtrace=0
-    if [[ -o xtrace ]]; then was_xtrace=1; set +x; fi
-    if ! output=$(gh secret set JFROG_ADMIN_TOKEN --repo "$full_repo" --body "$JFROG_ADMIN_TOKEN" 2>&1); then
-        log_warning "  → Failed to update JFROG_ADMIN_TOKEN: ${output}"
-        repo_ok=0
-    fi
-    if [[ $was_xtrace -eq 1 ]]; then set -x; fi
+    #log_info "  → Updating secrets..."
+    #local output
+    #local was_xtrace=0
+    #if [[ -o xtrace ]]; then was_xtrace=1; set +x; fi
+    #if ! output=$(gh secret set JFROG_ADMIN_TOKEN --repo "$full_repo" --body "$JFROG_ADMIN_TOKEN" 2>&1); then
+    #    log_warning "  → Failed to update JFROG_ADMIN_TOKEN: ${output}"
+    #    repo_ok=0
+    #fi
+    #if [[ $was_xtrace -eq 1 ]]; then set -x; fi
 
-    log_info "  → Updating variables..."
-    if ! output=$(gh variable set JFROG_URL --body "$NEW_JFROG_URL" --repo "$full_repo" 2>&1); then
-        log_warning "  → Failed to update JFROG_URL: ${output}"
-        repo_ok=0
-    fi
+    #log_info "  → Updating variables..."
+    #if ! output=$(gh variable set JFROG_URL --body "$NEW_JFROG_URL" --repo "$full_repo" 2>&1); then
+    #    log_warning "  → Failed to update JFROG_URL: ${output}"
+    #    repo_ok=0
+    #fi
 
-    if ! output=$(gh variable set DOCKER_REGISTRY --body "$docker_registry" --repo "$full_repo" 2>&1); then
-        log_warning "  → Failed to update DOCKER_REGISTRY: ${output}"
-        repo_ok=0
-    fi
+    #if ! output=$(gh variable set DOCKER_REGISTRY --body "$docker_registry" --repo "$full_repo" 2>&1); then
+    #    log_warning "  → Failed to update DOCKER_REGISTRY: ${output}"
+    #    repo_ok=0
+    #fi
 
-    if ! output=$(gh variable set PROJECT_KEY --body "$PROJECT_KEY" --repo "$full_repo" 2>&1); then
-        log_warning "  → Failed to update PROJECT_KEY: ${output}"
-        repo_ok=0
-    fi
+    #if ! output=$(gh variable set PROJECT_KEY --body "$PROJECT_KEY" --repo "$full_repo" 2>&1); then
+    #    log_warning "  → Failed to update PROJECT_KEY: ${output}"
+    #    repo_ok=0
+    #fi
 
-    if ! verify_variable_with_retry "$full_repo" "JFROG_URL" "$NEW_JFROG_URL"; then
-        log_warning "  → JFROG_URL verification failed, retrying update once..."
-        gh variable set JFROG_URL --body "$NEW_JFROG_URL" --repo "$full_repo" >/dev/null 2>&1 || true
-        if ! verify_variable_with_retry "$full_repo" "JFROG_URL" "$NEW_JFROG_URL"; then
-            repo_ok=0
-        else
-            log_success "  → JFROG_URL verified after retry"
-        fi
-    fi
-    if ! verify_variable_with_retry "$full_repo" "DOCKER_REGISTRY" "$docker_registry"; then
-        log_warning "  → DOCKER_REGISTRY verification failed, retrying update once..."
-        gh variable set DOCKER_REGISTRY --body "$docker_registry" --repo "$full_repo" >/dev/null 2>&1 || true
-        if ! verify_variable_with_retry "$full_repo" "DOCKER_REGISTRY" "$docker_registry"; then
-            repo_ok=0
-        else
-            log_success "  → DOCKER_REGISTRY verified after retry"
-        fi
-    fi
+    #if ! verify_variable_with_retry "$full_repo" "JFROG_URL" "$NEW_JFROG_URL"; then
+    #    log_warning "  → JFROG_URL verification failed, retrying update once..."
+    #    gh variable set JFROG_URL --body "$NEW_JFROG_URL" --repo "$full_repo" >/dev/null 2>&1 || true
+    #    if ! verify_variable_with_retry "$full_repo" "JFROG_URL" "$NEW_JFROG_URL"; then
+    #        repo_ok=0
+    #    else
+    #        log_success "  → JFROG_URL verified after retry"
+    #    fi
+    #fi
+    #if ! verify_variable_with_retry "$full_repo" "DOCKER_REGISTRY" "$docker_registry"; then
+    #    log_warning "  → DOCKER_REGISTRY verification failed, retrying update once..."
+    #    gh variable set DOCKER_REGISTRY --body "$docker_registry" --repo "$full_repo" >/dev/null 2>&1 || true
+    #    if ! verify_variable_with_retry "$full_repo" "DOCKER_REGISTRY" "$docker_registry"; then
+    #        repo_ok=0
+    #    else
+    #        log_success "  → DOCKER_REGISTRY verified after retry"
+    #    fi
+    #fi
 
     # Update evidence keys if provided
     #if [[ -n "${EVIDENCE_PRIVATE_KEY:-}" ]] && [[ -n "${EVIDENCE_PUBLIC_KEY:-}" ]]; then
@@ -308,17 +308,17 @@ update_repository_secrets_and_variables() {
     #        log_warning "    ⚠️  Failed to update EVIDENCE_KEY_ALIAS"
     #    fi
     #fi
-    log_info "skip upload evidence keys section"
 
-    if [[ $repo_ok -eq 1 ]]; then
-        log_success "  → $repo updated successfully"
-        SUCCEEDED_REPOS+=("$repo")
-        return 0
-    else
-        log_warning "  → $repo updated with errors"
-        FAILED_REPOS+=("$repo")
-        return 1
-    fi
+    #if [[ $repo_ok -eq 1 ]]; then
+    #    log_success "  → $repo updated successfully"
+    #    SUCCEEDED_REPOS+=("$repo")
+    #    return 0
+    #else
+    #    log_warning "  → $repo updated with errors"
+    #    FAILED_REPOS+=("$repo")
+    #    return 1
+    #fi
+    log_info "  $repo secret and variable update skipped"
 }
 
 generate_evidence_keys() {
@@ -459,6 +459,7 @@ update_all_repositories() {
             continue
         fi
 
+        # NOTE: Looks like the "switch-platform" stuff happens below here.
         local default_branch
         default_branch=$(gh repo view "$GITHUB_ORG/$repo" --json defaultBranchRef --jq .defaultBranchRef.name 2>/dev/null || echo "main")
 
@@ -512,6 +513,7 @@ update_all_repositories() {
         fi
         popd >/dev/null || true
         rm -rf "$workdir"
+        # NOTE: End of "switch-platform" stuff
     done
 
     log_info "Repository update results:"
@@ -519,50 +521,52 @@ update_all_repositories() {
     echo "  ✗ Failed: $((total_count - success_count))/${total_count}"
 }
 
+# FIXME: There's no reason to verify a thirteenth time.
 final_verification_pass() {
-    if [[ ${#FAILED_REPOS[@]} -eq 0 ]]; then
-        return 0
-    fi
+    #if [[ ${#FAILED_REPOS[@]} -eq 0 ]]; then
+    #    return 0
+    #fi
 
-    log_info "Performing final verification pass for repositories with errors..."
+    #log_info "Performing final verification pass for repositories with errors..."
 
-    local docker_registry
-    docker_registry=$(extract_docker_registry)
+    #local docker_registry
+    #docker_registry=$(extract_docker_registry)
 
-    local to_check=("${FAILED_REPOS[@]}")
-    local still_failed=()
+    #local to_check=("${FAILED_REPOS[@]}")
+    #local still_failed=()
 
-    for repo in "${to_check[@]}"; do
-        local full_repo="$GITHUB_ORG/$repo"
-        log_info "  → Re-verifying $full_repo"
+    #for repo in "${to_check[@]}"; do
+    #    local full_repo="$GITHUB_ORG/$repo"
+    #    log_info "  → Re-verifying $full_repo"
 
-        sleep 2
+    #    sleep 2
 
-        local ok=1
-        if ! verify_variable_with_retry "$full_repo" "JFROG_URL" "$NEW_JFROG_URL"; then
-            gh variable set JFROG_URL --body "$NEW_JFROG_URL" --repo "$full_repo" >/dev/null 2>&1 || true
-            if ! verify_variable_with_retry "$full_repo" "JFROG_URL" "$NEW_JFROG_URL"; then
-                ok=0
-            fi
-        fi
+    #    local ok=1
+    #    if ! verify_variable_with_retry "$full_repo" "JFROG_URL" "$NEW_JFROG_URL"; then
+    #        gh variable set JFROG_URL --body "$NEW_JFROG_URL" --repo "$full_repo" >/dev/null 2>&1 || true
+    #        if ! verify_variable_with_retry "$full_repo" "JFROG_URL" "$NEW_JFROG_URL"; then
+    #            ok=0
+    #        fi
+    #    fi
 
-        if ! verify_variable_with_retry "$full_repo" "DOCKER_REGISTRY" "$docker_registry"; then
-            gh variable set DOCKER_REGISTRY --body "$docker_registry" --repo "$full_repo" >/dev/null 2>&1 || true
-            if ! verify_variable_with_retry "$full_repo" "DOCKER_REGISTRY" "$docker_registry"; then
-                ok=0
-            fi
-        fi
+    #    if ! verify_variable_with_retry "$full_repo" "DOCKER_REGISTRY" "$docker_registry"; then
+    #        gh variable set DOCKER_REGISTRY --body "$docker_registry" --repo "$full_repo" >/dev/null 2>&1 || true
+    #        if ! verify_variable_with_retry "$full_repo" "DOCKER_REGISTRY" "$docker_registry"; then
+    #            ok=0
+    #        fi
+    #    fi
 
-        if [[ $ok -eq 1 ]]; then
-            log_success "  → $repo verified successfully on final pass"
-            SUCCEEDED_REPOS+=("$repo")
-        else
-            log_warning "  → $repo still failing after final pass"
-            still_failed+=("$repo")
-        fi
-    done
+    #    if [[ $ok -eq 1 ]]; then
+    #        log_success "  → $repo verified successfully on final pass"
+    #        SUCCEEDED_REPOS+=("$repo")
+    #    else
+    #        log_warning "  → $repo still failing after final pass"
+    #        still_failed+=("$repo")
+    #    fi
+    #done
 
-    FAILED_REPOS=("${still_failed[@]}")
+    #FAILED_REPOS=("${still_failed[@]}")
+    log_info "Skipping final final verification of variables."
 }
 
 # FIXME: Should probably split the "initial_setup" and "JPD Switch" functionality to two separate scripts.
@@ -578,10 +582,10 @@ main() {
     detect_setup_mode
     
     # Generate evidence keys if requested
-    if [[ "$GENERATE_EVIDENCE_KEYS" == "true" ]]; then
-        generate_evidence_keys
-        echo ""
-    fi
+    #if [[ "$GENERATE_EVIDENCE_KEYS" == "true" ]]; then
+    #    generate_evidence_keys
+    #    echo ""
+    #fi
     
     update_all_repositories
     echo ""
