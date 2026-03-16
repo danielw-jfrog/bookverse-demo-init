@@ -130,8 +130,9 @@ jobs:
           echo "Generating evidence keys"
           pwd
           # FIXME: Should these be recreated if they already exist?  Or pull pre-existing ones?
-          # FIXME: The following shoudl error out if the key fails to upload.
+          # FIXME: The following should error out if the key fails to upload.
           jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys"
+          echo $?
           echo "Storing evidence keys into component github repository secrets"
           for item in ${COMPONENTS}; do
             echo "  Setting evidence key secrets for repo ${{ github.repository_owner }}/bookverse-${item}"
