@@ -131,7 +131,7 @@ jobs:
           pwd
           # FIXME: Should these be recreated if they already exist?  Or pull pre-existing ones?
           source .github/scripts/setup/upload_evidence_public_key.sh
-          jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys" --upload-public-key "false"
+          jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys" --upload-public-key="false"
           upload_evidence_key_to_jfrog "./keys/${EVIDENCE_KEY_ALIAS}.pub" "${EVIDENCE_KEY_ALIAS}"
           
           echo "Storing evidence keys into component github repository secrets"
