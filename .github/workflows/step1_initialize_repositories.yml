@@ -3,12 +3,6 @@ name: 'Step 1: Initialize Repositories'
 on:
   workflow_dispatch:
     inputs:
-      # FIXME: Move the project key to a variable, not an input.
-      project_key:
-        description: 'The project key that should be used for the BookVerse Project in the JFrog Platform'
-        required: false
-        type: string
-        default: 'bookverse'
       generate_evidence_keys:
         description: 'Force generation of new Evidence Signing Keys.'
         required: false
@@ -26,14 +20,11 @@ on:
         default: false
 
 env:
-  NEW_JFROG_URL: ${{ secrets.JFROG_URL }}
-  JF_URL: ${{ secrets.JFROG_URL }}
-  JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
+  JF_URL: ${{ vars.JFROG_URL }}
   JF_ACCESS_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   COMPONENTS: "checkout demo-assets demo-init helm infra inventory platform recommendations web"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "TRUE"
-  PROJECT_KEY: ${{ github.event.inputs.project_key }}
 
 concurrency:
   group: switch-platform-${{ github.ref }}
@@ -112,26 +103,27 @@ jobs:
       - name: Update GitHub Repository Secrets and Variables
         # NOTE: These secrets and variables are pulled again in case they've been updated.
         env:
+          JFROG_URL: ${{ vars.JFROG_URL }}
+          JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
+          PROJECT_KEY: ${{ vars.PROJECT_KEY }}
           EVIDENCE_PRIVATE_SECRET: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
           EVIDENCE_PUBLIC_VARIABLE: ${{ vars.EVIDENCE_PUBLIC_KEY }}
           EVIDENCE_ALIAS_VARIABLE: ${{ vars.EVIDENCE_KEY_ALIAS }}
+          REPO_OWNER: ${{ github.repository_owner }}
         run: |
           echo "Updating GitHub Repository Secrets and Variables"
           for item in ${COMPONENTS}; do
             echo "Storing secrets and variables for repo ${{ github.repository_owner }}/bookverse-${item}"
             # NOTE: Skip some values that we don't want to overwrite if the demo-init repo
             if [[ ${item} != "demo-init" ]]; then
-              gh secret set "JFROG_ADMIN_TOKEN" --body "${JFROG_ADMIN_TOKEN}" --repo "${{ github.repository_owner }}/bookverse-${item}"
-              gh secret set "EVIDENCE_PRIVATE_KEY" --body "${EVIDENCE_PRIVATE_SECRET}" --repo "${{ github.repository_owner }}/bookverse-${item}"
-              # FIXME: Should the following be secrets or variables?
-              gh variable set "EVIDENCE_PUBLIC_KEY" --body "${EVIDENCE_PUBLIC_VARIABLE}" --repo "${{ github.repository_owner }}/bookverse-${item}"
-              gh variable set "EVIDENCE_KEY_ALIAS" --body "${EVIDENCE_ALIAS_VARIABLE}" --repo "${{ github.repository_owner }}/bookverse-${item}"
+              gh secret set "JFROG_ADMIN_TOKEN" --body "${JFROG_ADMIN_TOKEN}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh variable set "JFROG_URL" --body "${JFROG_URL}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh variable set "PROJECT_KEY" --body "${PROJECT_KEY}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh secret set "EVIDENCE_PRIVATE_KEY" --body "${EVIDENCE_PRIVATE_SECRET}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh variable set "EVIDENCE_PUBLIC_KEY" --body "${EVIDENCE_PUBLIC_VARIABLE}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh variable set "EVIDENCE_KEY_ALIAS" --body "${EVIDENCE_ALIAS_VARIABLE}" --repo "${REPO_OWNER}/bookverse-${item}"
             fi
-            # FIXME: Should this be made a secret and move into the skip section above?
-            gh variable set "JFROG_URL" --body "${NEW_JFROG_URL}" --repo "${{ github.repository_owner }}/bookverse-${item}"
-            # FIXME: Should these be secrets or variables?  I'm leaning toward secrets, though it makes it hard to view the values as a user later.
-            gh variable set "DOCKER_REGISTRY" --body "$(echo $NEW_JFROG_URL | sed 's|https://||')" --repo "${{ github.repository_owner }}/bookverse-${item}"
-            gh variable set "PROJECT_KEY" --body "${PROJECT_KEY}" --repo "${{ github.repository_owner }}/bookverse-${item}"
+            gh variable set "DOCKER_REGISTRY" --body "$(echo ${JFROG_URL} | sed 's|https://||')" --repo "${REPO_OWNER}/bookverse-${item}"
           done
 
       - name: Update Kubernetes Cluster Registry
