@@ -125,7 +125,7 @@ jobs:
           EVIDENCE_PRIVATE_SECRET: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
           EVIDENCE_PUBLIC_VARIABLE: ${{ vars.EVIDENCE_PUBLIC_KEY }}
           EVIDENCE_ALIAS_VARIABLE: ${{ vars.EVIDENCE_KEY_ALIAS }}
-        if: ${{ env.EVIDENCE_PRIVATE_SECRET == '' || env.EVIDENCE_PUBLIC_VARIABLE == '' || env.EVIDENCE_ALIAS_VARIABLE == '' || github.event.inputs.generate_evidence_keys }}
+        if: ${{ env.EVIDENCE_PRIVATE_SECRET == '' || env.EVIDENCE_PUBLIC_VARIABLE == '' || env.EVIDENCE_ALIAS_VARIABLE == '' || github.event.inputs.generate_evidence_keys == 'true' }}
         run: |
           echo "Generating Evidence Signing Keys.  Either the keys are unset or the force regenerate option has been set."
           source .github/scripts/setup/upload_evidence_public_key.sh
