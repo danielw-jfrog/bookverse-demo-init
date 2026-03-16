@@ -130,9 +130,10 @@ jobs:
           echo "Generating evidence keys"
           pwd
           # FIXME: Should these be recreated if they already exist?  Or pull pre-existing ones?
+          # FIXME: The following shoudl error out if the key fails to upload.
           jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys"
           echo "Storing evidence keys into component github repository secrets"
-          for item in ${COMPONENT}; do
+          for item in ${COMPONENTS}; do
             echo "  Setting evidence key secrets for repo ${{ github.repository_owner }}/bookverse-${item}"
             gh secret set "EVIDENCE_PRIVATE_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.key)" --app "actions" --repo "${{ github.repository_owner }}/bookverse-${item}"
             # FIXME: Should the following be secrets or variables?
@@ -144,7 +145,7 @@ jobs:
         run: |
           echo "Updating GitHub Repository Secrets and Variables"
           # FIXME: There was some retry logic around this.  Should it be retried?  Seems like bigger scope problems if this needs to be retried.
-          for item in ${COMPONENT}; do
+          for item in ${COMPONENTS}; do
             echo "Storing secrets and variables for repo ${{ github.repository_owner }}/bookverse-${item}"
             # Skip a couple of values if the demo-init repo
             if [[ ${item} != "demo-init" ]]; then

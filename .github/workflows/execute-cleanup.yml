@@ -303,6 +303,10 @@ jobs:
           DRY_RUN=${{ inputs.mode == 'preview' && 'true' || 'false' }}
           bash ./.github/scripts/setup/cleanup_realtime.sh project $DRY_RUN 2>&1 | tee -a /tmp/cleanup_execution.log
 
+      # FIXME: Delete the Evidence Public Key from the JFrog Platform
+
+      # FIXME: Delete the Forked Repos from the GitHub user/org
+
       - name: 📋 Cleanup Summary (Preview & Execute)
         if: always()
         env:
