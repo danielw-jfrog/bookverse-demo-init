@@ -571,15 +571,15 @@ final_verification_pass() {
 
 # FIXME: Should probably split the "initial_setup" and "JPD Switch" functionality to two separate scripts.
 main() {
-    if [[ "$SETUP_MODE" == "initial_setup" ]]; then
-        echo "🚀 BookVerse Platform - Initial Setup"
-        echo "======================================"
-    else
-        echo "🔄 JFrog Platform Deployment (JPD) Switch"
-        echo "=========================================="
-    fi
+    #if [[ "$SETUP_MODE" == "initial_setup" ]]; then
+    #    echo "🚀 BookVerse Platform - Initial Setup"
+    #    echo "======================================"
+    #else
+    #    echo "🔄 JFrog Platform Deployment (JPD) Switch"
+    #    echo "=========================================="
+    #fi
     
-    detect_setup_mode
+    #detect_setup_mode
     
     # Generate evidence keys if requested
     #if [[ "$GENERATE_EVIDENCE_KEYS" == "true" ]]; then
@@ -587,44 +587,45 @@ main() {
     #    echo ""
     #fi
     
-    update_all_repositories
-    echo ""
+    #update_all_repositories
+    #echo ""
 
-    final_verification_pass
-    echo ""
+    #final_verification_pass
+    #echo ""
     
-    local docker_registry
-    docker_registry=$(extract_docker_registry)
+    #local docker_registry
+    #docker_registry=$(extract_docker_registry)
     
-    local failed_count
-    failed_count=${#FAILED_REPOS[@]}
-    local success_count
-    success_count=${#SUCCEEDED_REPOS[@]}
+    #local failed_count
+    #failed_count=${#FAILED_REPOS[@]}
+    #local success_count
+    #success_count=${#SUCCEEDED_REPOS[@]}
 
-    echo "🎯 JPD Platform Switch Summary"
-    echo "================================="
-    echo "New Configuration:"
-    echo "  JFROG_URL: $NEW_JFROG_URL"
-    echo "  DOCKER_REGISTRY: $docker_registry"
-    echo "  Total repositories: ${#BOOKVERSE_REPOS[@]}"
-    echo "  Success: ${success_count}"
-    echo "  Failed: ${failed_count}"
+    #echo "🎯 JPD Platform Switch Summary"
+    #echo "================================="
+    #echo "New Configuration:"
+    #echo "  JFROG_URL: $NEW_JFROG_URL"
+    #echo "  DOCKER_REGISTRY: $docker_registry"
+    #echo "  Total repositories: ${#BOOKVERSE_REPOS[@]}"
+    #echo "  Success: ${success_count}"
+    #echo "  Failed: ${failed_count}"
 
-    if [[ ${success_count} -gt 0 ]]; then
-        echo ""
-        echo "✓ Updated repositories: ${SUCCEEDED_REPOS[*]}"
-    fi
+    #if [[ ${success_count} -gt 0 ]]; then
+    #    echo ""
+    #    echo "✓ Updated repositories: ${SUCCEEDED_REPOS[*]}"
+    #fi
 
-    if [[ ${failed_count} -gt 0 ]]; then
-        echo ""
-        echo "✗ Repositories with errors: ${FAILED_REPOS[*]}"
-        echo ""
-        log_error "Some repositories failed to update. See messages above."
-        exit 1
-    else
-        echo ""
-        log_success "All BookVerse repositories have been updated with new JPD configuration"
-    fi
+    #if [[ ${failed_count} -gt 0 ]]; then
+    #    echo ""
+    #    echo "✗ Repositories with errors: ${FAILED_REPOS[*]}"
+    #    echo ""
+    #    log_error "Some repositories failed to update. See messages above."
+    #    exit 1
+    #else
+    #    echo ""
+    #    log_success "All BookVerse repositories have been updated with new JPD configuration"
+    #fi
+    log_info "skipping it all.  delete me later."
 }
 
 main "$@"
