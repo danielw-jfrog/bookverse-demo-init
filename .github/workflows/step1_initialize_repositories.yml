@@ -3,46 +3,16 @@ name: 'Step 1: Initialize Repositories'
 on:
   workflow_dispatch:
     inputs:
-      setup_mode:
-        description: 'Operation mode: initial_setup (first-time setup) or platform_switch (migrate/refresh)'
-        required: true
-        type: choice
-        options:
-          - initial_setup
-          - platform_switch
-        default: 'initial_setup'
-      jpd_host:
-        description: 'JFrog Platform Host (e.g., https://mycompany.jfrog.io)'
-        required: true
-        type: string
-      confirm_switch:
-        description: 'Type "SWITCH" to confirm (required for platform_switch mode)'
-        required: false
-        type: string
       generate_evidence_keys:
-        description: 'Generate new evidence keys if not present (recommended for initial_setup)'
+        description: 'Force generation of new Evidence Signing Keys.'
         required: false
         type: boolean
-        default: true
-      evidence_key_type:
-        description: 'Evidence key algorithm (rsa, ec, ed25519)'
-        required: false
-        type: choice
-        options:
-          - rsa
-          - ec
-          - ed25519
-        default: 'rsa'
+        default: false
       evidence_key_alias:
         description: 'Evidence key alias (default: bookverse-signing-key)'
         required: false
         type: string
         default: 'bookverse-signing-key'
-      update_code_urls:
-        description: 'Update hardcoded URLs in source code (skip for initial_setup)'
-        required: false
-        type: boolean
-        default: false
       update_k8s:
         description: 'Update Kubernetes cluster registry (requires kubectl access)'
         required: false
@@ -50,12 +20,10 @@ on:
         default: false
 
 env:
-  NEW_JFROG_URL: ${{ github.event.inputs.jpd_host }}
-  JF_URL: ${{ github.event.inputs.jpd_host }}
-  JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
+  JF_URL: ${{ vars.JFROG_URL }}
   JF_ACCESS_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
-  COMPONENTS: "checkout demo-assets helm infra inventory platform recommendations web"
+  COMPONENTS: "checkout demo-assets demo-init helm infra inventory platform recommendations web"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "TRUE"
 
 concurrency:
@@ -63,42 +31,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  switch-platform:
+  initialize-repositories:
     runs-on: ubuntu-latest
     name: Switch Platform
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
         with:
-          version: 2.88.0
+          version: 2.91.0
 
       - name: Validate Confirmation
+        env:
+          JFROG_URL: ${{ vars.JFROG_URL }}
+          JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
+          PROJECT_KEY: ${{ vars.PROJECT_KEY }}
         run: |
-          SETUP_MODE="${{ github.event.inputs.setup_mode }}"
-          if [[ "$SETUP_MODE" == "platform_switch" ]]; then
-            if [[ "${{ github.event.inputs.confirm_switch }}" != "SWITCH" ]]; then
-              echo "❌ Platform switch cancelled: Invalid confirmation input"
-              echo "   You must type 'SWITCH' to confirm platform migration"
-              exit 1
-            fi
-            echo "✅ Platform switch confirmed. Proceeding with platform migration..."
-          else
-            echo "? initial_setup ?"
-          fi
-          
           # Validate the JFrog URL
-          if [[ -z "${NEW_JFROG_URL}" ]]; then
-            echo "ERROR: NEW_JFROG_URL secret not set."
+          if [[ -z "${JFROG_URL}" ]]; then
+            echo "ERROR: JFROG_URL variable not set."
             exit 1
           fi
           
           # Validate the JFrog Admin Token
           if [[ -z "${JFROG_ADMIN_TOKEN}" ]]; then
             echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
+            exit 1
+          fi
+          
+          # Validate the JFrog Project Key
+          if [[ -z "${PROJECT_KEY}" ]]; then
+            echo "ERROR: PROJECT_KEY variable not set."
             exit 1
           fi
           
@@ -119,93 +85,59 @@ jobs:
               gh repo fork bookverse-example/bookverse-${item} --fork-name bookverse-${item}
             fi
           done
+          # FIXME: SET JF_URL and JF_ADMIN_TOKEN on forks
 
       - name: Verify JFrog Platform Connectivity
         run: |
           echo "Checking JFrog Platform access from the JF CLI."
           jf rt ping
 
-      - name: Switch/Setup JFrog Platform
+      - name: Generate Evidence Signing Keys
+        env:
+          EVIDENCE_KEY_ALIAS: ${{ github.event.inputs.evidence_key_alias }}
+          EVIDENCE_PRIVATE_SECRET: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
+          EVIDENCE_PUBLIC_VARIABLE: ${{ vars.EVIDENCE_PUBLIC_KEY }}
+          EVIDENCE_ALIAS_VARIABLE: ${{ vars.EVIDENCE_KEY_ALIAS }}
+        if: ${{ env.EVIDENCE_PRIVATE_SECRET == '' || env.EVIDENCE_PUBLIC_VARIABLE == '' || env.EVIDENCE_ALIAS_VARIABLE == '' || github.event.inputs.generate_evidence_keys == 'true' }}
         run: |
-          export SETUP_MODE='${{ github.event.inputs.setup_mode }}'
-          export GENERATE_EVIDENCE_KEYS='${{ github.event.inputs.generate_evidence_keys }}'
-          export EVIDENCE_KEY_TYPE='${{ github.event.inputs.evidence_key_type }}'
-          export EVIDENCE_KEY_ALIAS='${{ github.event.inputs.evidence_key_alias }}'
-          export UPDATE_CODE_URLS='${{ github.event.inputs.update_code_urls }}'
-          export JFROG_CLI_AVOID_NEW_VERSION_WARNING=true
-          
-          export NO_COLOR=1
-          LOG_FILE="switch-platform.log"
-          echo "LOG_FILE=$LOG_FILE" >> "$GITHUB_ENV"
-          
-          if [[ "$SETUP_MODE" == "initial_setup" ]]; then
-            echo "🚀 Starting Initial Platform Setup"
-            echo "=================================================="
-            echo "Mode: Initial Setup (first-time configuration)"
-            echo "Target Platform: ${{ github.event.inputs.jpd_host }}"
-            echo "Generate Evidence Keys: $GENERATE_EVIDENCE_KEYS"
-            echo ""
-          else
-            echo "🔄 Starting JFrog Platform Switch"
-            echo "=================================================="
-            if [[ -z "${{ vars.JFROG_URL }}" ]]; then
-              echo "⚠️  Missing vars.JFROG_URL. Treating as initial setup."
-              export SETUP_MODE="initial_setup"
-            else
-              echo "From: ${{ vars.JFROG_URL }}"
-              echo "To: ${{ github.event.inputs.jpd_host }}"
+          echo "Generating Evidence Signing Keys.  Either the keys are unset or the force regenerate option has been set."
+          source .github/scripts/setup/upload_evidence_public_key.sh
+          jf evd generate-key-pair --key-alias "${EVIDENCE_KEY_ALIAS}" --key-file-name "${EVIDENCE_KEY_ALIAS}" --key-file-path "./keys" --upload-public-key="false"
+          # FIXME: This should probably be moved to the "Step 2: Setup Platform" workflow.
+          upload_evidence_key_to_jfrog "./keys/${EVIDENCE_KEY_ALIAS}.pub" "${EVIDENCE_KEY_ALIAS}"
+          gh secret set "EVIDENCE_PRIVATE_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.key)" --repo "${{ github.repository_owner }}/bookverse-demo-init"
+          # FIXME: Should the following be secrets or variables?
+          gh variable set "EVIDENCE_PUBLIC_KEY" --body "$(cat ./keys/${EVIDENCE_KEY_ALIAS}.pub)" --repo "${{ github.repository_owner }}/bookverse-demo-init"
+          gh variable set "EVIDENCE_KEY_ALIAS" --body "${EVIDENCE_KEY_ALIAS}" --repo "${{ github.repository_owner }}/bookverse-demo-init"
+
+      - name: Update GitHub Repository Secrets and Variables
+        # NOTE: These secrets and variables are pulled again in case they've been updated.
+        env:
+          JFROG_URL: ${{ vars.JFROG_URL }}
+          JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
+          PROJECT_KEY: ${{ vars.PROJECT_KEY }}
+          EVIDENCE_PRIVATE_SECRET: ${{ secrets.EVIDENCE_PRIVATE_KEY }}
+          EVIDENCE_PUBLIC_VARIABLE: ${{ vars.EVIDENCE_PUBLIC_KEY }}
+          EVIDENCE_ALIAS_VARIABLE: ${{ vars.EVIDENCE_KEY_ALIAS }}
+          REPO_OWNER: ${{ github.repository_owner }}
+        run: |
+          echo "Updating GitHub Repository Secrets and Variables"
+          for item in ${COMPONENTS}; do
+            echo "Storing secrets and variables for repo ${{ github.repository_owner }}/bookverse-${item}"
+            # NOTE: Skip some values that we don't want to overwrite if the demo-init repo
+            if [[ ${item} != "demo-init" ]]; then
+              gh secret set "JFROG_ADMIN_TOKEN" --body "${JFROG_ADMIN_TOKEN}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh variable set "JFROG_URL" --body "${JFROG_URL}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh variable set "PROJECT_KEY" --body "${PROJECT_KEY}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh secret set "EVIDENCE_PRIVATE_KEY" --body "${EVIDENCE_PRIVATE_SECRET}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh variable set "EVIDENCE_PUBLIC_KEY" --body "${EVIDENCE_PUBLIC_VARIABLE}" --repo "${REPO_OWNER}/bookverse-${item}"
+              gh variable set "EVIDENCE_KEY_ALIAS" --body "${EVIDENCE_ALIAS_VARIABLE}" --repo "${REPO_OWNER}/bookverse-${item}"
             fi
-            echo ""
-          fi
-
-          set -o pipefail
-          CONTINUE_ON_AUTH_FAILURE=1 ./.github/scripts/setup/switch_jfrog_platform.sh 2>&1 | tee "$LOG_FILE"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Uploading full log as artifact" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload switch log artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: switch-platform.log
-          path: switch-platform.log
-          retention-days: 7
-          if-no-files-found: ignore
-
-      - name: Append log tail to summary
-        if: always()
-        run: |
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "## 📋 Switch Platform Log Details" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          if [[ -f "switch-platform.log" ]]; then
-            tail -n 200 "switch-platform.log" >> "$GITHUB_STEP_SUMMARY" || true
-          fi
-          
-      - name: Validate New Platform
-        run: |
-          echo "🔍 Validating new platform connectivity..."
-          # FIXME: Shouldn't this use the JF CLI?
-          if curl -s --fail --header "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" \
-              "${NEW_JFROG_URL}/artifactory/api/system/ping" > /dev/null; then
-            echo "✅ New platform validation successful"
-          else
-            echo "❌ New platform validation failed"
-            exit 1
-          fi
-          
-          echo ""
-          echo "🎯 Platform Switch Summary:"
-          echo "================================"
-          echo "✅ Host validation: Passed"
-          echo "✅ Connectivity test: Passed" 
-          echo "✅ Service availability: Verified"
-          echo "✅ All repositories updated: Confirmed"
-          echo ""
-          echo "🚀 BookVerse is now configured for the new platform!"
+            gh variable set "DOCKER_REGISTRY" --body "$(echo ${JFROG_URL} | sed 's|https://||')" --repo "${REPO_OWNER}/bookverse-${item}"
+          done
 
       - name: Update Kubernetes Cluster Registry
+        # FIXME: Need to figure this part out, but that can come later.
         if: github.event.inputs.update_k8s == 'true'
         run: |
           echo "🔧 Updating Kubernetes cluster registry configuration..."
@@ -236,64 +168,25 @@ jobs:
             echo "   See the manual update instructions in the documentation"
           fi
 
-      - name: 📋 Switch Platform Summary
+      - name: Output Summary
         if: always()
         run: |
-          echo "## 🔄 Platform Switch Results" >> $GITHUB_STEP_SUMMARY
+          echo "## Results - Initialize Repositories" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Logs: see artifact 'switch-platform.log' (if uploaded)" >> $GITHUB_STEP_SUMMARY
-          
           if [[ "${{ job.status }}" == "success" ]]; then
-            echo "✅ **Platform switch completed successfully**" >> $GITHUB_STEP_SUMMARY
+            echo "**BookVerse is now configured for the new platform**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "🎯 **BookVerse is now configured for the new platform**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            SETUP_MODE="${{ github.event.inputs.setup_mode }}"
-            if [[ "$SETUP_MODE" == "initial_setup" ]]; then
-              echo "### ✅ Initial Setup Details:" >> $GITHUB_STEP_SUMMARY
-              echo "- 🎯 **Platform**: \`${{ github.event.inputs.jpd_host }}\`" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "### ✅ Migration Details:" >> $GITHUB_STEP_SUMMARY
-              echo "- 🔗 **From**: \`${{ vars.JFROG_URL }}\`" >> $GITHUB_STEP_SUMMARY
-              echo "- 🎯 **To**: \`${{ github.event.inputs.jpd_host }}\`" >> $GITHUB_STEP_SUMMARY
-            fi
-            echo "- 📦 **Updated repositories**: All BookVerse service repositories" >> $GITHUB_STEP_SUMMARY
-            echo "- 🔐 **Environment variables**: JFROG_URL, DOCKER_REGISTRY updated" >> $GITHUB_STEP_SUMMARY
-            echo "- ✅ **Validation**: New platform connectivity confirmed" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            SETUP_MODE="${{ github.event.inputs.setup_mode }}"
-            if [[ "$SETUP_MODE" == "initial_setup" ]]; then
-              echo "### 📋 Next Steps:" >> $GITHUB_STEP_SUMMARY
-              echo "1. 🏗️ **Run Setup Platform workflow** to create JFrog infrastructure (projects, repos, OIDC)" >> $GITHUB_STEP_SUMMARY
-              echo "2. 🧪 **Test CI/CD workflows** to verify integration" >> $GITHUB_STEP_SUMMARY
-              echo "3. 🔍 **Verify repository configurations** are correct" >> $GITHUB_STEP_SUMMARY
-              echo "4. ⚙️ **Check evidence keys** were generated and distributed" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "### 📋 Next Steps:" >> $GITHUB_STEP_SUMMARY
-              echo "1. 🏗️ **Run Setup Platform workflow** to initialize the new environment" >> $GITHUB_STEP_SUMMARY
-              echo "2. 🧪 **Test CI/CD workflows** to verify integration" >> $GITHUB_STEP_SUMMARY
-              echo "3. 🔍 **Check service repositories** for updated configurations" >> $GITHUB_STEP_SUMMARY
-              echo "4. ⚙️ **Verify platform-specific settings** (OIDC, webhooks, etc.)" >> $GITHUB_STEP_SUMMARY
-            fi
-            if [[ "${{ github.event.inputs.update_k8s }}" != "true" ]]; then
-              echo "5. 🔧 **Update Kubernetes cluster** manually (see documentation)" >> $GITHUB_STEP_SUMMARY
-            fi
-          else
-            echo "❌ **Platform switch failed**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "🔍 **Check the logs above for error details**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### ❌ Common Issues:" >> $GITHUB_STEP_SUMMARY
-            echo "- 🔐 **Authentication failed** with new platform" >> $GITHUB_STEP_SUMMARY
-            echo "- 🌐 **Network connectivity** to new platform" >> $GITHUB_STEP_SUMMARY
-            echo "- 🔒 **Invalid admin token** or insufficient permissions" >> $GITHUB_STEP_SUMMARY
-            echo "- 📝 **Incorrect platform URL** format" >> $GITHUB_STEP_SUMMARY
-            echo "- 🚫 **GitHub API rate limits** or token issues" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### 🔧 Troubleshooting Steps:" >> $GITHUB_STEP_SUMMARY
-            echo "1. ✅ **Verify platform URL** (format: https://hostname.jfrog.io)" >> $GITHUB_STEP_SUMMARY
-            echo "2. 🔐 **Check admin token** has proper permissions" >> $GITHUB_STEP_SUMMARY
-            echo "3. 🌐 **Test platform connectivity** manually" >> $GITHUB_STEP_SUMMARY
-            echo "4. 📋 **Review GitHub token** scopes and permissions" >> $GITHUB_STEP_SUMMARY
-            echo "5. 🔄 **Retry with corrected inputs** if needed" >> $GITHUB_STEP_SUMMARY
+            echo "- Platform: \`${{ vars.JFROG_URL }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- Forked (if not already) the following repos:" >> $GITHUB_STEP_SUMMARY
+            for item in ${COMPONENTS}; do
+              echo "  - ${{ github.repository_owner }}/bookverse-${item}" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "- Updated the following secrets and variables in the forked repos:" >> $GITHUB_STEP_SUMMARY
+            echo "  - Secret JFROG_ADMIN_TOKEN: ***" >> $GITHUB_STEP_SUMMARY
+            echo "  - Variable JFROG_URL: ${{ vars.JFROG_URL }}" >> $GITHUB_STEP_SUMMARY
+            echo "  - Variable PROJECT_KEY: ${{ vars.PROJECT_KEY }}" >> $GITHUB_STEP_SUMMARY
+            echo "  - Variable DOCKER_REGISTRY: ${{ vars.DOCKER_REGISTRY }}" >> $GITHUB_STEP_SUMMARY
+            echo "  - Secret EVIDENCE_PRIVATE_KEY: ***" >> $GITHUB_STEP_SUMMARY
+            echo "  - Variable EVIDENCE_PUBLIC_KEY: ${{ vars.EVIDENCE_PUBLIC_KEY }}" >> $GITHUB_STEP_SUMMARY
+            echo "  - Variable EVIDENCE_KEY_ALIAS: ${{ vars.EVIDENCE_KEY_ALIAS }}" >> $GITHUB_STEP_SUMMARY
           fi

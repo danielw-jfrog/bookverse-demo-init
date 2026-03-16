@@ -42,29 +42,22 @@ Quick Start
    * `GH_TOKEN` - A GitHub Personal Access Token (PAT) classic with _'repo'_, _'workflow'_, and _'admin:repo_hook'_
                   permissions.  This is required to fork the other repositories and setup the project.
 
+3. Set necessary variables for the workflows.  These variables can be set on the _Settings -> Secrets and variables ->
+   Actions_ page in the _Repository Variables_ section.
+
+   * `JFROG_URL` - The URL of the JFrog Platform installation that will be used.  This should start with _https://_ as
+                   all good HTTPS URLs should.
+
+   * `PROJECT_KEY` - The Project Key that will be used on the JFrog Platform when setting up the example project.
+
 3. Run the _Step 1: Initialize Repositories_ action.  This can be found on the _Actions_ tab.  Use the settings below to
    configure the initial setup run.
 
-   * Setup Mode: `initial_setup`
-
-   * JFrog Platform Host: `https://<JPD_URL>`  This will be the URL for your JFrog Platform.
-     e.g. _https://example.jfrog.io_
-
-   * Confirm Switch: Leave empty as not needed for initial_setup.
-
-   * Generate Evidence Keys: `true`
-
-   * Evidence Key Type: `rsa`  Can be _rsa_, _ec_, or _ed25519_.
+   * Generate Evidence Keys: `false`
 
    * Evidence Key Alias: `bookverse-signing-key`
 
-   * Update Code URLs: `false` Set this to false to skip this step for the initial run.
-
    * Update K8s: `false` Set this to false to skip configuring Kubernetes for the initial run.
-
-[//]: <> (FIXME: Should the Platform Host / URL be moved to a secret?)
-[//]: <> (FIXME: Should the admin token value be removed and the secret forced?)
-[//]: <> (FIXME: What does the Update Code URLs option do?  Should it be removed?)
 
 4. Run the _Step 2: Setup Platform_ action.  This can be found on the _Actions_ tab.  No settings are required for this
    action.
