@@ -71,6 +71,8 @@ jobs:
 
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
+        with:
+          version: 2.91.0
 
       - name: Validate Confirmation
         run: |
