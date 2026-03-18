@@ -1,48 +1,6 @@
 #!/usr/bin/env bash
-# =============================================================================
-# BookVerse Platform - Setup Automation - Common Utilities Library
-# =============================================================================
-#
-# Comprehensive utility library providing shared functions for BookVerse platform setup automation
-#
-# 🎯 PURPOSE:
-#     This script serves as the foundational utility library for all BookVerse platform
-#     setup automation scripts. It provides standardized logging, error handling, HTTP
-#     API communication, and JSON payload construction for consistent automation workflows.
-#     Every setup script depends on this library for reliable, maintainable operations.
-#
-# 🏗️ ARCHITECTURE:
-#     - Modular Function Design: Self-contained functions with clear responsibilities
-#     - Error Handling Framework: Comprehensive error detection and recovery mechanisms
-#     - HTTP API Abstraction: Standardized JFrog Platform API communication layer
-#     - JSON Template System: Type-safe payload construction for API operations
-#     - Logging Infrastructure: Consistent, colorized output with multiple severity levels
-#     - Environment Validation: Robust validation of required configuration and credentials
-#
-# 🚀 KEY FEATURES:
-#     - Comprehensive error handling with automatic script termination on failures
-#     - Colorized logging output with emojis for enhanced readability and UX
-#     - Standardized HTTP API communication with response code handling
-#     - Template-based JSON payload construction for type safety and consistency
-#     - Environment validation ensuring all required credentials and URLs are present
-#     - Batch processing framework for handling multiple similar operations
-#     - JFrog Platform connectivity validation with detailed diagnostic information
-#
-# 📊 BUSINESS LOGIC:
-#     - Platform Provisioning: Enables automated creation of JFrog projects and repositories
-#     - Security Integration: Supports OIDC authentication setup and credential management
-#     - Quality Assurance: Provides consistent error handling and validation across all scripts
-#     - Operational Excellence: Standardizes logging and debugging for enterprise operations
-#     - Developer Experience: Simplifies script development with reusable, tested components
-#
-# 🔧 USAGE PATTERNS:
-#     - Script Initialization: Every setup script sources this library for common functionality
-#     - API Operations: All JFrog Platform API calls use the standardized communication layer
-#     - Error Management: Automatic error detection and reporting with detailed context
-#     - Logging Operations: Consistent output formatting across all automation scripts
-#     - Environment Setup: Validation and configuration loading for all setup operations
-#
-# ⚙️ FUNCTIONS PROVIDED:
+
+# FUNCTIONS PROVIDED:
 #     [Error Handling]
 #     error_handler()           : Global error handler with detailed context reporting
 #     setup_error_handling()    : Initialize error handling for calling scripts
@@ -71,8 +29,8 @@
 #     validate_environment()   : Validate required environment variables are present
 #     show_config()           : Display current configuration for debugging
 #     validate_jfrog_connectivity() : Test JFrog Platform API connectivity
-#
-# 🌍 ENVIRONMENT VARIABLES:
+
+# ENVIRONMENT VARIABLES:
 #     [Required Variables]
 #     JFROG_URL              : JFrog Platform URL (e.g., https://company.jfrog.io)
 #     JFROG_ADMIN_TOKEN      : JFrog admin token for API access
@@ -82,129 +40,11 @@
 #     LOG_LEVEL              : Logging verbosity [default: INFO]
 #     DEBUG                  : Enable debug output [default: false]
 #     CI_ENVIRONMENT         : CI/CD environment identifier for debugging
-#
-# 📋 PREREQUISITES:
-#     [System Requirements]
-#     - bash (version 4.0+): Advanced shell features and array support
-#     - curl: HTTP API communication with JFrog Platform
-#     - jq: JSON processing and payload construction
-#     
-#     [Access Requirements]
-#     - JFrog Platform admin access: Required for project and repository operations
-#     - Network connectivity: HTTPS access to JFrog Platform APIs
-#
-# 📤 OUTPUTS:
-#     [Logging Output]
-#     - Colorized console output with severity-based formatting
-#     - Emoji indicators for enhanced readability and status communication
-#     - Detailed error messages with script context and debugging information
-#     
-#     [Return Codes]
-#     0: Success - All operations completed successfully
-#     1: General Error - Script or API operation failures
-#     2: Environment Error - Missing required environment variables or configuration
-#
-# 💡 EXAMPLES:
-#     [Script Integration]
-#     #!/usr/bin/env bash
-#     source "$(dirname "$0")/common.sh"
-#     init_script "my-script.sh" "Script description"
-#     # ... script logic ...
-#     finalize_script "my-script.sh"
-#     
-#     [API Operations]
-#     response_code=$(jfrog_api_call POST "${JFROG_URL}/api/endpoint" "$json_payload")
-#     handle_api_response "$response_code" "Resource Name" "creation"
-#     
-#     [Logging Usage]
-#     log_info "Starting operation..."
-#     log_success "Operation completed successfully"
-#     log_error "Operation failed with details"
-#
-# ⚠️ ERROR HANDLING:
-#     [Automatic Error Detection]
-#     - Script termination on any command failure (set -e)
-#     - Automatic error context collection including line numbers and commands
-#     - Detailed debugging information including environment and configuration
-#     
-#     [Recovery Procedures]
-#     - Environment validation failures: Check configuration and credentials
-#     - API communication failures: Verify JFrog Platform connectivity and permissions
-#     - JSON construction failures: Validate input parameters and templates
-#
-# 🔍 DEBUGGING:
-#     [Error Context]
-#     - Automatic collection of script name, line number, and failed command
-#     - Environment variable status and configuration display
-#     - JFrog Platform connectivity and project information
-#     
-#     [Debug Mode]
-#     DEBUG=true ./script.sh    # Enable detailed debug output
-#     
-#     [Common Issues]
-#     - Missing JFROG_ADMIN_TOKEN: Ensure token is set and has admin privileges
-#     - Invalid JFROG_URL: Verify URL format and platform accessibility
-#     - API failures: Check network connectivity and platform status
-#
-# 🔗 INTEGRATION POINTS:
-#     [Dependent Scripts]
-#     - create_project.sh: Project creation and configuration
-#     - create_repositories.sh: Repository setup and management
-#     - create_oidc.sh: OIDC authentication configuration
-#     - validate_environment.sh: Environment validation and verification
-#     
-#     [External Services]
-#     - JFrog Platform APIs: Project, repository, and user management
-#     - JFrog Access APIs: Authentication and authorization operations
-#     - JFrog AppTrust APIs: Application lifecycle and stage management
-#
-# 📊 PERFORMANCE:
-#     [Function Execution]
-#     - API Calls: Typical 100-500ms response time depending on operation
-#     - JSON Construction: Sub-millisecond operation for template processing
-#     - Environment Validation: Sub-second validation of all required variables
-#     
-#     [Resource Usage]
-#     - Memory: Minimal memory footprint for utility functions
-#     - Network: HTTPS API calls to JFrog Platform as needed
-#     - CPU: Lightweight JSON processing and string manipulation
-#
-# 🛡️ SECURITY CONSIDERATIONS:
-#     [Credential Handling]
-#     - Admin tokens passed via environment variables only
-#     - No credential logging or exposure in output streams
-#     - Secure API communication via HTTPS with proper authorization headers
-#     
-#     [Access Control]
-#     - Requires JFrog Platform admin privileges for full functionality
-#     - Validates token permissions before attempting operations
-#     - Network access limited to configured JFrog Platform endpoints
-#
-# 📚 REFERENCES:
-#     [Documentation]
-#     - JFrog Platform REST API: https://jfrog.com/help/r/jfrog-rest-apis
-#     - BookVerse Setup Guide: ../docs/SETUP_AUTOMATION.md
-#     
-#     [Standards]
-#     - JSON Schema: Template validation and type safety
-#     - HTTP Status Codes: RFC 7231 standard status code handling
-#     - Shell Best Practices: Google Shell Style Guide compliance
-#
-# Authors: BookVerse Platform Team
-# Version: 1.0.0
-# Last Updated: 2024-01-01
-# =============================================================================
 
 # Exit on any error and treat unset variables as errors for safety
 set -euo pipefail
 
-#######################################
 # HTTP Status Code Constants
-# 
-# Standardized HTTP status codes for consistent API response handling across
-# all BookVerse setup scripts. These constants enable clear, readable code
-# and consistent error handling patterns.
-#######################################
 [[ -z ${HTTP_OK+x} ]] && readonly HTTP_OK=200
 [[ -z ${HTTP_CREATED+x} ]] && readonly HTTP_CREATED=201
 [[ -z ${HTTP_ACCEPTED+x} ]] && readonly HTTP_ACCEPTED=202
@@ -215,13 +55,7 @@ set -euo pipefail
 [[ -z ${HTTP_CONFLICT+x} ]] && readonly HTTP_CONFLICT=409
 [[ -z ${HTTP_INTERNAL_ERROR+x} ]] && readonly HTTP_INTERNAL_ERROR=500
 
-#######################################
 # ANSI Color Code Constants
-# 
-# Terminal color codes for enhanced readability and user experience in console output.
-# These colors are used throughout the logging system to provide visual hierarchy
-# and quick status identification for users monitoring setup operations.
-#######################################
 [[ -z ${RED+x} ]] && readonly RED='\033[0;31m'      # Error messages and failures
 [[ -z ${GREEN+x} ]] && readonly GREEN='\033[0;32m'   # Success messages and confirmations
 [[ -z ${YELLOW+x} ]] && readonly YELLOW='\033[1;33m' # Warning messages and important notices
@@ -230,41 +64,10 @@ set -euo pipefail
 [[ -z ${CYAN+x} ]] && readonly CYAN='\033[0;36m'     # Configuration details and debugging
 [[ -z ${NC+x} ]] && readonly NC='\033[0m'            # No Color - reset to default
 
-#######################################
 # Global Script State Management
-# 
-# Tracks the overall success/failure state across all operations within a script.
-# This global state enables comprehensive error reporting and final status determination.
-#######################################
 FAILED=false  # Global flag tracking if any operation has failed
 
-#######################################
 # Comprehensive Error Handler
-# 
-# This function provides detailed error reporting and context collection when any
-# command fails during script execution. It captures essential debugging information
-# including script location, environment state, and execution context to facilitate
-# rapid troubleshooting and issue resolution.
-# 
-# 🎯 Purpose:
-#   - Provide comprehensive error context for failed script operations
-#   - Enable rapid troubleshooting with detailed environment and state information
-#   - Ensure consistent error reporting across all BookVerse setup scripts
-#   - Support enterprise operations with professional error handling and logging
-# 
-# 🔧 Implementation:
-#   - Captures execution context including line numbers and failed commands
-#   - Collects environment state including CI/CD context and configuration
-#   - Provides structured error output with clear formatting and debugging hints
-#   - Terminates script execution with appropriate exit codes for automation
-# 
-# Globals:
-#   RED, NC - Color constants for error formatting
-#   CYAN - Color constant for debugging information formatting
-#   CI_ENVIRONMENT - Optional CI/CD environment identifier
-#   PROJECT_KEY - BookVerse project identifier for context
-#   JFROG_URL - JFrog Platform URL for connectivity debugging
-# 
 # Arguments:
 #   $1 - line_no: Line number where the error occurred
 #   $2 - error_code: Exit code from the failed command
@@ -276,30 +79,6 @@ FAILED=false  # Global flag tracking if any operation has failed
 #   - Failed command details and exit code
 #   - Environment state and configuration details
 #   - Debugging hints and troubleshooting information
-# 
-# Returns:
-#   Exits with the provided error_code (no return to caller)
-# 
-# Examples:
-#   # Automatic invocation via trap (standard usage)
-#   trap "error_handler \${LINENO} \$? \"$script_name\"" ERR
-#   
-#   # Manual invocation for custom error handling
-#   error_handler "$LINENO" 1 "custom-script.sh"
-# 
-# Error Context Collected:
-#   - Script name and line number for precise error location
-#   - Failed command text for understanding what operation failed
-#   - CI/CD environment context for pipeline debugging
-#   - Working directory and project configuration
-#   - JFrog Platform URL for connectivity troubleshooting
-# 
-# Troubleshooting Information:
-#   - Environment variable status and configuration validation
-#   - Working directory verification for script execution context
-#   - Project and platform configuration display
-#   - Network connectivity hints for JFrog Platform access
-#######################################
 error_handler() {
     local line_no=$1
     local error_code=$2

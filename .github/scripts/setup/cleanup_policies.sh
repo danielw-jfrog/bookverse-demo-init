@@ -1,25 +1,12 @@
 #!/usr/bin/env bash
 
-# =============================================================================
-# BookVerse Platform - Unified Policy and Rules Cleanup Script
-# =============================================================================
-#
-# This script safely removes all BookVerse unified policies and rules during 
-# platform cleanup operations, ensuring complete removal of policy configurations
-# while maintaining data integrity and proper cleanup sequencing.
-#
-# 🗑️ CLEANUP OPERATIONS:
+# CLEANUP OPERATIONS:
 #     - Rules Identification: Locate all BookVerse custom rules
 #     - Policy Identification: Locate all BookVerse project policies  
 #     - Safe Removal: Remove rules first, then policies in proper dependency order
 #     - Verification: Confirm complete policy and rule removal
 #     - Error Handling: Robust error handling for cleanup operations
 #     - Detailed Reporting: Report on which rules and policies will be deleted
-#
-# Authors: BookVerse Platform Team
-# Version: 1.0.0
-# Last Updated: 2024
-#
 
 set -euo pipefail
 

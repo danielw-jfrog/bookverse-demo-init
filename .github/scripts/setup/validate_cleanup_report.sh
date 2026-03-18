@@ -1,19 +1,5 @@
 #!/usr/bin/env bash
 
-# =============================================================================
-# BookVerse Platform - Cleanup Report Validation Script
-# =============================================================================
-#
-# Validates cleanup report freshness and integrity before allowing cleanup execution.
-# Ensures reports are not stale (older than 30 minutes) and contain valid data.
-#
-# Exit Codes:
-#   0: Report is valid and fresh
-#   1: Report is missing, invalid, or stale
-#   2: Environment error (missing required variables)
-#
-# =============================================================================
-
 set -euo pipefail
 
 # Source common utilities
