@@ -5,6 +5,22 @@ source "$(dirname "$0")/config.sh"
 
 init_script "$(basename "$0")" "Creating AppTrust stages and lifecycle configuration"
 
+build_stage_payload() {
+    local project_key="$1"
+    local stage_name="$2"
+    local category="${3:-promote}"
+    
+    jq -n \
+        --arg project "$project_key" \
+        --arg name "$stage_name" \
+        --arg cat "$category" \
+        '{
+            "name": ($project + "-" + $name),
+            "scope": "project",
+            "project_key": $project,
+            "category": $cat
+        }'
+}
 
 process_stage() {
     local stage_name="$1"

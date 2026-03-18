@@ -13,11 +13,6 @@
 #     resource_exists()         : Check if a resource exists via API call
 #     handle_api_response()     : Process and categorize HTTP response codes
 #     
-#     [JSON Payload Builders]
-#     build_user_payload()      : Construct user creation JSON
-#     build_application_payload() : Construct AppTrust application JSON
-#     build_stage_payload()     : Construct lifecycle stage JSON
-#     build_oidc_*_payload()    : Construct OIDC integration JSON payloads
 #     
 #     [Script Management]
 #     init_script()            : Initialize script with error handling and validation
@@ -223,119 +218,6 @@ handle_api_response() {
     esac
 }
 
-#build_user_payload() {
-#    local username="$1"
-#    local email="$2"
-#    local password="$3"
-#    local role="${4:-Developer}"
-#    
-#    jq -n \
-#        --arg user "$username" \
-#        --arg email "$email" \
-#        --arg pass "$password" \
-#        --arg role "$role" \
-#        '{
-#            "username": $user,
-#            "email": $email,
-#            "password": $pass,
-#            "role": $role
-#        }'
-#}
-
-#build_application_payload() {
-#    local project_key="$1"
-#    local app_key="$2"
-#    local app_name="$3"
-#    local description="$4"
-#    local criticality="${5:-medium}"
-#    local maturity="${6:-development}"
-#    local team="${7:-default-team}"
-#    local owner="${8:-admin@example.com}"
-#    
-#    jq -n \
-#        --arg project "$project_key" \
-#        --arg key "$app_key" \
-#        --arg name "$app_name" \
-#        --arg desc "$description" \
-#        --arg crit "$criticality" \
-#        --arg mat "$maturity" \
-#        --arg team "$team" \
-#        --arg owner "$owner" \
-#        '{
-#            "project_key": $project,
-#            "application_key": $key,
-#            "application_name": $name,
-#            "description": $desc,
-#            "criticality": $crit,
-#            "maturity_level": $mat,
-#            "labels": {
-#                "team": $team,
-#                "type": "microservice",
-#                "architecture": "microservices",
-#                "environment": "production"
-#            },
-#            "user_owners": [$owner],
-#            "group_owners": []
-#        }'
-#}
-
-build_stage_payload() {
-    local project_key="$1"
-    local stage_name="$2"
-    local category="${3:-promote}"
-    
-    jq -n \
-        --arg project "$project_key" \
-        --arg name "$stage_name" \
-        --arg cat "$category" \
-        '{
-            "name": ($project + "-" + $name),
-            "scope": "project",
-            "project_key": $project,
-            "category": $cat
-        }'
-}
-
-build_oidc_integration_payload() {
-    local name="$1"
-    local issuer_url="${2:-https://token.actions.githubusercontent.com/}"
-    
-    jq -n \
-        --arg name "$name" \
-        --arg issuer "$issuer_url" \
-        '{
-            "name": $name,
-            "issuer_url": $issuer
-        }'
-}
-
-build_oidc_mapping_payload() {
-    local name="$1"
-    local provider_name="$2"
-    local username="$3"
-    local issuer="${4:-https://token.actions.githubusercontent.com}"
-    local scope="${5:-applied-permissions/admin}"
-    local priority="${6:-1}"
-    
-    jq -n \
-        --arg name "$name" \
-        --arg provider "$provider_name" \
-        --arg user "$username" \
-        --arg iss "$issuer" \
-        --arg scope "$scope" \
-        --argjson priority "$priority" \
-        '{
-            "name": $name,
-            "provider_name": $provider,
-            "claims": {"iss": $iss},
-            "token_spec": {
-                "username": $user,
-                "scope": $scope
-            },
-            "priority": $priority
-        }'
-}
-
 
 init_script() {
     local script_name="${1:-$(basename "$0")}"
@@ -486,7 +368,7 @@ validate_jfrog_connectivity() {
 export -f setup_error_handling error_handler
 export -f log_info log_success log_warning log_error log_step log_config log_section log_debug
 export -f jfrog_api_call resource_exists handle_api_response
-#export -f build_user_payload build_application_payload
-export -f build_stage_payload build_oidc_integration_payload build_oidc_mapping_payload
+
+
 export -f init_script finalize_script process_batch 
 export -f validate_environment check_env_vars show_config validate_jfrog_connectivity
