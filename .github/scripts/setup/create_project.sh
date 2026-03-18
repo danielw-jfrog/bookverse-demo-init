@@ -6,6 +6,27 @@ source "$(dirname "$0")/common.sh"
 # Initialize script with comprehensive error handling and environment validation
 init_script "$(basename "$0")" "Creating BookVerse project"
 
+build_project_payload() {
+    local project_key="$1"
+    local display_name="$2"
+    local storage_quota="${3:--1}"
+    
+    jq -n \
+        --arg key "$project_key" \
+        --arg name "$display_name" \
+        --argjson quota "$storage_quota" \
+        '{
+            "project_key": $key,
+            "display_name": $name,
+            "admin_privileges": {
+                "manage_members": true,
+                "manage_resources": true,
+                "index_resources": true
+            },
+            "storage_quota_bytes": $quota
+        }'
+}
+
 # Construct JSON payload for project creation using standardized template
 # Configures project with unlimited storage and full administrative privileges
 project_payload=$(build_project_payload \

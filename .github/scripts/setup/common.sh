@@ -14,7 +14,6 @@
 #     handle_api_response()     : Process and categorize HTTP response codes
 #     
 #     [JSON Payload Builders]
-#     build_project_payload()   : Construct JFrog project creation JSON
 #     build_user_payload()      : Construct user creation JSON
 #     build_application_payload() : Construct AppTrust application JSON
 #     build_stage_payload()     : Construct lifecycle stage JSON
@@ -224,83 +223,61 @@ handle_api_response() {
     esac
 }
 
+#build_user_payload() {
+#    local username="$1"
+#    local email="$2"
+#    local password="$3"
+#    local role="${4:-Developer}"
+#    
+#    jq -n \
+#        --arg user "$username" \
+#        --arg email "$email" \
+#        --arg pass "$password" \
+#        --arg role "$role" \
+#        '{
+#            "username": $user,
+#            "email": $email,
+#            "password": $pass,
+#            "role": $role
+#        }'
+#}
 
-build_project_payload() {
-    local project_key="$1"
-    local display_name="$2"
-    local storage_quota="${3:--1}"
-    
-    jq -n \
-        --arg key "$project_key" \
-        --arg name "$display_name" \
-        --argjson quota "$storage_quota" \
-        '{
-            "project_key": $key,
-            "display_name": $name,
-            "admin_privileges": {
-                "manage_members": true,
-                "manage_resources": true,
-                "index_resources": true
-            },
-            "storage_quota_bytes": $quota
-        }'
-}
-
-build_user_payload() {
-    local username="$1"
-    local email="$2"
-    local password="$3"
-    local role="${4:-Developer}"
-    
-    jq -n \
-        --arg user "$username" \
-        --arg email "$email" \
-        --arg pass "$password" \
-        --arg role "$role" \
-        '{
-            "username": $user,
-            "email": $email,
-            "password": $pass,
-            "role": $role
-        }'
-}
-
-build_application_payload() {
-    local project_key="$1"
-    local app_key="$2"
-    local app_name="$3"
-    local description="$4"
-    local criticality="${5:-medium}"
-    local maturity="${6:-development}"
-    local team="${7:-default-team}"
-    local owner="${8:-admin@example.com}"
-    
-    jq -n \
-        --arg project "$project_key" \
-        --arg key "$app_key" \
-        --arg name "$app_name" \
-        --arg desc "$description" \
-        --arg crit "$criticality" \
-        --arg mat "$maturity" \
-        --arg team "$team" \
-        --arg owner "$owner" \
-        '{
-            "project_key": $project,
-            "application_key": $key,
-            "application_name": $name,
-            "description": $desc,
-            "criticality": $crit,
-            "maturity_level": $mat,
-            "labels": {
-                "team": $team,
-                "type": "microservice",
-                "architecture": "microservices",
-                "environment": "production"
-            },
-            "user_owners": [$owner],
-            "group_owners": []
-        }'
-}
+#build_application_payload() {
+#    local project_key="$1"
+#    local app_key="$2"
+#    local app_name="$3"
+#    local description="$4"
+#    local criticality="${5:-medium}"
+#    local maturity="${6:-development}"
+#    local team="${7:-default-team}"
+#    local owner="${8:-admin@example.com}"
+#    
+#    jq -n \
+#        --arg project "$project_key" \
+#        --arg key "$app_key" \
+#        --arg name "$app_name" \
+#        --arg desc "$description" \
+#        --arg crit "$criticality" \
+#        --arg mat "$maturity" \
+#        --arg team "$team" \
+#        --arg owner "$owner" \
+#        '{
+#            "project_key": $project,
+#            "application_key": $key,
+#            "application_name": $name,
+#            "description": $desc,
+#            "criticality": $crit,
+#            "maturity_level": $mat,
+#            "labels": {
+#                "team": $team,
+#                "type": "microservice",
+#                "architecture": "microservices",
+#                "environment": "production"
+#            },
+#            "user_owners": [$owner],
+#            "group_owners": []
+#        }'
+#}
 
 build_stage_payload() {
     local project_key="$1"
@@ -509,7 +486,7 @@ validate_jfrog_connectivity() {
 export -f setup_error_handling error_handler
 export -f log_info log_success log_warning log_error log_step log_config log_section log_debug
 export -f jfrog_api_call resource_exists handle_api_response
-export -f build_project_payload build_user_payload build_application_payload
+#export -f build_user_payload build_application_payload
 export -f build_stage_payload build_oidc_integration_payload build_oidc_mapping_payload
 export -f init_script finalize_script process_batch 
 export -f validate_environment check_env_vars show_config validate_jfrog_connectivity
