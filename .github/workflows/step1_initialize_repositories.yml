@@ -26,6 +26,7 @@ env:
   COMPONENTS: "checkout demo-assets demo-init helm infra inventory platform recommendations web"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "TRUE"
 
+# FIXME: Verify these settings
 concurrency:
   group: switch-platform-${{ github.ref }}
   cancel-in-progress: true
@@ -33,7 +34,7 @@ concurrency:
 jobs:
   initialize-repositories:
     runs-on: ubuntu-latest
-    name: Switch Platform
+    name: Initialize Repositories
 
     steps:
       - name: Checkout code
@@ -44,7 +45,7 @@ jobs:
         with:
           version: 2.91.0
 
-      - name: Validate Confirmation
+      - name: Validate Inputs
         env:
           JFROG_URL: ${{ vars.JFROG_URL }}
           JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
@@ -85,7 +86,6 @@ jobs:
               gh repo fork bookverse-example/bookverse-${item} --fork-name bookverse-${item}
             fi
           done
-          # FIXME: SET JF_URL and JF_ADMIN_TOKEN on forks
 
       - name: Verify JFrog Platform Connectivity
         run: |
