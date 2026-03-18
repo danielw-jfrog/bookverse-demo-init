@@ -10,7 +10,6 @@
 #     
 #     [HTTP API Functions]
 #     jfrog_api_call()          : Standardized HTTP API communication with JFrog Platform
-#     resource_exists()         : Check if a resource exists via API call
 #     handle_api_response()     : Process and categorize HTTP response codes
 #     
 #     
@@ -22,7 +21,6 @@
 #     [Environment Management]
 #     validate_environment()   : Validate required environment variables are present
 #     show_config()           : Display current configuration for debugging
-#     validate_jfrog_connectivity() : Test JFrog Platform API connectivity
 
 # ENVIRONMENT VARIABLES:
 #     [Required Variables]
@@ -178,13 +176,6 @@ jfrog_api_call() {
     echo "$response_code"
 }
 
-resource_exists() {
-    local url="$1"
-    local code
-    code=$(jfrog_api_call GET "$url")
-    [[ "$code" -eq $HTTP_OK ]]
-}
-
 handle_api_response() {
     local code="$1"
     local resource_name="$2"
@@ -239,27 +230,6 @@ init_script() {
     log_config "JFrog URL: ${JFROG_URL}"
     echo ""
 }
-
-finalize_script() {
-    local script_name="${1:-$(basename "$0")}"
-    
-    echo ""
-    if [[ "$FAILED" == "true" ]]; then
-        log_error "$script_name completed with errors!"
-        echo ""
-        echo -e "${CYAN}💡 TROUBLESHOOTING TIPS:${NC}"
-        echo "   1. Check JFrog platform connectivity"
-        echo "   2. Verify admin token permissions"
-        echo "   3. Review detailed error messages above"
-        echo "   4. Ensure all dependencies are met"
-        echo ""
-        exit 1
-    else
-        log_success "$script_name completed successfully!"
-        echo ""
-    fi
-}
-
 
 process_batch() {
     local batch_name="$1"
@@ -338,37 +308,10 @@ show_config() {
     log_config "Production Stage: ${PROD_STAGE}"
 }
 
-validate_jfrog_connectivity() {
-    local url_no_slash="${JFROG_URL%/}"
-    
-    log_step "Validating JFrog platform connectivity..."
-    
-    local ping_code
-    ping_code=$(jfrog_api_call GET "${url_no_slash}/access/api/v1/system/ping")
-    if [[ "$ping_code" -eq $HTTP_OK ]]; then
-        log_success "System ping successful (HTTP $ping_code)"
-    else
-        log_error "System ping failed (HTTP $ping_code)"
-        return 1
-    fi
-    
-    local projects_code
-    projects_code=$(jfrog_api_call GET "${url_no_slash}/access/api/v1/projects")
-    if [[ "$projects_code" -eq $HTTP_OK ]]; then
-        log_success "Projects API accessible (HTTP $projects_code)"
-    else
-        log_error "Projects API failed (HTTP $projects_code)"
-        return 1
-    fi
-    
-    log_success "JFrog platform connectivity validated"
-    return 0
-}
-
 export -f setup_error_handling error_handler
 export -f log_info log_success log_warning log_error log_step log_config log_section log_debug
-export -f jfrog_api_call resource_exists handle_api_response
+export -f jfrog_api_call handle_api_response
 
 
 export -f init_script finalize_script process_batch 
-export -f validate_environment check_env_vars show_config validate_jfrog_connectivity
+export -f validate_environment check_env_vars show_config

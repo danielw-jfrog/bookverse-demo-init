@@ -22,6 +22,19 @@ build_stage_payload() {
         }'
 }
 
+finalize_script() {
+    local script_name="${1:-$(basename "$0")}"
+    
+    echo ""
+    if [[ "$FAILED" == "true" ]]; then
+        log_error "$script_name completed with errors!"
+        exit 1
+    else
+        log_success "$script_name completed successfully!"
+        echo ""
+    fi
+}
+
 process_stage() {
     local stage_name="$1"
     local full_stage_name="${PROJECT_KEY}-${stage_name}"
