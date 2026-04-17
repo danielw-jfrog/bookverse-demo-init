@@ -27,7 +27,7 @@ and OIDC integration — can be stood up automatically through the orchestration
 
 [Demo Runbook](docs/DEMO_RUNBOOK.md)
 
-[AppTrust Showcase Guide](docs/APPTRUST_SHOWCASE_GUIDE.md)
+[AppTrust Showcase Guide](docs/apptrust_showcase_guide.md)
 
 
 Demonstration Notice
@@ -85,10 +85,21 @@ Quick Start
 [//]: <> (FIXME: This should be created to run each of the build actions in each of the sub projects.)
 
 
+Cleanup
+-------
+
+1. Run the _Cleanup (Preview & Execute)_ action.  If running the preview, there's not arguments required.  If performing
+   the actual cleanup, type the word `DELETE` into the box and change the Operation Mode to `execute`.
+
+2. The BookVerse Example can be redeployed by starting again at the second step of the Quick Start above.  Or the
+   repository forks for BookVerse Example can be deleted to removed to fully cleanup the project.
+
+
 Component Repositories
 ----------------------
 
-More information is available in the [Application Architecture]() and [Delivery Architecure]() documentation.
+More information is available in the [Application Architecture](docs/application_architecture.md) and
+[Delivery Architecure](docs/delivery_architecture.md) documentation.
 
 **NOTE**: Individual service documentation is available in each service repository:
 
