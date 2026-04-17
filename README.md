@@ -2,30 +2,44 @@ BookVerse Example
 =================
 
 BookVerse Example is a cloud-native microservices reference application that demonstrates secure software delivery using
-the JFrog Platform. Built as an online bookstore, it comprises an Inventory Service for product catalog management, a
-Recommendations Service powered by machine learning, a Checkout Service for order processing, a vanilla JavaScript Web
-Application, shared Infrastructure Libraries, Helm Charts for Kubernetes deployment, and a Platform Service for
+the JFrog Platform.  Built as an online bookstore, it comprises an inventory service for product catalog management, a
+recommendations service powered by machine learning, a checkout service for order processing, a vanilla JavaScript web
+application, shared infrastructure libraries, helm charts for Kubernetes deployment, and a platform service for
 integration testing — each showcasing distinct CI/CD build patterns ranging from single-container deployments to
 multi-artifact library publishing.
 
-The project's primary purpose is to provide a complete, end-to-end reference architecture for enterprise-grade software
-supply chain security. It leverages JFrog AppTrust with 14 automated policy gates spanning four lifecycle stages (DEV,
-QA, STAGING, and PROD), cryptographically signed evidence collection, SLSA provenance verification, and multi-layer
-security scanning (SAST, DAST, penetration testing, and IaC). Deployments are managed through GitOps workflows with
-ArgoCD, and the entire environment — including JFrog Platform provisioning, GitHub repository creation, and OIDC
-integration — can be stood up automatically through the orchestration workflows in this repository.
+The project's primary purpose is to provide a complete, end-to-end reference architecture for JFrog's enterprise-grade
+software supply chain security.  It leverages JFrog AppTrust with 14 automated policy gates spanning four lifecycle
+stages (DEV, QA, STAGING, and PROD), cryptographically signed evidence collection, SLSA provenance verification, and
+multi-layer security scanning (SAST, DAST, penetration testing, and IaC).  Deployments are managed through GitOps
+workflows with ArgoCD, and the entire environment — including JFrog Platform provisioning, GitHub repository creation,
+and OIDC integration — can be stood up automatically through the orchestration workflows in this repository.
 
 [What is BookVerse Example?](docs/what_is_bookverse_example.md)
 
-[Indepth Documentation](docs/index.md)
+[Documentation](docs/index.md)
 
 [Getting Started Guide](docs/GETTING_STARTED.md)
 
-[Platform Architecture Overview](docs/ARCHITECTURE.md)
+[Application Architecture Overview](docs/application_architecture.md)
+
+[Delivery Architecture Overview](docs/delivery_architecture.md)
 
 [Demo Runbook](docs/DEMO_RUNBOOK.md)
 
 [AppTrust Showcase Guide](docs/APPTRUST_SHOWCASE_GUIDE.md)
+
+
+Demonstration Notice
+--------------------
+
+This is a demonstration project designed to showcase JFrog AppTrust integration patterns and modern DevOps workflows.
+The architecture described in this repository may be more aspirational than what is actually implemented.  As a demo
+project, some features and capabilities described here may be simplified or not fully implemented.
+
+For production deployments, additional enterprise-grade features such as comprehensive monitoring, distributed tracing,
+advanced security controls, and high-availability configurations would typically be required.
+
 
 Quick Start
 -----------
@@ -62,64 +76,34 @@ Quick Start
 4. Run the _Step 2: Setup Platform_ action.  This can be found on the _Actions_ tab.  No settings are required for this
    action.
 
-5. Run the _Step 3: Initial Build Actions_ action.  NOTE: THIS DOESN'T EXIST YET!
+5. Run the _Step 3: Setup Kubernetes and ArgoCD_ actin. NOTE: THIS DOESN'T EXIST YET!
+
+[//]: <> (FIXME: This should be created to split the Kubernetes and ArgoCD setup to a separate action.)
+
+6. Run the _Step 3: Initial Build Actions_ action.  NOTE: THIS DOESN'T EXIST YET!
 
 [//]: <> (FIXME: This should be created to run each of the build actions in each of the sub projects.)
 
 
-Components
-----------
+Component Repositories
+----------------------
+
+More information is available in the [Application Architecture]() and [Delivery Architecure]() documentation.
 
 **NOTE**: Individual service documentation is available in each service repository:
 
-[//]: <> (FIXME: Review later for correctness, once I understand more about the component parts.)
+* [Checkout Service](https://github.com/bookverse-example/bookverse-checkout)
 
-* [Checkout Service](https://github.com/bookverse-example/bookverse-checkout) —
-  The Checkout Service handles the complete order lifecycle from cart management through payment processing and
-  fulfillment.  Built with FastAPI and backed by PostgreSQL, it demonstrates the Multi-Container Application Pattern
-  with separate containers for the API service, a background worker, and a payment mock — all promoted together as a
-  single application version through the AppTrust pipeline.
+* [Demo Assets](https://github.com/bookverse-example/bookverse-demo-assets)
 
-* [Demo Assets](https://github.com/bookverse-example/bookverse-demo-assets) —
-  The Demo Assets repository is the shared assets hub used by all BookVerse microservices during demonstrations.  It
-  contains sample datasets and fixtures, example SBOMs and signed attestations, reusable GitHub Action composites and
-  workflow snippets, and the presenter runbook for the demo flow.  It also provides ArgoCD bootstrap configuration for
-  Helm repository credentials and Docker registry pull secrets.
+* [Helm Charts](https://github.com/bookverse-example/bookverse-helm)
 
-* [Helm Charts](https://github.com/bookverse-example/bookverse-helm) —
-  The Helm Charts repository provides production-ready Kubernetes deployment charts for the entire BookVerse platform.
-  It demonstrates the Infrastructure-as-Code Application Pattern, packaging platform Helm charts, environment-specific
-  values files, and Kubernetes manifests as versioned artifacts that are promoted together through the AppTrust pipeline
-  to ensure deployment consistency across DEV, QA, STAGING, and PROD clusters.
+* [Infrastructure Libraries](https://github.com/bookverse-example/bookverse-infra)
 
-* [Infrastructure Libraries](https://github.com/bookverse-example/bookverse-infra) —
-  The Infrastructure Libraries repository houses shared components consumed by all BookVerse services: the
-  `bookverse-core` Python library providing common authentication, utilities, and business logic, and the
-  `bookverse-devops` package with automation scripts and DevOps tooling.  It demonstrates the Enterprise Library &
-  DevOps Tooling Pattern, publishing multiple artifacts — Python packages, templates, and evidence configurations — that
-  are promoted as a unit to guarantee consistent tooling across all environments.
+* [Inventory Service](https://github.com/bookverse-example/bookverse-inventory)
 
-* [Inventory Service](https://github.com/bookverse-example/bookverse-inventory) —
-  The Inventory Service manages the BookVerse product catalog and real-time stock levels.  Built with FastAPI and SQLite,
-  it exposes a RESTful API for catalog browsing, search, and availability queries.  As the simplest backend service, it
-  demonstrates the Single Docker Image Application Pattern — a single container image accompanied by Python packages,
-  SBOMs, and test reports, all moving together through the AppTrust promotion stages.
+* [Platform Service](https://github.com/bookverse-example/bookverse-platform)
 
-* [Platform Service](https://github.com/bookverse-example/bookverse-platform) —
-  The Platform Service acts as the aggregation and coordination layer for the BookVerse ecosystem.  It manages
-  cross-service version compatibility, orchestrates platform-wide releases, and runs integration tests that validate all
-  services working together.  It demonstrates the Shared Library & Aggregator Pattern, bundling shared libraries,
-  configuration templates, and platform utility containers into a single promotable application version.
+* [Recommendations Service](https://github.com/bookverse-example/bookverse-recommendations)
 
-* [Recommendations Service](https://github.com/bookverse-example/bookverse-recommendations) —
-  The Recommendations Service delivers personalized book suggestions using configurable machine-learning algorithms with
-  sub-200ms response times.  It employs a dual-architecture design with a FastAPI API server for real-time
-  recommendations and a background worker process for content indexing and model updates, backed by Redis for
-  high-performance caching.  It demonstrates the Multi-Container Orchestration Pattern with multiple Docker images and
-  supporting artifacts.
-
-* [Web Application](https://github.com/bookverse-example/bookverse-web) —
-  The Web Application is the customer-facing frontend for the BookVerse bookstore, providing a responsive single-page
-  application with client-side routing, product browsing, personalized recommendations, and a shopping cart and checkout
-  flow.  Served via an Nginx container, it demonstrates the Static Asset Application Pattern — built JavaScript, CSS,
-  and HTML assets packaged alongside their container image and promoted together through the AppTrust pipeline.
+* [Web Application](https://github.com/bookverse-example/bookverse-web)
