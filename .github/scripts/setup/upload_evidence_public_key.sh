@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# FIXME: This should be moved into the step directly.
+
 upload_evidence_key_to_jfrog() {
     local public_key_file="$1"
     local alias="$2"
@@ -23,7 +25,7 @@ upload_evidence_key_to_jfrog() {
         -H "Authorization: Bearer $JFROG_ADMIN_TOKEN" \
         -H "Content-Type: application/json" \
         -d "$payload" \
-        "$NEW_JFROG_URL/artifactory/api/security/keys/trusted" 2>/dev/null)
+        "$JFROG_URL/artifactory/api/security/keys/trusted" 2>/dev/null)
 
     http_code="${response: -3}"
 
