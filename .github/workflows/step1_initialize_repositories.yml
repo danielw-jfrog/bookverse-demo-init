@@ -80,7 +80,7 @@ jobs:
           ORGANIZATION: ${{ github.repository_owner }}
         run: |
           export PATUSER=`gh auth status --json hosts --jq '.hosts."github.com".[0].login'`
-          echo "GitHub PAT User: ${PATUSER}
+          echo "GitHub PAT User: ${PATUSER}"
           echo "Forking the needed repositories into organization ${ORGANIZATION}"
           # skipping bookverse-demo-init as this should already be forked to run this action
           for item in ${COMPONENTS}; do
