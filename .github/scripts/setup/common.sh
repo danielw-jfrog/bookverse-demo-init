@@ -15,7 +15,6 @@
 #     
 #     [Script Management]
 #     init_script()            : Initialize script with error handling and validation
-#     finalize_script()        : Finalize script execution with success/failure reporting
 #     
 #     [Environment Management]
 #     validate_environment()   : Validate required environment variables are present
@@ -253,5 +252,5 @@ export -f setup_error_handling error_handler
 export -f log_info log_success log_warning log_error log_step log_config log_section log_debug
 export -f jfrog_api_call handle_api_response
 
-export -f init_script finalize_script 
+export -f init_script
 export -f validate_environment
