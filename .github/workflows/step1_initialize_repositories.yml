@@ -90,11 +90,11 @@ jobs:
               echo "Repository ${ORGANIZATION}/bookverse-${item} has already been forked."
             else
               echo "result: $?"
-              if [[ "${ORGANIZATION}" == "${PATUSER}"; then
+              if [[ "${ORGANIZATION}" == "${PATUSER}" ]]; then
                 echo "Owner appears to be user"
                 gh repo fork bookverse-example/bookverse-${item} --fork-name bookverse-${item}
               else
-                echo "Pwner appears to be org"
+                echo "Owner appears to be org"
                 gh repo fork bookverse-example/bookverse-${item} --org ${ORGANIZATION} --fork-name bookverse-${item}
             fi
           done
