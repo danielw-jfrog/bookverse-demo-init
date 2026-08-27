@@ -24,7 +24,8 @@ def main():
     parser.add_argument("--host", default = os.getenv("JFROG_URL", ""),
                         help = "Artifactory host URL (e.g. https://artifactory.example.com/) to use for requests.  Will use JFROG_URL if not specified.")
 
-    parser.add_argument("--project_key", help = "Short version of the project name used for identifying the project.")
+    parser.add_argument("--project_key", default = os.getenv("PROJECT_KEY", None),
+                        help = "Short version of the project name used for identifying the project.")
 
     parser.add_argument("stage_name", help = "Full name of the project.")
     args = parser.parse_args()
@@ -43,7 +44,7 @@ def main():
     tmp_login_data["host"] = args.host
 
     project_key = None
-    if args.project_key:
+    if args.project_key is not None:
         project_key = str(args.project_key)
     stage_name = str(args.stage_name)
 

@@ -151,7 +151,7 @@ jobs:
 
       - name: Create Lifecycle Stages
         run: |
-          python ./scripts/create_lifecycle_stage.py "${PROJECT_KEY}" "DEV"
+          python ./scripts/create_lifecycle_stage.py "DEV"
 
   setup-bookverse:
     runs-on: ubuntu-latest
@@ -221,9 +221,9 @@ jobs:
 
       - name: Create Lifecycle Stages
         run: |
-          python ./scripts/create_lifecycle_stage.py "${PROJECT_KEY}" "DEV"
-          python ./scripts/create_lifecycle_stage.py "${PROJECT_KEY}" "QA"
-          python ./scripts/create_lifecycle_stage.py "${PROJECT_KEY}" "STAGING"
+          python ./scripts/create_lifecycle_stage.py "DEV"
+          python ./scripts/create_lifecycle_stage.py "QA"
+          python ./scripts/create_lifecycle_stage.py "STAGING"
 
 #      # FIXME: Convert to JF CLI
 #      - name: Create Service Repositories
