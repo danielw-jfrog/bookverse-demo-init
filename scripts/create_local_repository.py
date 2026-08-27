@@ -51,6 +51,9 @@ def main():
     service_name = str(args.service_name).lower()
     package_type = str(args.package_type).lower()
     stage_name = str(args.stage_name).lower()
+    if stage_name == "prod":
+        # FIXME: Covering up an inconsistency in the old bookverse example
+        stage_name = "release"
 
     # NOTE: This is using the old format for the bookverse example.  This should be simplified at some point.
     # ${projecy_key}-${service}-${visibility}-${package_type}-${stage_lower}-local"
@@ -62,8 +65,12 @@ def main():
         stage_name
     )
 
+    # FIXME: Covering up inconsistencies in the old bookverse example
+    if package_type == "python":
+        package_type = "pypi"
+
     try:
-        logging.info("Checking if repository exists: %s - %s", project_key, stage_name)
+        logging.info("Checking if repository exists: %s - %s", project_key, repo_name)
         stage_data = get_repository(tmp_login_data, project_key, repo_name)
         logging.info("  Repository already exists")
         # FIXME: Check the data for the Repository and update if needed.

@@ -89,6 +89,8 @@ jobs:
         run: |
           python ./scripts/create_project.py "${PROJECT_KEY}" "BookVerse Global Remotes"
 
+      # Create the global remote repos
+
   setup-golden-images:
     runs-on: ubuntu-latest
     name: Setup Golden Images Project
@@ -152,6 +154,14 @@ jobs:
       - name: Create Lifecycle Stages
         run: |
           python ./scripts/create_lifecycle_stage.py "DEV"
+
+      # Create the remote repos for the Alpine Packages
+
+      - name: Create Service Repositories
+        run: |
+          # FIXME: How to handled the "public" prod/release repository?
+          python ./scripts/create_local_repository.py "golden" "docker" "DEV"
+          python ./scripts/create_local_repository.py "golden" "docker" "PROD"
 
   setup-bookverse:
     runs-on: ubuntu-latest
@@ -224,20 +234,104 @@ jobs:
           python ./scripts/create_lifecycle_stage.py "DEV"
           python ./scripts/create_lifecycle_stage.py "QA"
           python ./scripts/create_lifecycle_stage.py "STAGING"
+          # NOTE: PROD is a global stage that always exists.  It's also a release stage, so it's special.
 
       - name: Create Service Repositories
         run: |
-          # Create Docker, Python, npm, and Helm repositories for all services
-          #./.github/scripts/setup/create_repositories.sh
-          
-          # Checkout Service: docker, generic
+          # FIXME: Make sure that all of these repositories are being used.
+          # Checkout Service: docker, generic, pypi
           python ./scripts/create_local_repository.py "checkout" "docker" "DEV"
-          # Helm Service: helm
+          python ./scripts/create_local_repository.py "checkout" "docker" "QA"
+          python ./scripts/create_local_repository.py "checkout" "docker" "STAGING"
+          python ./scripts/create_local_repository.py "checkout" "docker" "PROD"
+          python ./scripts/create_local_repository.py "checkout" "generic" "DEV"
+          python ./scripts/create_local_repository.py "checkout" "generic" "QA"
+          python ./scripts/create_local_repository.py "checkout" "generic" "STAGING"
+          python ./scripts/create_local_repository.py "checkout" "generic" "PROD"
+          # FIXME: Should be pypi, not python, but legacy...
+          python ./scripts/create_local_repository.py "checkout" "python" "DEV"
+          python ./scripts/create_local_repository.py "checkout" "python" "QA"
+          python ./scripts/create_local_repository.py "checkout" "python" "STAGING"
+          python ./scripts/create_local_repository.py "checkout" "python" "PROD"
+          
+          # Helm Service: generic, helm
+          python ./scripts/create_local_repository.py "helm" "generic" "DEV"
+          python ./scripts/create_local_repository.py "helm" "generic" "QA"
+          python ./scripts/create_local_repository.py "helm" "generic" "STAGING"
+          python ./scripts/create_local_repository.py "helm" "generic" "PROD"
+          python ./scripts/create_local_repository.py "helm" "helm" "DEV"
+          python ./scripts/create_local_repository.py "helm" "helm" "QA"
+          python ./scripts/create_local_repository.py "helm" "helm" "STAGING"
+          python ./scripts/create_local_repository.py "helm" "helm" "PROD"
+          
           # Infra Service: generic, pypi
-          # Inventory Service: docker, pypi
-          # Platform Service: docker
-          # Recommendations Service: docker, generic
-          # Web Service: generic
+          python ./scripts/create_local_repository.py "infra" "generic" "DEV"
+          python ./scripts/create_local_repository.py "infra" "generic" "QA"
+          python ./scripts/create_local_repository.py "infra" "generic" "STAGING"
+          python ./scripts/create_local_repository.py "infra" "generic" "PROD"
+          python ./scripts/create_local_repository.py "infra" "pypi" "DEV"
+          python ./scripts/create_local_repository.py "infra" "pypi" "QA"
+          python ./scripts/create_local_repository.py "infra" "pypi" "STAGING"
+          python ./scripts/create_local_repository.py "infra" "pypi" "PROD"
+          
+          # Inventory Service: docker, generic, pypi
+          python ./scripts/create_local_repository.py "inventory" "docker" "DEV"
+          python ./scripts/create_local_repository.py "inventory" "docker" "QA"
+          python ./scripts/create_local_repository.py "inventory" "docker" "STAGING"
+          python ./scripts/create_local_repository.py "inventory" "docker" "PROD"
+          python ./scripts/create_local_repository.py "inventory" "generic" "DEV"
+          python ./scripts/create_local_repository.py "inventory" "generic" "QA"
+          python ./scripts/create_local_repository.py "inventory" "generic" "STAGING"
+          python ./scripts/create_local_repository.py "inventory" "generic" "PROD"
+          # FIXME: Should be pypi, not python, but legacy...
+          python ./scripts/create_local_repository.py "inventory" "python" "DEV"
+          python ./scripts/create_local_repository.py "inventory" "python" "QA"
+          python ./scripts/create_local_repository.py "inventory" "python" "STAGING"
+          python ./scripts/create_local_repository.py "inventory" "python" "PROD"
+          
+          # Platform Service: docker, generic, pypi
+          python ./scripts/create_local_repository.py "platform" "docker" "DEV"
+          python ./scripts/create_local_repository.py "platform" "docker" "QA"
+          python ./scripts/create_local_repository.py "platform" "docker" "STAGING"
+          python ./scripts/create_local_repository.py "platform" "docker" "PROD"
+          python ./scripts/create_local_repository.py "platform" "generic" "DEV"
+          python ./scripts/create_local_repository.py "platform" "generic" "QA"
+          python ./scripts/create_local_repository.py "platform" "generic" "STAGING"
+          python ./scripts/create_local_repository.py "platform" "generic" "PROD"
+          # FIXME: Should be pypi, not python, but legacy...
+          python ./scripts/create_local_repository.py "platform" "python" "DEV"
+          python ./scripts/create_local_repository.py "platform" "python" "QA"
+          python ./scripts/create_local_repository.py "platform" "python" "STAGING"
+          python ./scripts/create_local_repository.py "platform" "python" "PROD"
+          
+          # Recommendations Service: docker, generic, pypi
+          python ./scripts/create_local_repository.py "recommendations" "docker" "DEV"
+          python ./scripts/create_local_repository.py "recommendations" "docker" "QA"
+          python ./scripts/create_local_repository.py "recommendations" "docker" "STAGING"
+          python ./scripts/create_local_repository.py "recommendations" "docker" "PROD"
+          python ./scripts/create_local_repository.py "recommendations" "generic" "DEV"
+          python ./scripts/create_local_repository.py "recommendations" "generic" "QA"
+          python ./scripts/create_local_repository.py "recommendations" "generic" "STAGING"
+          python ./scripts/create_local_repository.py "recommendations" "generic" "PROD"
+          # FIXME: Should be pypi, not python, but legacy...
+          python ./scripts/create_local_repository.py "recommendations" "python" "DEV"
+          python ./scripts/create_local_repository.py "recommendations" "python" "QA"
+          python ./scripts/create_local_repository.py "recommendations" "python" "STAGING"
+          python ./scripts/create_local_repository.py "recommendations" "python" "PROD"
+          
+          # Web Service: docker, generic, npm
+          python ./scripts/create_local_repository.py "web" "docker" "DEV"
+          python ./scripts/create_local_repository.py "web" "docker" "QA"
+          python ./scripts/create_local_repository.py "web" "docker" "STAGING"
+          python ./scripts/create_local_repository.py "web" "docker" "PROD"
+          python ./scripts/create_local_repository.py "web" "generic" "DEV"
+          python ./scripts/create_local_repository.py "web" "generic" "QA"
+          python ./scripts/create_local_repository.py "web" "generic" "STAGING"
+          python ./scripts/create_local_repository.py "web" "generic" "PROD"
+          python ./scripts/create_local_repository.py "web" "npm" "DEV"
+          python ./scripts/create_local_repository.py "web" "npm" "QA"
+          python ./scripts/create_local_repository.py "web" "npm" "STAGING"
+          python ./scripts/create_local_repository.py "web" "npm" "PROD"
 
 #      # FIXME: Convert to JF CLI
 #      - name: Create Dependency Repositories
