@@ -160,7 +160,7 @@ jobs:
       - name: Create Service Repositories
         run: |
           # FIXME: How to handled the "public" prod/release repository?
-          python ./scripts/create_local_repository.py "golden" "docker" "DEV"
+          python ./scripts/create_local_repository.py --verbose "golden" "docker" "DEV"
           python ./scripts/create_local_repository.py "golden" "docker" "PROD"
 
   setup-bookverse:
