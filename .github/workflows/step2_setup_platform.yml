@@ -31,7 +31,7 @@ concurrency:
 jobs:
   setup-globals:
     runs-on: ubuntu-latest
-    name: Setup Golden Images Project
+    name: Setup Global Remotes Project
 
     steps:
       - name: Setup Python
