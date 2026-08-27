@@ -20,7 +20,7 @@ def make_api_request(login_data, method, path, data = None, is_data_json = True)
     req_data = None
     if is_data_json:
         req_headers["Content-Type"] = "application/json"
-        req_data = json.dumps(data)
+        req_data = json.dumps(data).encode("utf-8") if data is not None else None
     else:
         req_headers["Content-Type"] = "text/plain"
         req_data = data.encode("utf-8") if data is not None else None
