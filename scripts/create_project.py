@@ -6,7 +6,8 @@ import logging
 import os
 import sys
 
-from api_helpers.projects import create_project
+from api_helpers.exceptions import NotFoundException
+from api_helpers.projects import get_project, create_project
 
 ### GLOBALS ###
 
@@ -40,9 +41,17 @@ def main():
     tmp_login_data["token"] = args.token
     tmp_login_data["host"] = args.host
 
-    logging.info("Creating Project: %s %s", args.project_key, args.project_name)
     try:
-        create_project(tmp_login_data, args.project_key, args.project_name)
+        logging.info("Checking if project exists: [%s]", args.project_key)
+        project_data = get_project(tmp_login_data, args.project_key)
+        logging.info("  Project already exists")
+        # FIXME: Check the data for the project and update if needed.
+    except NotFoundException:
+        try:
+            logging.info("Creating Project: [%s] %s", args.project_key, args.project_name)
+            create_project(tmp_login_data, args.project_key, args.project_name)
+        except Exception as ex:
+            raise ex
     except Exception as ex:
         logging.error(ex)
         sys.exit(1)

@@ -10,6 +10,8 @@ import urllib.request
 import urllib.error
 import urllib.parse
 
+from .exceptions import NotFoundException
+
 ### GLOBALS ###
 
 ### FUNCTIONS ###
@@ -37,13 +39,17 @@ def make_api_request(login_data, method, path, data = None, is_data_json = True)
         with urllib.request.urlopen(request) as response:
             # Check the status and log
             # NOTE: response.status for Python >=3.9, change to response.code if Python <=3.8
+            # FIXME: JSON decode the response if the content is type "application/json"
             resp = response.read().decode("utf-8")
             logging.debug("  Response Status: %d, Response Body: %s", response.status, resp)
             logging.debug("Repository operation successful")
     except urllib.error.HTTPError as ex:
         logging.warning("Error (%d) for operation", ex.code)
         logging.debug("  response body: %s", ex.read().decode("utf-8"))
-        raise Exception("Fail Build")
+        if(ex.code == 404):
+            raise NotFoundException()
+        else:
+            raise Exception("Fail Build")
     except urllib.error.URLError as ex:
         logging.error("Request Failed (URLError): %s", ex.reason)
         raise Exception("Fail Build")
