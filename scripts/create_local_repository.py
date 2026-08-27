@@ -50,10 +50,7 @@ def main():
 
     service_name = str(args.service_name).lower()
     package_type = str(args.package_type).lower()
-    stage_name = str(args.stage_name)
-    if stage_name.lower() == "prod":
-        # FIXME: Covering up an inconsistency in the old bookverse example
-        stage_name = "release"
+    stage_name = str(args.stage_name) # NOT LOWER
 
     # NOTE: This is using the old format for the bookverse example.  This should be simplified at some point.
     # ${projecy_key}-${service}-${visibility}-${package_type}-${stage_lower}-local"
@@ -62,7 +59,8 @@ def main():
         service_name,
         "public" if service_name == "platform" else "internal",
         package_type,
-        stage_name.lower()
+        # FIXME: Covering up an inconsistency in the old bookverse example
+        "release" if stage_name.lower() == "prod" else stage_name.lower()
     )
 
     # FIXME: Covering up inconsistencies in the old bookverse example
