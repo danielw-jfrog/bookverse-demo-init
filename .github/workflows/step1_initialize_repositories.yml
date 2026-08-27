@@ -23,7 +23,7 @@ env:
   JF_URL: ${{ vars.JFROG_URL }}
   JF_ACCESS_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
-  COMPONENTS: "checkout demo-assets demo-init helm infra inventory platform recommendations web"
+  COMPONENTS: "golden-images checkout demo-assets demo-init helm infra inventory platform recommendations web"
   JFROG_CLI_AVOID_NEW_VERSION_WARNING: "TRUE"
 
 # FIXME: Verify these settings
