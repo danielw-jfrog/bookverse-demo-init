@@ -212,274 +212,274 @@ jobs:
         run: |
           python ./scripts/create_project.py "bookverse" "BookVerse"
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently Lifecycle management in the JF CLI.
-      - name: Create Lifecycle Stages
-        run: |
-          # Create DEV → QA → STAGING → PROD promotion pipeline stages
-          ./.github/scripts/setup/create_stages.sh
+#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
+#      # NOTE: This has to be a script calling the API as there's not currently Lifecycle management in the JF CLI.
+#      - name: Create Lifecycle Stages
+#        run: |
+#          # Create DEV → QA → STAGING → PROD promotion pipeline stages
+#          ./.github/scripts/setup/create_stages.sh
 
-      # FIXME: Convert to JF CLI
-      - name: Create Service Repositories
-        run: |
-          # Create Docker, Python, npm, and Helm repositories for all services
-          ./.github/scripts/setup/create_repositories.sh
+#      # FIXME: Convert to JF CLI
+#      - name: Create Service Repositories
+#        run: |
+#          # Create Docker, Python, npm, and Helm repositories for all services
+#          ./.github/scripts/setup/create_repositories.sh
 
-      # FIXME: Convert to JF CLI
-      - name: Create Dependency Repositories
-        run: |
-          # Create proxy repositories for npm, PyPI, and other dependency sources
-          ./.github/scripts/setup/create_dependency_repos.sh
+#      # FIXME: Convert to JF CLI
+#      - name: Create Dependency Repositories
+#        run: |
+#          # Create proxy repositories for npm, PyPI, and other dependency sources
+#          ./.github/scripts/setup/create_dependency_repos.sh
 
-      # FIXME: Can this be converted to JF CLI?
-      - name: Pre-populate Dependencies Cache
-        if: ${{ inputs.prepopulate_dependencies }}
-        run: |
-          # Cache common dependencies to improve build performance and reliability
-          # Controlled by workflow input 'prepopulate_dependencies' (defaults to true)
-          ./.github/scripts/setup/prepopulate_dependencies.sh
+#      # FIXME: Can this be converted to JF CLI?
+#      - name: Pre-populate Dependencies Cache
+#        if: ${{ inputs.prepopulate_dependencies }}
+#        run: |
+#          # Cache common dependencies to improve build performance and reliability
+#          # Controlled by workflow input 'prepopulate_dependencies' (defaults to true)
+#          ./.github/scripts/setup/prepopulate_dependencies.sh
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently role management in the JF CLI.
-      - name: Create Custom Roles
-        run: |
-          # Create developer, manager, and architect roles with graduated permissions
-          ./.github/scripts/setup/create_roles.sh
+#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
+#      # NOTE: This has to be a script calling the API as there's not currently role management in the JF CLI.
+#      - name: Create Custom Roles
+#        run: |
+#          # Create developer, manager, and architect roles with graduated permissions
+#          ./.github/scripts/setup/create_roles.sh
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently user management in the JF CLI.
-      - name: Create Users
-        run: |
-          # Create user accounts for developers, managers, and service accounts
-          ./.github/scripts/setup/create_users.sh
+#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
+#      # NOTE: This has to be a script calling the API as there's not currently user management in the JF CLI.
+#      - name: Create Users
+#        run: |
+#          # Create user accounts for developers, managers, and service accounts
+#          ./.github/scripts/setup/create_users.sh
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently AppTrust / Lifecycle management in the JF CLI.
-      - name: Create Applications
-        run: |
-          # Create AppTrust applications for each microservice with lifecycle configuration
-          ./.github/scripts/setup/create_applications.sh
+#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
+#      # NOTE: This has to be a script calling the API as there's not currently AppTrust / Lifecycle management in the JF CLI.
+#      - name: Create Applications
+#        run: |
+#          # Create AppTrust applications for each microservice with lifecycle configuration
+#          ./.github/scripts/setup/create_applications.sh
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently Unified Policy management in the JF CLI.
-      - name: Create Unified Policies
-        run: |
-          # Create and configure all BookVerse unified policies for lifecycle management
-          ./.github/scripts/setup/create_policies.sh
+#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
+#      # NOTE: This has to be a script calling the API as there's not currently Unified Policy management in the JF CLI.
+#      - name: Create Unified Policies
+#        run: |
+#          # Create and configure all BookVerse unified policies for lifecycle management
+#          ./.github/scripts/setup/create_policies.sh
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently OIDC management in the JF CLI.
-      - name: Configure Security Integration
-        run: |
-          # Establish OIDC trust relationships between GitHub Actions and JFrog Platform
-          ./.github/scripts/setup/create_oidc.sh
+#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
+#      # NOTE: This has to be a script calling the API as there's not currently OIDC management in the JF CLI.
+#      - name: Configure Security Integration
+#        run: |
+#          # Establish OIDC trust relationships between GitHub Actions and JFrog Platform
+#          ./.github/scripts/setup/create_oidc.sh
 
-      # FIXME: Validate the validation.
-      - name: Validate Complete Setup
-        run: |
-          # Execute comprehensive validation of all platform components and integrations
-          ./.github/scripts/setup/validate_setup.sh
+#      # FIXME: Validate the validation.
+#      - name: Validate Complete Setup
+#        run: |
+#          # Execute comprehensive validation of all platform components and integrations
+#          ./.github/scripts/setup/validate_setup.sh
 
-      # FIXME: Cleanup and simplify the summary.
-      - name: 📋 Setup Platform Summary
-        if: always()
-        run: |
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          # Check for setup issues by examining step outputs and common error patterns
-          setup_errors=""
-          setup_warnings=""
-          
-          # Look for specific error indicators in the current session
-          # (GitHub Actions doesn't provide direct access to step logs, so we check for error files/indicators)
-          
-          # Check if any setup scripts created error/warning indicators
-          if [[ -f "/tmp/setup_errors.log" ]]; then
-            setup_errors=$(cat /tmp/setup_errors.log 2>/dev/null || echo "Error file found but unreadable")
-          fi
-          if [[ -f "/tmp/setup_warnings.log" ]]; then
-            setup_warnings=$(cat /tmp/setup_warnings.log 2>/dev/null || echo "Warning file found but unreadable")
-          fi
-          
-          # Check for common setup issues by testing key functionality
-          source ./.github/scripts/setup/config.sh 2>/dev/null || setup_errors="${setup_errors}Config loading failed; "
-          
-          # Test basic JFrog connectivity to catch auth issues
-          if ! curl -s -f -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/artifactory/api/system/ping" >/dev/null 2>&1; then
-            setup_errors="${setup_errors}JFrog authentication/connectivity failed; "
-          fi
-          
-          # Test JFrog CLI authentication (more specific than basic connectivity)
-          if ! jf rt ping >/dev/null 2>&1; then
-            setup_errors="${setup_errors}JFrog CLI authentication failed; "
-          fi
-          
-          # Check if project exists (basic validation)
-          project_check=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/access/api/v1/projects/${PROJECT_KEY:-bookverse}" -w "%{http_code}" -o /dev/null 2>/dev/null || echo "000")
-          if [[ "$project_check" != "200" ]]; then
-            setup_errors="${setup_errors}Project creation/access failed (HTTP $project_check); "
-          fi
-          
-          # Check if Docker registry authentication is working
-          docker_test=$(jf docker pull "${JFROG_URL#https://}/bookverse-dockerhub-virtual/library/alpine:latest" --dry-run 2>&1 | grep -i "authentication\|unauthorized\|forbidden" || true)
-          if [[ -n "$docker_test" ]]; then
-            setup_errors="${setup_errors}Docker registry authentication failed; "
-          fi
-          
-          # Override job status if we found errors
-          actual_status="${{ job.status }}"
-          if [[ -n "$setup_errors" ]]; then
-            actual_status="failed_with_errors"
-            echo "::error::Setup completed with errors: $setup_errors"
-            echo "SETUP_HAD_ERRORS=true" >> $GITHUB_ENV
-          fi
-          
-          if [[ "$actual_status" == "success" ]]; then
-            if [[ -n "$setup_warnings" ]]; then
-              echo "✅ **Platform setup completed successfully (with warnings)**" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-              echo "⚠️ **Non-critical issues detected:**" >> $GITHUB_STEP_SUMMARY
-              echo "$setup_warnings" | tr '\n' ';' | tr ';' '\n' | sed 's/^/- ⚠️ /' >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "✅ **Platform setup completed successfully**" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-            fi
-            echo "🎯 **BookVerse demo environment is ready**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            
-            echo "- **Project**: \`bookverse\` with full configuration" >> $GITHUB_STEP_SUMMARY
-            echo "- **Lifecycle stages**: \`bookverse-DEV\`, \`bookverse-QA\`, \`bookverse-STAGING\` (+ system PROD)" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            
-            source ./.github/scripts/setup/config.sh
-            project_key="${PROJECT_KEY:-bookverse}"
-            repos_json=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/artifactory/api/repositories")
-            repo_keys=$(echo "$repos_json" | jq -r --arg p "$project_key" '.[] | select(.key | startswith($p + "-")) | .key' 2>/dev/null || true)
+#      # FIXME: Cleanup and simplify the summary.
+#      - name: 📋 Setup Platform Summary
+#        if: always()
+#        run: |
+#          echo "" >> $GITHUB_STEP_SUMMARY
+#
+#          # Check for setup issues by examining step outputs and common error patterns
+#          setup_errors=""
+#          setup_warnings=""
+#
+#          # Look for specific error indicators in the current session
+#          # (GitHub Actions doesn't provide direct access to step logs, so we check for error files/indicators)
+#
+#          # Check if any setup scripts created error/warning indicators
+#          if [[ -f "/tmp/setup_errors.log" ]]; then
+#            setup_errors=$(cat /tmp/setup_errors.log 2>/dev/null || echo "Error file found but unreadable")
+#          fi
+#          if [[ -f "/tmp/setup_warnings.log" ]]; then
+#            setup_warnings=$(cat /tmp/setup_warnings.log 2>/dev/null || echo "Warning file found but unreadable")
+#          fi
+#
+#          # Check for common setup issues by testing key functionality
+#          source ./.github/scripts/setup/config.sh 2>/dev/null || setup_errors="${setup_errors}Config loading failed; "
+#
+#          # Test basic JFrog connectivity to catch auth issues
+#          if ! curl -s -f -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/artifactory/api/system/ping" >/dev/null 2>&1; then
+#            setup_errors="${setup_errors}JFrog authentication/connectivity failed; "
+#          fi
+#
+#          # Test JFrog CLI authentication (more specific than basic connectivity)
+#          if ! jf rt ping >/dev/null 2>&1; then
+#            setup_errors="${setup_errors}JFrog CLI authentication failed; "
+#          fi
+#
+#          # Check if project exists (basic validation)
+#          project_check=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/access/api/v1/projects/${PROJECT_KEY:-bookverse}" -w "%{http_code}" -o /dev/null 2>/dev/null || echo "000")
+#          if [[ "$project_check" != "200" ]]; then
+#            setup_errors="${setup_errors}Project creation/access failed (HTTP $project_check); "
+#          fi
+#
+#          # Check if Docker registry authentication is working
+#          docker_test=$(jf docker pull "${JFROG_URL#https://}/bookverse-dockerhub-virtual/library/alpine:latest" --dry-run 2>&1 | grep -i "authentication\|unauthorized\|forbidden" || true)
+#          if [[ -n "$docker_test" ]]; then
+#            setup_errors="${setup_errors}Docker registry authentication failed; "
+#          fi
+#
+#          # Override job status if we found errors
+#          actual_status="${{ job.status }}"
+#          if [[ -n "$setup_errors" ]]; then
+#            actual_status="failed_with_errors"
+#            echo "::error::Setup completed with errors: $setup_errors"
+#            echo "SETUP_HAD_ERRORS=true" >> $GITHUB_ENV
+#          fi
+#
+#          if [[ "$actual_status" == "success" ]]; then
+#            if [[ -n "$setup_warnings" ]]; then
+#              echo "✅ **Platform setup completed successfully (with warnings)**" >> $GITHUB_STEP_SUMMARY
+#              echo "" >> $GITHUB_STEP_SUMMARY
+#              echo "⚠️ **Non-critical issues detected:**" >> $GITHUB_STEP_SUMMARY
+#              echo "$setup_warnings" | tr '\n' ';' | tr ';' '\n' | sed 's/^/- ⚠️ /' >> $GITHUB_STEP_SUMMARY
+#              echo "" >> $GITHUB_STEP_SUMMARY
+#            else
+#              echo "✅ **Platform setup completed successfully**" >> $GITHUB_STEP_SUMMARY
+#              echo "" >> $GITHUB_STEP_SUMMARY
+#            fi
+#            echo "🎯 **BookVerse demo environment is ready**" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#
+#            echo "- **Project**: \`bookverse\` with full configuration" >> $GITHUB_STEP_SUMMARY
+#            echo "- **Lifecycle stages**: \`bookverse-DEV\`, \`bookverse-QA\`, \`bookverse-STAGING\` (+ system PROD)" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#
+#            source ./.github/scripts/setup/config.sh
+#            project_key="${PROJECT_KEY:-bookverse}"
+#            repos_json=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/artifactory/api/repositories")
+#            repo_keys=$(echo "$repos_json" | jq -r --arg p "$project_key" '.[] | select(.key | startswith($p + "-")) | .key' 2>/dev/null || true)
+#
+#            echo "**Service Repositories:**" >> $GITHUB_STEP_SUMMARY
+#            service_list=$(echo "$repo_keys" | grep -E "^${project_key}-(inventory|recommendations|checkout|platform|web|helm|infra|core)-(public|internal)-(python|docker|maven|npm|helm|generic)-(dev|qa|staging|release)-local$" || true)
+#            if [[ -n "$service_list" ]]; then echo "$service_list" | sed "s/^/- \`&\`/" >> $GITHUB_STEP_SUMMARY; else echo "- None" >> $GITHUB_STEP_SUMMARY; fi
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#
+#            echo "**Dependency Repositories:**" >> $GITHUB_STEP_SUMMARY
+#            dep_list=$(echo "$repo_keys" | grep -E "^${project_key}-(pypi|npm|dockerhub)-(remote|cache-local|virtual)$" || true)
+#            if [[ -n "$dep_list" ]]; then echo "$dep_list" | sed "s/^/- \`&\`/" >> $GITHUB_STEP_SUMMARY; else echo "- None" >> $GITHUB_STEP_SUMMARY; fi
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            # Get unified policy rules and policies created
+#            echo "**Unified Policy Rules Created:**" >> $GITHUB_STEP_SUMMARY
+#            rules_response=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/unifiedpolicy/api/v1/rules" 2>/dev/null || echo '{"items":[]}')
+#            created_rules=$(echo "$rules_response" | jq -r '.items[]? | select(.is_custom == true and (.name | type == "string") and (.name | startswith("BookVerse"))) | .name' 2>/dev/null | sort || true)
+#            if [[ -n "$created_rules" ]]; then echo "$created_rules" | sed "s/^/- \`&\`/" >> $GITHUB_STEP_SUMMARY; else echo "- None" >> $GITHUB_STEP_SUMMARY; fi
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#
+#            echo "**Unified Policies Created:**" >> $GITHUB_STEP_SUMMARY
+#            policies_response=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/unifiedpolicy/api/v1/policies?projectKey=${project_key}" 2>/dev/null || echo '{"items":[]}')
+#            created_policies=$(echo "$policies_response" | jq -r '.items[]? | select((.name | type == "string") and (.name | startswith("BookVerse"))) | .name' 2>/dev/null | sort || true)
+#            if [[ -n "$created_policies" ]]; then echo "$created_policies" | sed "s/^/- \`&\`/" >> $GITHUB_STEP_SUMMARY; else echo "- None" >> $GITHUB_STEP_SUMMARY; fi
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#
+#
+#            echo "**Management Users:**" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`alice.developer@bookverse.com\` (Developer)" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`bob.release@bookverse.com\` (Release Manager, Project Admin)" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`charlie.devops@bookverse.com\` (DevOps Manager, Project Admin)" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`diana.architect@bookverse.com\` (Platform Architect, Project Admin)" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`edward.manager@bookverse.com\` (Engineering Manager, Project Admin)" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "**Service Owners:**" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`frank.inventory@bookverse.com\` (Inventory Service)" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`grace.ai@bookverse.com\` (Recommendations Service)" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`henry.checkout@bookverse.com\` (Checkout Service)" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "**Pipeline Users:**" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`pipeline.inventory@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`pipeline.recommendations@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`pipeline.checkout@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`pipeline.web@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`pipeline.platform@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#
+#            echo "- \`bookverse-inventory\` → frank.inventory@bookverse.com [high criticality]" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`bookverse-recommendations\` → grace.ai@bookverse.com [medium criticality]" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`bookverse-checkout\` → henry.checkout@bookverse.com [high criticality]" >> $GITHUB_STEP_SUMMARY
+#            echo "- \`bookverse-platform\` → diana.architect@bookverse.com [high criticality]" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#
+#            echo "**OIDC Integrations:**" >> $GITHUB_STEP_SUMMARY
+#
+#            # Check if JPD workaround is enabled (default: true)
+#            use_workaround="${USE_PLATFORM_ADMIN_WORKAROUND:-true}"
+#            if [[ "$use_workaround" == "true" ]]; then
+#                echo "" >> $GITHUB_STEP_SUMMARY
+#                echo "⚠️ **JPD Workaround Active**: Due to a JFrog Platform bug, all OIDC integrations use the \`cicd\` platform admin user instead of service-specific users." >> $GITHUB_STEP_SUMMARY
+#                echo "" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-inventory-github\` → \`cicd\` (platform admin) *[intended: frank.inventory@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-recommendations-github\` → \`cicd\` (platform admin) *[intended: grace.ai@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-checkout-github\` → \`cicd\` (platform admin) *[intended: pipeline.checkout@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-platform-github\` → \`cicd\` (platform admin) *[intended: diana.architect@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-web-github\` → \`cicd\` (platform admin) *[intended: pipeline.web@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-infra-github\` → \`cicd\` (platform admin) *[intended: pipeline.infra@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
+#            else
+#                echo "- \`${project_key}-inventory-github\` → frank.inventory@bookverse.com" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-recommendations-github\` → grace.ai@bookverse.com" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-checkout-github\` → pipeline.checkout@bookverse.com" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-platform-github\` → diana.architect@bookverse.com" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-web-github\` → pipeline.web@bookverse.com" >> $GITHUB_STEP_SUMMARY
+#                echo "- \`${project_key}-infra-github\` → pipeline.infra@bookverse.com" >> $GITHUB_STEP_SUMMARY
+#            fi
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "**Evidence Keys:**" >> $GITHUB_STEP_SUMMARY
+#            echo "- Managed by the Switch Platform workflow during initial setup" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "1. 🏗️ **Run service CI/CD workflows** to build and deploy applications" >> $GITHUB_STEP_SUMMARY
+#            echo "2. 🧪 **Test the demo applications** using the provided endpoints" >> $GITHUB_STEP_SUMMARY
+#            echo "3. 🔍 **Explore JFrog Platform** to see created resources" >> $GITHUB_STEP_SUMMARY
+#            echo "4. 📖 **Check documentation** for detailed usage instructions" >> $GITHUB_STEP_SUMMARY
+#          elif [[ "$actual_status" == "failed_with_errors" ]]; then
+#            echo "⚠️ **Platform setup completed with errors**" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "🔍 **Issues detected during setup:**" >> $GITHUB_STEP_SUMMARY
+#            echo "$setup_errors" | tr ';' '\n' | sed 's/^/- ❌ /' >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "**The setup may appear successful but had underlying issues:**" >> $GITHUB_STEP_SUMMARY
+#            echo "- 🔐 **Authentication/Permission errors** (HTTP 400/403)" >> $GITHUB_STEP_SUMMARY
+#            echo "- ⚠️ **Resource creation warnings** (conflicts, partial failures)" >> $GITHUB_STEP_SUMMARY
+#            echo "- 🌐 **Connectivity issues** to JFrog platform" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
+#            echo "1. 🔍 **Review step logs** for detailed error messages" >> $GITHUB_STEP_SUMMARY
+#            echo "2. 🧪 **Test functionality** to confirm what's working" >> $GITHUB_STEP_SUMMARY
+#            echo "3. 🗑️ **Run Discover Cleanup** to see actual resource state" >> $GITHUB_STEP_SUMMARY
+#            echo "4. 🔧 **Fix specific issues** and re-run setup if needed" >> $GITHUB_STEP_SUMMARY
+#          else
+#            echo "❌ **Platform setup failed**" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "🔍 **Check the logs above for error details**" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            if [[ -n "$setup_errors" ]]; then
+#              echo "**Detected errors:**" >> $GITHUB_STEP_SUMMARY
+#              echo "$setup_errors" | tr ';' '\n' | sed 's/^/- ❌ /' >> $GITHUB_STEP_SUMMARY
+#              echo "" >> $GITHUB_STEP_SUMMARY
+#            fi
+#            echo "**Common failure causes:**" >> $GITHUB_STEP_SUMMARY
+#            echo "- 🔐 **Authentication issues** with JFrog platform" >> $GITHUB_STEP_SUMMARY
+#            echo "- 🔒 **Insufficient permissions** for admin token" >> $GITHUB_STEP_SUMMARY
+#            echo "- 🌐 **Network connectivity** problems" >> $GITHUB_STEP_SUMMARY
+#            echo "- ⚠️ **Resource conflicts** (project/users already exist)" >> $GITHUB_STEP_SUMMARY
+#            echo "- 🎯 **Missing prerequisites** (GitHub token, environment variables)" >> $GITHUB_STEP_SUMMARY
+#            echo "" >> $GITHUB_STEP_SUMMARY
+#            echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
+#            echo "1. 🔍 **Review error logs** for specific failure points" >> $GITHUB_STEP_SUMMARY
+#            echo "2. 🗑️ **Run Discover Cleanup workflow** to see existing resources" >> $GITHUB_STEP_SUMMARY
+#            echo "3. 🧹 **Clean up conflicts** before retrying setup" >> $GITHUB_STEP_SUMMARY
+#            echo "4. ✅ **Verify environment variables** and secrets are configured" >> $GITHUB_STEP_SUMMARY
+#          fi
 
-            echo "**Service Repositories:**" >> $GITHUB_STEP_SUMMARY
-            service_list=$(echo "$repo_keys" | grep -E "^${project_key}-(inventory|recommendations|checkout|platform|web|helm|infra|core)-(public|internal)-(python|docker|maven|npm|helm|generic)-(dev|qa|staging|release)-local$" || true)
-            if [[ -n "$service_list" ]]; then echo "$service_list" | sed "s/^/- \`&\`/" >> $GITHUB_STEP_SUMMARY; else echo "- None" >> $GITHUB_STEP_SUMMARY; fi
-            echo "" >> $GITHUB_STEP_SUMMARY
-
-            echo "**Dependency Repositories:**" >> $GITHUB_STEP_SUMMARY
-            dep_list=$(echo "$repo_keys" | grep -E "^${project_key}-(pypi|npm|dockerhub)-(remote|cache-local|virtual)$" || true)
-            if [[ -n "$dep_list" ]]; then echo "$dep_list" | sed "s/^/- \`&\`/" >> $GITHUB_STEP_SUMMARY; else echo "- None" >> $GITHUB_STEP_SUMMARY; fi
-            echo "" >> $GITHUB_STEP_SUMMARY
-            # Get unified policy rules and policies created
-            echo "**Unified Policy Rules Created:**" >> $GITHUB_STEP_SUMMARY
-            rules_response=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/unifiedpolicy/api/v1/rules" 2>/dev/null || echo '{"items":[]}')
-            created_rules=$(echo "$rules_response" | jq -r '.items[]? | select(.is_custom == true and (.name | type == "string") and (.name | startswith("BookVerse"))) | .name' 2>/dev/null | sort || true)
-            if [[ -n "$created_rules" ]]; then echo "$created_rules" | sed "s/^/- \`&\`/" >> $GITHUB_STEP_SUMMARY; else echo "- None" >> $GITHUB_STEP_SUMMARY; fi
-            echo "" >> $GITHUB_STEP_SUMMARY
-
-            echo "**Unified Policies Created:**" >> $GITHUB_STEP_SUMMARY
-            policies_response=$(curl -s -H "Authorization: Bearer ${JFROG_ADMIN_TOKEN}" "${JFROG_URL}/unifiedpolicy/api/v1/policies?projectKey=${project_key}" 2>/dev/null || echo '{"items":[]}')
-            created_policies=$(echo "$policies_response" | jq -r '.items[]? | select((.name | type == "string") and (.name | startswith("BookVerse"))) | .name' 2>/dev/null | sort || true)
-            if [[ -n "$created_policies" ]]; then echo "$created_policies" | sed "s/^/- \`&\`/" >> $GITHUB_STEP_SUMMARY; else echo "- None" >> $GITHUB_STEP_SUMMARY; fi
-            echo "" >> $GITHUB_STEP_SUMMARY
-
-            
-            echo "**Management Users:**" >> $GITHUB_STEP_SUMMARY
-            echo "- \`alice.developer@bookverse.com\` (Developer)" >> $GITHUB_STEP_SUMMARY
-            echo "- \`bob.release@bookverse.com\` (Release Manager, Project Admin)" >> $GITHUB_STEP_SUMMARY
-            echo "- \`charlie.devops@bookverse.com\` (DevOps Manager, Project Admin)" >> $GITHUB_STEP_SUMMARY
-            echo "- \`diana.architect@bookverse.com\` (Platform Architect, Project Admin)" >> $GITHUB_STEP_SUMMARY
-            echo "- \`edward.manager@bookverse.com\` (Engineering Manager, Project Admin)" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Service Owners:**" >> $GITHUB_STEP_SUMMARY
-            echo "- \`frank.inventory@bookverse.com\` (Inventory Service)" >> $GITHUB_STEP_SUMMARY
-            echo "- \`grace.ai@bookverse.com\` (Recommendations Service)" >> $GITHUB_STEP_SUMMARY
-            echo "- \`henry.checkout@bookverse.com\` (Checkout Service)" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Pipeline Users:**" >> $GITHUB_STEP_SUMMARY
-            echo "- \`pipeline.inventory@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
-            echo "- \`pipeline.recommendations@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
-            echo "- \`pipeline.checkout@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
-            echo "- \`pipeline.web@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
-            echo "- \`pipeline.platform@bookverse.com\`" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            
-            echo "- \`bookverse-inventory\` → frank.inventory@bookverse.com [high criticality]" >> $GITHUB_STEP_SUMMARY
-            echo "- \`bookverse-recommendations\` → grace.ai@bookverse.com [medium criticality]" >> $GITHUB_STEP_SUMMARY
-            echo "- \`bookverse-checkout\` → henry.checkout@bookverse.com [high criticality]" >> $GITHUB_STEP_SUMMARY
-            echo "- \`bookverse-platform\` → diana.architect@bookverse.com [high criticality]" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            
-            echo "**OIDC Integrations:**" >> $GITHUB_STEP_SUMMARY
-            
-            # Check if JPD workaround is enabled (default: true)
-            use_workaround="${USE_PLATFORM_ADMIN_WORKAROUND:-true}"
-            if [[ "$use_workaround" == "true" ]]; then
-                echo "" >> $GITHUB_STEP_SUMMARY
-                echo "⚠️ **JPD Workaround Active**: Due to a JFrog Platform bug, all OIDC integrations use the \`cicd\` platform admin user instead of service-specific users." >> $GITHUB_STEP_SUMMARY
-                echo "" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-inventory-github\` → \`cicd\` (platform admin) *[intended: frank.inventory@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-recommendations-github\` → \`cicd\` (platform admin) *[intended: grace.ai@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-checkout-github\` → \`cicd\` (platform admin) *[intended: pipeline.checkout@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-platform-github\` → \`cicd\` (platform admin) *[intended: diana.architect@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-web-github\` → \`cicd\` (platform admin) *[intended: pipeline.web@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-infra-github\` → \`cicd\` (platform admin) *[intended: pipeline.infra@bookverse.com]*" >> $GITHUB_STEP_SUMMARY
-            else
-                echo "- \`${project_key}-inventory-github\` → frank.inventory@bookverse.com" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-recommendations-github\` → grace.ai@bookverse.com" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-checkout-github\` → pipeline.checkout@bookverse.com" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-platform-github\` → diana.architect@bookverse.com" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-web-github\` → pipeline.web@bookverse.com" >> $GITHUB_STEP_SUMMARY
-                echo "- \`${project_key}-infra-github\` → pipeline.infra@bookverse.com" >> $GITHUB_STEP_SUMMARY
-            fi
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Evidence Keys:**" >> $GITHUB_STEP_SUMMARY
-            echo "- Managed by the Switch Platform workflow during initial setup" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "1. 🏗️ **Run service CI/CD workflows** to build and deploy applications" >> $GITHUB_STEP_SUMMARY
-            echo "2. 🧪 **Test the demo applications** using the provided endpoints" >> $GITHUB_STEP_SUMMARY
-            echo "3. 🔍 **Explore JFrog Platform** to see created resources" >> $GITHUB_STEP_SUMMARY
-            echo "4. 📖 **Check documentation** for detailed usage instructions" >> $GITHUB_STEP_SUMMARY
-          elif [[ "$actual_status" == "failed_with_errors" ]]; then
-            echo "⚠️ **Platform setup completed with errors**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "🔍 **Issues detected during setup:**" >> $GITHUB_STEP_SUMMARY
-            echo "$setup_errors" | tr ';' '\n' | sed 's/^/- ❌ /' >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**The setup may appear successful but had underlying issues:**" >> $GITHUB_STEP_SUMMARY
-            echo "- 🔐 **Authentication/Permission errors** (HTTP 400/403)" >> $GITHUB_STEP_SUMMARY
-            echo "- ⚠️ **Resource creation warnings** (conflicts, partial failures)" >> $GITHUB_STEP_SUMMARY
-            echo "- 🌐 **Connectivity issues** to JFrog platform" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
-            echo "1. 🔍 **Review step logs** for detailed error messages" >> $GITHUB_STEP_SUMMARY
-            echo "2. 🧪 **Test functionality** to confirm what's working" >> $GITHUB_STEP_SUMMARY
-            echo "3. 🗑️ **Run Discover Cleanup** to see actual resource state" >> $GITHUB_STEP_SUMMARY
-            echo "4. 🔧 **Fix specific issues** and re-run setup if needed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ **Platform setup failed**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "🔍 **Check the logs above for error details**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            if [[ -n "$setup_errors" ]]; then
-              echo "**Detected errors:**" >> $GITHUB_STEP_SUMMARY
-              echo "$setup_errors" | tr ';' '\n' | sed 's/^/- ❌ /' >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-            fi
-            echo "**Common failure causes:**" >> $GITHUB_STEP_SUMMARY
-            echo "- 🔐 **Authentication issues** with JFrog platform" >> $GITHUB_STEP_SUMMARY
-            echo "- 🔒 **Insufficient permissions** for admin token" >> $GITHUB_STEP_SUMMARY
-            echo "- 🌐 **Network connectivity** problems" >> $GITHUB_STEP_SUMMARY
-            echo "- ⚠️ **Resource conflicts** (project/users already exist)" >> $GITHUB_STEP_SUMMARY
-            echo "- 🎯 **Missing prerequisites** (GitHub token, environment variables)" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
-            echo "1. 🔍 **Review error logs** for specific failure points" >> $GITHUB_STEP_SUMMARY
-            echo "2. 🗑️ **Run Discover Cleanup workflow** to see existing resources" >> $GITHUB_STEP_SUMMARY
-            echo "3. 🧹 **Clean up conflicts** before retrying setup" >> $GITHUB_STEP_SUMMARY
-            echo "4. ✅ **Verify environment variables** and secrets are configured" >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: 🚨 Fail job if critical errors detected
-        if: always() && env.SETUP_HAD_ERRORS == 'true'
-        run: |
-          echo "❌ Setup completed with critical errors that require attention"
-          echo "Check the job summary and logs above for details"
-          exit 1
+#      - name: 🚨 Fail job if critical errors detected
+#        if: always() && env.SETUP_HAD_ERRORS == 'true'
+#        run: |
+#          echo "❌ Setup completed with critical errors that require attention"
+#          echo "Check the job summary and logs above for details"
+#          exit 1
