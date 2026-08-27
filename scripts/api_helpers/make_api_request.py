@@ -4,6 +4,7 @@
 #!/usr/bin/env python3
 
 ### IMPORTS ###
+import json
 import logging
 import urllib.request
 import urllib.error
@@ -16,11 +17,13 @@ def make_api_request(login_data, method, path, data = None, is_data_json = True)
     # Send the request to the JFrog Artifactory API.
     req_url = "{}{}".format(login_data["host"], urllib.parse.quote(path, safe="/?=,&"))
     req_headers = {}
+    req_data = None
     if is_data_json:
         req_headers["Content-Type"] = "application/json"
+        req_data = json.dumps(data)
     else:
         req_headers["Content-Type"] = "text/plain"
-    req_data = data.encode("utf-8") if data is not None else None
+        req_data = data.encode("utf-8") if data is not None else None
 
     logging.debug("req_url: %s", req_url)
     logging.debug("req_headers: %s", req_headers)
