@@ -14,9 +14,11 @@ def list_lifecycle_stages(login_data, project_key):
 
 def get_lifecycle_stage(login_data, project_key, stage_name):
     # NOTE: Project Key should be None for global stages.
-    req_url = "/access/api/v2/stages/{}".format(stage_name)
+    req_url = "/access/api/v2/stages"
     if project_key is not None:
-        req_url = "{}?project_key={}".format(req_url, project_key)
+        req_url = "{}/{}-{}?project_key={}".format(req_url, project_key, stage_name, project_key)
+    else:
+        req_url = "{}/{}".format(req_url, stage_name)
     resp = make_api_request(login_data, 'GET', req_url)
     return json.loads(resp)
 
