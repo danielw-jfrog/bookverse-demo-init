@@ -14,7 +14,7 @@ import urllib.parse
 ### FUNCTIONS ###
 def make_api_request(login_data, method, path, data = None, is_data_json = True):
     # Send the request to the JFrog Artifactory API.
-    req_url = "{}{}".format(login_data["arti_host"], urllib.parse.quote(path, safe="/?=,&"))
+    req_url = "{}{}".format(login_data["host"], urllib.parse.quote(path, safe="/?=,&"))
     req_headers = {}
     if is_data_json:
         req_headers["Content-Type"] = "application/json"
@@ -26,7 +26,7 @@ def make_api_request(login_data, method, path, data = None, is_data_json = True)
     logging.debug("req_headers: %s", req_headers)
     logging.debug("req_data: %s", req_data)
 
-    req_headers["Authorization"] = "Bearer {}".format(login_data["arti_token"])
+    req_headers["Authorization"] = "Bearer {}".format(login_data["token"])
 
     request = urllib.request.Request(req_url, data = req_data, headers = req_headers, method = method)
     resp = None
