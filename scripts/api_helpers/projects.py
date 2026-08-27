@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 ### IMPORTS ###
-import logging
-
 from .make_api_request import make_api_request
 
 ### GLOBALS ###

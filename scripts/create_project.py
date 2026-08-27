@@ -4,6 +4,7 @@
 import argparse
 import logging
 import os
+import sys
 
 from api_helpers.projects import create_project
 
@@ -39,8 +40,12 @@ def main():
     tmp_login_data["token"] = args.token
     tmp_login_data["host"] = args.host
 
-    logging.info("Creating Project: {} {}", args.project_key, args.project_name)
-    create_project(tmp_login_data, args.project_key, args.project_name)
+    logging.info("Creating Project: %s %s", args.project_key, args.project_name)
+    try:
+        create_project(tmp_login_data, args.project_key, args.project_name)
+    except Exception as ex:
+        logging.error(ex)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

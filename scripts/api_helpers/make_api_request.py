@@ -41,10 +41,12 @@ def make_api_request(login_data, method, path, data = None, is_data_json = True)
             logging.debug("  Response Status: %d, Response Body: %s", response.status, resp)
             logging.debug("Repository operation successful")
     except urllib.error.HTTPError as ex:
-        logging.warning("Error (%d) for repository operation", ex.code)
+        logging.warning("Error (%d) for operation", ex.code)
         logging.debug("  response body: %s", ex.read().decode("utf-8"))
+        raise Exception("Fail Build")
     except urllib.error.URLError as ex:
         logging.error("Request Failed (URLError): %s", ex.reason)
+        raise Exception("Fail Build")
     # FIXME: Should make the status code available to the calling method.
     return resp
 
