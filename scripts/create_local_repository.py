@@ -50,8 +50,8 @@ def main():
 
     service_name = str(args.service_name).lower()
     package_type = str(args.package_type).lower()
-    stage_name = str(args.stage_name).lower()
-    if stage_name == "prod":
+    stage_name = str(args.stage_name)
+    if stage_name.lower() == "prod":
         # FIXME: Covering up an inconsistency in the old bookverse example
         stage_name = "release"
 
@@ -62,7 +62,7 @@ def main():
         service_name,
         "public" if service_name == "platform" else "internal",
         package_type,
-        stage_name
+        stage_name.lower()
     )
 
     # FIXME: Covering up inconsistencies in the old bookverse example
