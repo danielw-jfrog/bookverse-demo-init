@@ -35,8 +35,6 @@ def main():
     )
     logging.debug("Args: %s", args)
 
-    logging.info("Preparing Environment")
-
     tmp_login_data = {}
     tmp_login_data["token"] = args.token
     tmp_login_data["host"] = args.host

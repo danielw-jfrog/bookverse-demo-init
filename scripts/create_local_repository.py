@@ -7,7 +7,7 @@ import os
 import sys
 
 from api_helpers.exceptions import NotFoundException
-from api_helpers.lifecycle_stages import get_lifecycle_stage, create_lifecycle_stage
+from api_helpers.repositories import get_repository, create_local_repository
 
 ### GLOBALS ###
 
@@ -27,7 +27,10 @@ def main():
     parser.add_argument("--project_key", default = os.getenv("PROJECT_KEY", None),
                         help = "Short version of the project name used for identifying the project.")
 
-    parser.add_argument("stage_name", help = "Name of the Lifecycle Stage.")
+    parser.add_argument("service_name")
+    parser.add_argument("package_type")
+    parser.add_argument("stage_name")
+
     args = parser.parse_args()
 
     # Set up logging
@@ -44,17 +47,30 @@ def main():
     project_key = None
     if args.project_key is not None:
         project_key = str(args.project_key)
-    stage_name = str(args.stage_name)
+
+    service_name = str(args.service_name).lower()
+    package_type = str(args.package_type).lower()
+    stage_name = str(args.stage_name).lower()
+
+    # NOTE: This is using the old format for the bookverse example.  This should be simplified at some point.
+    # ${projecy_key}-${service}-${visibility}-${package_type}-${stage_lower}-local"
+    # NOTE: Project key part handled by method internally...
+    repo_name = "{}-{}-{}-{}-local".format(
+        service_name,
+        "public" if service_name == "platform" else "internal",
+        package_type,
+        stage_name
+    )
 
     try:
-        logging.info("Checking if Lifecycle Stage exists: %s - %s", project_key, stage_name)
-        stage_data = get_lifecycle_stage(tmp_login_data, project_key, stage_name)
-        logging.info("  Lifecycle Stage already exists")
-        # FIXME: Check the data for the Lifecycle Stage and update if needed.
+        logging.info("Checking if repository exists: %s - %s", project_key, stage_name)
+        stage_data = get_repository(tmp_login_data, project_key, repo_name)
+        logging.info("  Repository already exists")
+        # FIXME: Check the data for the Repository and update if needed.
     except NotFoundException:
         try:
-            logging.info("  Creating Lifecycle Stage: %s - %s", project_key, stage_name)
-            create_lifecycle_stage(tmp_login_data, project_key, stage_name)
+            logging.info("  Creating Repository: %s - %s", project_key, repo_name)
+            create_local_repository(tmp_login_data, project_key, repo_name, stage_name, package_type)
         except Exception as ex:
             raise ex
     except Exception as ex:

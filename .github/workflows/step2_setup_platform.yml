@@ -225,11 +225,19 @@ jobs:
           python ./scripts/create_lifecycle_stage.py "QA"
           python ./scripts/create_lifecycle_stage.py "STAGING"
 
-#      # FIXME: Convert to JF CLI
-#      - name: Create Service Repositories
-#        run: |
-#          # Create Docker, Python, npm, and Helm repositories for all services
-#          ./.github/scripts/setup/create_repositories.sh
+      - name: Create Service Repositories
+        run: |
+          # Create Docker, Python, npm, and Helm repositories for all services
+          #./.github/scripts/setup/create_repositories.sh
+          
+          # Checkout Service: docker, generic
+          python ./scripts/create_local_repository.py "checkout" "docker" "DEV"
+          # Helm Service: helm
+          # Infra Service: generic, pypi
+          # Inventory Service: docker, pypi
+          # Platform Service: docker
+          # Recommendations Service: docker, generic
+          # Web Service: generic
 
 #      # FIXME: Convert to JF CLI
 #      - name: Create Dependency Repositories
