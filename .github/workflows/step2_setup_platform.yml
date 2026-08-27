@@ -157,10 +157,10 @@ jobs:
 
       # Create the remote repos for the Alpine Packages
 
-      - name: Create Service Repositories
+      - name: Create Local Repositories
         run: |
           # FIXME: How to handled the "public" prod/release repository?
-          python ./scripts/create_local_repository.py --verbose "golden" "docker" "DEV"
+          python ./scripts/create_local_repository.py "golden" "docker" "DEV"
           python ./scripts/create_local_repository.py "golden" "docker" "PROD"
 
   setup-bookverse:
@@ -236,7 +236,7 @@ jobs:
           python ./scripts/create_lifecycle_stage.py "STAGING"
           # NOTE: PROD is a global stage that always exists.  It's also a release stage, so it's special.
 
-      - name: Create Service Repositories
+      - name: Create Local Repositories
         run: |
           # FIXME: Make sure that all of these repositories are being used.
           # Checkout Service: docker, generic, pypi
