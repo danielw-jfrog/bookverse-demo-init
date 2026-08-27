@@ -7,7 +7,7 @@ import os
 import sys
 
 from api_helpers.exceptions import NotFoundException
-from api_helpers.projects import get_project, create_project
+from api_helpers.lifecycle_stages import get_lifecycle_stage, create_lifecycle_stage
 
 ### GLOBALS ###
 
@@ -24,8 +24,9 @@ def main():
     parser.add_argument("--host", default = os.getenv("JFROG_URL", ""),
                         help = "Artifactory host URL (e.g. https://artifactory.example.com/) to use for requests.  Will use JFROG_URL if not specified.")
 
-    parser.add_argument("project_key", help = "Short version of the project name used for identifying the project.")
-    parser.add_argument("project_name", help = "Full name of the project.")
+    parser.add_argument("--project_key", help = "Short version of the project name used for identifying the project.")
+
+    parser.add_argument("stage_name", help = "Full name of the project.")
     args = parser.parse_args()
 
     # Set up logging
@@ -41,15 +42,20 @@ def main():
     tmp_login_data["token"] = args.token
     tmp_login_data["host"] = args.host
 
+    project_key = None
+    if args.project_key:
+        project_key = str(args.project_key)
+    stage_name = str(args.stage_name)
+
     try:
-        logging.info("Checking if project exists: [%s]", args.project_key)
-        project_data = get_project(tmp_login_data, args.project_key)
-        logging.info("  Project already exists")
-        # FIXME: Check the data for the project and update if needed.
+        logging.info("Checking if Lifecycle Stage exists: %s - %s", project_key, stage_name)
+        stage_data = get_lifecycle_stage(tmp_login_data, project_key, stage_name)
+        logging.info("  Lifecycle Stage already exists")
+        # FIXME: Check the data for the Lifecycle Stage and update if needed.
     except NotFoundException:
         try:
-            logging.info("  Creating Project: [%s] %s", args.project_key, args.project_name)
-            create_project(tmp_login_data, args.project_key, args.project_name)
+            logging.info("  Creating Lifecycle Stage: %s - %s", project_key, stage_name)
+            create_lifecycle_stage(tmp_login_data, project_key, stage_name)
         except Exception as ex:
             raise ex
     except Exception as ex:

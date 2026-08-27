@@ -32,6 +32,9 @@ jobs:
   setup-globals:
     runs-on: ubuntu-latest
     name: Setup Global Remotes Project
+    env:
+      # FIXME: Should probably make multiple project key variables
+      PROJECT_KEY: "bvglobals"
 
     steps:
       - name: Checkout code
@@ -51,7 +54,7 @@ jobs:
         env:
           JFROG_URL: ${{ vars.JFROG_URL }}
           JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
-          PROJECT_KEY: ${{ vars.PROJECT_KEY }}
+          #PROJECT_KEY: ${{ vars.PROJECT_KEY }}
         run: |
           # Validate the JFrog URL
           if [[ -z "${JFROG_URL}" ]]; then
@@ -82,15 +85,16 @@ jobs:
           echo "Checking JFrog Platform access from the JF CLI."
           jf rt ping
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently project management in the JF CLI.
       - name: Create Projects
         run: |
-          python ./scripts/create_project.py "bvglobals" "BookVerse Global Remotes"
+          python ./scripts/create_project.py "${PROJECT_KEY}" "BookVerse Global Remotes"
 
   setup-golden-images:
     runs-on: ubuntu-latest
     name: Setup Golden Images Project
+    env:
+      # FIXME: Should probably make multiple project key variables
+      PROJECT_KEY: "bvgi"
 
     steps:
       - name: Checkout code
@@ -110,7 +114,7 @@ jobs:
         env:
           JFROG_URL: ${{ vars.JFROG_URL }}
           JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
-          PROJECT_KEY: ${{ vars.PROJECT_KEY }}
+          #PROJECT_KEY: ${{ vars.PROJECT_KEY }}
         run: |
           # Validate the JFrog URL
           if [[ -z "${JFROG_URL}" ]]; then
@@ -141,15 +145,20 @@ jobs:
           echo "Checking JFrog Platform access from the JF CLI."
           jf rt ping
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently project management in the JF CLI.
       - name: Create Projects
         run: |
-          python ./scripts/create_project.py "bvgi" "BookVerse Golden Images"
+          python ./scripts/create_project.py "${PROJECT_KEY}" "BookVerse Golden Images"
+
+      - name: Create Lifecycle Stages
+        run: |
+          python ./scripts/create_lifecycle_stage.py "${PROJECT_KEY}" "DEV"
 
   setup-bookverse:
     runs-on: ubuntu-latest
     name: Setup BookVerse Project
+    env:
+      # FIXME: Should probably make multiple project key variables
+      PROJECT_KEY: ${{ vars.PROJECT_KEY }}
 
     steps:
       - name: Checkout code
@@ -175,7 +184,7 @@ jobs:
         env:
           JFROG_URL: ${{ vars.JFROG_URL }}
           JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
-          PROJECT_KEY: ${{ vars.PROJECT_KEY }}
+          #PROJECT_KEY: ${{ vars.PROJECT_KEY }}
         run: |
           # Validate the JFrog URL
           if [[ -z "${JFROG_URL}" ]]; then
@@ -206,18 +215,15 @@ jobs:
           echo "Checking JFrog Platform access from the JF CLI."
           jf rt ping
 
-      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-      # NOTE: This has to be a script calling the API as there's not currently project management in the JF CLI.
       - name: Create Projects
         run: |
-          python ./scripts/create_project.py "bookverse" "BookVerse"
+          python ./scripts/create_project.py "${PROJECT_KEY}" "BookVerse"
 
-#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-#      # NOTE: This has to be a script calling the API as there's not currently Lifecycle management in the JF CLI.
-#      - name: Create Lifecycle Stages
-#        run: |
-#          # Create DEV → QA → STAGING → PROD promotion pipeline stages
-#          ./.github/scripts/setup/create_stages.sh
+      - name: Create Lifecycle Stages
+        run: |
+          python ./scripts/create_lifecycle_stage.py "${PROJECT_KEY}" "DEV"
+          python ./scripts/create_lifecycle_stage.py "${PROJECT_KEY}" "QA"
+          python ./scripts/create_lifecycle_stage.py "${PROJECT_KEY}" "STAGING"
 
 #      # FIXME: Convert to JF CLI
 #      - name: Create Service Repositories
