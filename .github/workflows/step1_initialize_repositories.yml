@@ -161,6 +161,8 @@ jobs:
               gh secret set "JFROG_ADMIN_TOKEN" --body "${JFROG_ADMIN_TOKEN}" --repo "${REPO_OWNER}/bookverse-${item}"
               gh variable set "JFROG_URL" --body "${JFROG_URL}" --repo "${REPO_OWNER}/bookverse-${item}"
               gh variable set "PROJECT_KEY" --body "${PROJECT_KEY}" --repo "${REPO_OWNER}/bookverse-${item}"
+              # Set secrets and variables for evidence signing keys
+              # FIXME: Setup signing keys for golden images separately
               gh secret set "EVIDENCE_PRIVATE_KEY" --body "${EVIDENCE_PRIVATE_SECRET}" --repo "${REPO_OWNER}/bookverse-${item}"
               gh variable set "EVIDENCE_PUBLIC_KEY" --body "${EVIDENCE_PUBLIC_VARIABLE}" --repo "${REPO_OWNER}/bookverse-${item}"
               gh variable set "EVIDENCE_KEY_ALIAS" --body "${EVIDENCE_ALIAS_VARIABLE}" --repo "${REPO_OWNER}/bookverse-${item}"

@@ -30,15 +30,29 @@ def create_local_repository(login_data, project_key, repository_name, stage_name
     }
     if project_key is not None:
         req_data["key"] = "{}-{}".format(project_key, repository_name)
-        req_data["projectKey"] =  project_key
+        req_data["projectKey"] = project_key
     if stage_name is not None:
         req_data["environments"] = [stage_name]
     req_url = "/artifactory/api/repositories/{}".format(req_data["key"])
     make_api_request(login_data, 'PUT', req_url, req_data)
 
-def create_remote_repository(login_data, project_key, repository_name, package_type, external_url):
+def create_remote_repository(login_data, project_key, repository_name, package_type, external_url, pypi_registry_url = None):
     # NOTE: Project Key should be None for global repositories.
-    pass
+    req_data = {
+        "rclass": "remote",
+        "key": repository_name,
+        "package_type": package_type,
+        "url": external_url,
+        "listRemoteFolderItems": True
+    }
+    if project_key is not None:
+        req_data["key"] = "{}-{}".format(project_key, repository_name)
+        req_data["projectKey"] = project_key
+        req_data["environments"] = ["DEV"] # FIXME: How should this be handled better?
+    if package_type == "pypi" and pypi_registry_url is not None:
+        req_data["pypiRegistryUrl"] = pypi_registry_url
+    req_url = "/artifactory/api/repositories/{}".format(req_data["key"])
+    make_api_request(login_data, 'PUT', req_url, req_data)
 
 def update_repositories(login_data, project_key, repository_name, repository_data):
     # NOTE: Project Key should be None for global repositories.
