@@ -51,6 +51,8 @@ def main():
     service_name = str(args.service_name).lower()
     package_type = str(args.package_type).lower()
     stage_name = str(args.stage_name) # NOT LOWER
+    if stage_name != "PROD":
+        stage_name = {}-{}.format(project_key, stage_name)
 
     # NOTE: This is using the old format for the bookverse example.  This should be simplified at some point.
     # ${projecy_key}-${service}-${visibility}-${package_type}-${stage_lower}-local"
@@ -62,10 +64,6 @@ def main():
         # FIXME: Covering up an inconsistency in the old bookverse example
         "release" if stage_name.lower() == "prod" else stage_name.lower()
     )
-
-    # FIXME: Covering up inconsistencies in the old bookverse example
-    if package_type == "python":
-        package_type = "pypi"
 
     try:
         logging.info("Checking if repository exists: %s - %s", project_key, repo_name)
