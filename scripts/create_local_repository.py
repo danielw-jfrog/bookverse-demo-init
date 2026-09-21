@@ -51,8 +51,6 @@ def main():
     service_name = str(args.service_name).lower()
     package_type = str(args.package_type).lower()
     stage_name = str(args.stage_name) # NOT LOWER
-    if stage_name != "PROD":
-        stage_name = "{}-{}".format(project_key, stage_name)
 
     # NOTE: This is using the old format for the bookverse example.  This should be simplified at some point.
     # ${projecy_key}-${service}-${visibility}-${package_type}-${stage_lower}-local"
@@ -72,6 +70,8 @@ def main():
         # FIXME: Check the data for the Repository and update if needed.
     except NotFoundException:
         try:
+            if stage_name != "PROD":
+                stage_name = "{}-{}".format(project_key, stage_name)
             logging.info("  Creating Repository: %s - %s", project_key, repo_name)
             create_local_repository(tmp_login_data, project_key, repo_name, stage_name, package_type)
         except Exception as ex:
