@@ -52,7 +52,7 @@ def main():
     package_type = str(args.package_type).lower()
     stage_name = str(args.stage_name) # NOT LOWER
     if stage_name != "PROD":
-        stage_name = {}-{}.format(project_key, stage_name)
+        stage_name = "{}-{}".format(project_key, stage_name)
 
     # NOTE: This is using the old format for the bookverse example.  This should be simplified at some point.
     # ${projecy_key}-${service}-${visibility}-${package_type}-${stage_lower}-local"
