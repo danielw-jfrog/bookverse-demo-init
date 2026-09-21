@@ -8,9 +8,10 @@ from .make_api_request import make_api_request
 ### GLOBALS ###
 
 ### FUNCTIONS ###
-def list_repositories(login_data, project_key):
-    # NOTE: Project Key should be None for global repositories.
-    pass
+def list_repositories(login_data):
+    req_url = "/artifactory/api/repositories/configurations"
+    resp = make_api_request(login_data, 'GET', req_url)
+    return json.loads(resp)
 
 def get_repository(login_data, project_key, repository_name):
     # NOTE: Project Key should be None for global repositories.
@@ -54,12 +55,12 @@ def create_remote_repository(login_data, project_key, repository_name, package_t
     req_url = "/artifactory/api/repositories/{}".format(req_data["key"])
     make_api_request(login_data, 'PUT', req_url, req_data)
 
-def update_repositories(login_data, project_key, repository_name, repository_data):
+def update_repository(login_data, project_key, repository_name, repository_data):
     # NOTE: Project Key should be None for global repositories.
     pass
 
-def delete_repositories(login_data, project_key, repository_name):
-    # NOTE: Project Key should be None for global repositories.
-    pass
+def delete_repository(login_data, repository_name):
+    req_url = "/artifactory/api/repositories/{}".format(repository_name)
+    make_api_request(login_data, 'DELETE', req_url)
 
 ### CLASSES ###

@@ -355,14 +355,11 @@ jobs:
 #          # Controlled by workflow input 'prepopulate_dependencies' (defaults to true)
 #          ./.github/scripts/setup/prepopulate_dependencies.sh
 
-#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-#      # FIXME: This appears to not be used as there doesn't seem to be any custom roles being made.
-#      # NOTE: This has to be a script calling the API as there's not currently role management in the JF CLI.
       - name: Create Custom Roles
         run: |
           # Create developer, manager, and architect roles with graduated permissions
           #./.github/scripts/setup/create_roles.sh
-          echo "Creating Roles"
+          echo "Creating custom project roles"
           python ./scripts/create_role.py "cicd_pipeline"
           python ./scripts/create_role.py "k8s_image_pull"
 
@@ -382,6 +379,16 @@ jobs:
               gh variable set "${role}_username" --body "${useremail}" --repo "${GH_REPOSITORY_OWNER}/bookverse-${item}"
               gh secret set "${role}_password" --body "${password}" --repo "${GH_REPOSITORY_OWNER}/bookverse-${item}"
             done
+          done
+
+      - name: Assign Project Roles to Users
+        run: |
+          echo: "Assigning project roles to users."
+          for item in ${COMPONENTS}; do
+            # for role in ${"developer manager pipeline"}; do
+            python ./script/add_user_to_project_role.py "${item}.developer@bookverse.example.com" "Developer"
+            python ./script/add_user_to_project_role.py "${item}.manager@bookverse.example.com" "Release Manager"
+            python ./script/add_user_to_project_role.py "${item}.pipeline@bookverse.example.com" "cicd_pipeline"
           done
 
 #      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.

@@ -7,7 +7,7 @@ import os
 import sys
 
 from api_helpers.exceptions import NotFoundException
-from api_helpers.users import get_user, create_user
+from api_helpers.users import get_user, assign_roles_to_user
 
 ### GLOBALS ###
 
@@ -24,9 +24,11 @@ def main():
     parser.add_argument("--host", default = os.getenv("JFROG_URL", ""),
                         help = "Artifactory host URL (e.g. https://artifactory.example.com/) to use for requests.  Will use JFROG_URL if not specified.")
 
+    parser.add_argument("--project_key", default=os.getenv("PROJECT_KEY", None),
+                        help="Short version of the project name used for identifying the project.")
+
     parser.add_argument("username")
-    parser.add_argument("password")
-    parser.add_argument("email")
+    parser.add_argument("role")
 
     args = parser.parse_args()
 
@@ -41,16 +43,26 @@ def main():
     tmp_login_data["token"] = args.token
     tmp_login_data["host"] = args.host
 
+    project_key = None
+    if args.project_key is not None:
+        project_key = str(args.project_key)
+
     try:
-        logging.info("Checking if user exists: %s", args.username)
-        user_data = get_user(tmp_login_data, None, args.username)
-        logging.info("  User already exists")
-    except NotFoundException:
+        logging.info("Checking if user assigned to role: %s - %s", project_key, args.username)
+        roles = []
         try:
-            logging.info("  Creating user: %s", args.username)
-            create_user(tmp_login_data, args.username, args.password, args.email)
+            user_data = get_user(tmp_login_data, project_key, str(args.username))
+            logging.debug("User Data: %s", user_data)
+            # Add project role and add
+            for role in user_data["roles"]:
+                roles.append(role)
+        except NotFoundException:
+            # User not assigned role in project yet, leave roles list blank and continue
+            pass
         except Exception as ex:
             raise ex
+        roles.append(str(args.role))
+        assign_roles_to_user(tmp_login_data, project_key, str(args.username), roles)
     except Exception as ex:
         logging.error(ex)
         sys.exit(1)
