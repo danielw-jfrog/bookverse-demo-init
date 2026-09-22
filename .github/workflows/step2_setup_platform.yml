@@ -363,7 +363,7 @@ jobs:
             # Set secrets and variables for project users
             ROLES="developer manager pipeline"
             for role in ${ROLES}; do
-              password="$(python ./script/gen_random_password.py)"
+              password="$(python ./scripts/gen_random_password.py)"
               useremail="${item}.${role}@bookverse.example.com"
               # Mask the secret value
               #echo "::add-mask::${password}"
@@ -378,9 +378,9 @@ jobs:
           echo: "Assigning project roles to users."
           for item in ${COMPONENTS}; do
             # for role in ${"developer manager pipeline"}; do
-            python ./script/add_user_to_project_role.py "${item}.developer@bookverse.example.com" "Developer"
-            python ./script/add_user_to_project_role.py "${item}.manager@bookverse.example.com" "Release Manager"
-            python ./script/add_user_to_project_role.py "${item}.pipeline@bookverse.example.com" "cicd_pipeline"
+            python ./scripts/add_user_to_project_role.py "${item}.developer@bookverse.example.com" "Developer"
+            python ./scripts/add_user_to_project_role.py "${item}.manager@bookverse.example.com" "Release Manager"
+            python ./scripts/add_user_to_project_role.py "${item}.pipeline@bookverse.example.com" "cicd_pipeline"
           done
 
 #      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
