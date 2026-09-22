@@ -363,7 +363,7 @@ jobs:
             # Set secrets and variables for project users
             ROLES="developer manager pipeline"
             for role in ${ROLES}; do
-              password="$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c16)"
+              password="$(python ./script/gen_random_password.py)"
               useremail="${item}.${role}@bookverse.example.com"
               # Mask the secret value
               #echo "::add-mask::${password}"
