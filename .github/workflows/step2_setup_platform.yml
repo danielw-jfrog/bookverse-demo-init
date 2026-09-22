@@ -375,7 +375,7 @@ jobs:
 
       - name: Assign Project Roles to Users
         run: |
-          echo: "Assigning project roles to users."
+          echo "Assigning project roles to users."
           for item in ${COMPONENTS}; do
             # for role in ${"developer manager pipeline"}; do
             python ./scripts/add_user_to_project_role.py "${item}.developer@bookverse.example.com" "Developer"
