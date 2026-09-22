@@ -366,7 +366,7 @@ jobs:
               password="$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c16)"
               useremail="${item}.${role}@bookverse.example.com"
               # Mask the secret value
-              echo "::add-mask::${password}"
+              #echo "::add-mask::${password}"
               python ./scripts/create_user.py "${useremail}" "${password}" "${useremail}"
               gh variable set "${role}_username" --body "${useremail}" --repo "${GH_REPOSITORY_OWNER}/bookverse-${item}"
               gh secret set "${role}_password" --body "${password}" --repo "${GH_REPOSITORY_OWNER}/bookverse-${item}"
