@@ -91,17 +91,17 @@ def main():
     tmp_login_data["token"] = args.token
     tmp_login_data["host"] = args.host
 
-    if args.predifined_role_name not in predefined_roles:
+    if args.predefined_role_name not in predefined_roles:
         logging.error("Not one of the predefined roles.")
         sys.exit(1)
-    role_name = str(args.predifined_role_name)
+    role_name = str(args.predefined_role_name)
 
     project_key = None
     if args.project_key is not None:
         project_key = str(args.project_key)
 
     try:
-        logging.info("Checking if role exists: %s - %s", project_key, args.predefined_role_name)
+        logging.info("Checking if role exists: %s - %s", project_key, role_name)
         role_data = get_role(tmp_login_data, project_key, predefined_roles[role_name]["name"])
         logging.info("  Role already exists")
     except NotFoundException:
