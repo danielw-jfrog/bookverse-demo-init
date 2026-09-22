@@ -58,7 +58,7 @@ APP_DEFINITIONS = {
         "owner": "platform.manager@bookverse.com"
     },
     "recommendations": {
-        "application_key": "bookverse-recommendations|||medium|production|ai-ml-team|grace.ai@bookverse.com",
+        "application_key": "bookverse-recommendations",
         "application_name": "BookVerse Recommendations Service",
         "description": "AI-powered microservice that provides personalized book recommendations based on user preferences, reading history, and collaborative filtering.",
         "criticality": "medium",
