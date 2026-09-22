@@ -168,12 +168,12 @@ jobs:
     env:
       # FIXME: Should probably make multiple project key variables
       PROJECT_KEY: ${{ vars.PROJECT_KEY }}
-      COMPONENTS: "checkout core helm infra inventory platform recommendations web"
-      COMPONENTS_DOCKER: "checkout core inventory platform recommendations web"
+      COMPONENTS: "checkout helm infra inventory platform recommendations web"
+      COMPONENTS_DOCKER: "checkout inventory platform recommendations web"
       COMPONENTS_GENERIC: "checkout helm infra inventory platform recommendations web"
       COMPONENTS_HELM: "helm"
       COMPONENTS_NPM: "web"
-      COMPONENTS_PYPI: "checkout core infra inventory platform recommendations"
+      COMPONENTS_PYPI: "checkout infra inventory platform recommendations"
 
     steps:
       - name: Checkout code
