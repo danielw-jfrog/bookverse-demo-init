@@ -45,7 +45,7 @@ def make_api_request(login_data, method, path, data = None, is_data_json = True)
             logging.debug("Repository operation successful")
     except urllib.error.HTTPError as ex:
         logging.warning("Error (%d) for operation", ex.code)
-        logging.debug("  response body: %s", ex.read().decode("utf-8"))
+        logging.warning("  response body: %s", ex.read().decode("utf-8"))
         if(ex.code == 404):
             raise NotFoundException()
         else:
