@@ -234,6 +234,7 @@ jobs:
           python ./scripts/create_lifecycle_stage.py "QA"
           python ./scripts/create_lifecycle_stage.py "STAGING"
           # NOTE: PROD is a global stage that always exists.  It's also a release stage, so it's special.
+          # FIXME: Setup the Lifecycle stage plan / order
 
       - name: Create Local Repositories
         run: |
@@ -360,7 +361,7 @@ jobs:
           echo "Creating users for components"
           for item in ${COMPONENTS}; do
             # Set secrets and variables for project users
-            for role in ${"developer manager pipeline"}; do
+            for role in "developer manager pipeline"; do
               password="$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c16)"
               useremail="${item}.${role}@bookverse.example.com"
               # Mask the secret value
