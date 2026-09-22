@@ -42,4 +42,12 @@ def delete_lifecycle_stages(login_data, project_key, stage_name):
     # NOTE: Project Key should be None for global stages.
     pass
 
+def set_lifecycle(login_data, project_key, stage_list):
+    req_url = "/access/api/v2/lifecycle/?project_key={}".format(project_key)
+    req_data = {
+        "project_key": project_key,
+        "promote_stages": stage_list
+    }
+    make_api_request(login_data, 'PATCH', req_url, req_data)
+
 ### CLASSES ###

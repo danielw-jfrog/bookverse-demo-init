@@ -234,7 +234,7 @@ jobs:
           python ./scripts/create_lifecycle_stage.py "QA"
           python ./scripts/create_lifecycle_stage.py "STAGING"
           # NOTE: PROD is a global stage that always exists.  It's also a release stage, so it's special.
-          # FIXME: Setup the Lifecycle stage plan / order
+          python ./scripts/update_lifecycle.py "DEV" "QA" "STAGING"
 
       - name: Create Local Repositories
         run: |
