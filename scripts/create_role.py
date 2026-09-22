@@ -110,7 +110,7 @@ def main():
             environments = []
             for environ in predefined_roles[role_name]["environments"]:
                 # If the environ needs the project key replaced, replace and append
-                if environ.contains('{pkey}'):
+                if '{pkey}' in environ:
                     if project_key is not None:
                         environments.append(str(environ).replace('{pkey}', str(project_key)))
                 # Otherwise just append to list
