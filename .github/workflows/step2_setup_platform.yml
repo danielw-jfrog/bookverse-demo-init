@@ -392,12 +392,12 @@ jobs:
             python ./scripts/create_application.py "${item}"
           done
 
-#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-#      # NOTE: This has to be a script calling the API as there's not currently Unified Policy management in the JF CLI.
-#      - name: Create Unified Policies
-#        run: |
-#          # Create and configure all BookVerse unified policies for lifecycle management
-#          ./.github/scripts/setup/create_policies.sh
+      - name: Create Unified Policies
+        run: |
+          # Create and configure all BookVerse unified policies for lifecycle management
+          #./.github/scripts/setup/create_policies.sh
+          echo "Creating the lifecycle rules and policies"
+          python ./scripts/create_lifecycle_policies.py
 
 #      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
 #      # NOTE: This has to be a script calling the API as there's not currently OIDC management in the JF CLI.
