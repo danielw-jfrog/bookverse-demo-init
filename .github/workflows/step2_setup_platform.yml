@@ -361,7 +361,8 @@ jobs:
           echo "Creating users for components"
           for item in ${COMPONENTS}; do
             # Set secrets and variables for project users
-            for role in "developer manager pipeline"; do
+            ROLES="developer manager pipeline"
+            for role in ${ROLES}; do
               password="$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c16)"
               useremail="${item}.${role}@bookverse.example.com"
               # Mask the secret value
