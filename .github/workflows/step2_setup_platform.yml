@@ -193,7 +193,7 @@ jobs:
           echo "Assigning project roles to users."
           python ./scripts/add_user_to_project_role.py "golden-images.developer@bookverse.example.com" "Developer"
           python ./scripts/add_user_to_project_role.py "golden-images.manager@bookverse.example.com" "Release Manager"
-          python ./scripts/add_user_to_project_role.py "golden-images.pipeline@bookverse.example.com" "cicd_pipeline"
+          python ./scripts/add_user_to_project_role.py "golden-images.pipeline@bookverse.example.com" "cicd_pipeline_gi"
 
   setup-bookverse:
     runs-on: ubuntu-latest
