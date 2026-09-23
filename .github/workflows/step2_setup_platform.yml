@@ -388,7 +388,6 @@ jobs:
           #./.github/scripts/setup/create_applications.sh
           echo "Creating AppTrust applications."
           for item in ${COMPONENTS}; do
-            # for role in ${"developer manager pipeline"}; do
             python ./scripts/create_application.py "${item}"
           done
 
@@ -399,12 +398,14 @@ jobs:
           echo "Creating the lifecycle rules and policies"
           python ./scripts/create_lifecycle_policies.py
 
-#      # FIXME: Clean this up later, once other items are pulled out an use the JF CLI.
-#      # NOTE: This has to be a script calling the API as there's not currently OIDC management in the JF CLI.
-#      - name: Configure Security Integration
-#        run: |
-#          # Establish OIDC trust relationships between GitHub Actions and JFrog Platform
-#          ./.github/scripts/setup/create_oidc.sh
+      - name: Configure Security Integration
+        run: |
+          # Establish OIDC trust relationships between GitHub Actions and JFrog Platform
+          #./.github/scripts/setup/create_oidc.sh
+          echo "Creating the OIDC Integrations and Identity Mappings
+          for item in ${COMPONENTS}; do
+            python ./scripts/create_oidc_integration.py "${item}"
+          done
 
 
 
@@ -415,9 +416,3 @@ jobs:
 #          # Execute comprehensive validation of all platform components and integrations
 #          ./.github/scripts/setup/validate_setup.sh
 
-#      - name: 🚨 Fail job if critical errors detected
-#        if: always() && env.SETUP_HAD_ERRORS == 'true'
-#        run: |
-#          echo "❌ Setup completed with critical errors that require attention"
-#          echo "Check the job summary and logs above for details"
-#          exit 1
