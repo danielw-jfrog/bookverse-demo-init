@@ -185,8 +185,8 @@ jobs:
         run: |
           echo "Creating AppTrust applications."
           # FIXME: Hard coded data in script
-          python ./scripts/create_application.py "golden-image-base"
-          python ./scripts/create_application.py "golden-image-pypi"
+          python ./scripts/create_application.py "golden-images-base"
+          python ./scripts/create_application.py "golden-images-pypi"
 
       - name: Assign Project Roles to Users
         run: |
