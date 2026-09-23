@@ -19,7 +19,7 @@ APP_DEFINITIONS = {
         "criticality": "high",
         "maturity": "production",
         "team": "checkout-team",
-        "owner": "henry.checkout@bookverse.com"
+        "owner": "henry.checkout@bookverse.example.com"
     },
     "helm": {
         "application_key": "bookverse-helm",
@@ -28,7 +28,7 @@ APP_DEFINITIONS = {
         "criticality": "high",
         "maturity": "production",
         "team": "devops-team",
-        "owner": "helm.manager@bookverse.com"
+        "owner": "helm.manager@bookverse.example.com"
     },
     "infra": {
         "application_key": "bookverse-infra",
@@ -37,7 +37,7 @@ APP_DEFINITIONS = {
         "criticality": "high",
         "maturity": "production",
         "team": "infra-team",
-        "owner": "infra.manager@bookverse.com"
+        "owner": "infra.manager@bookverse.example.com"
     },
     "inventory": {
         "application_key": "bookverse-inventory",
@@ -46,7 +46,7 @@ APP_DEFINITIONS = {
         "criticality": "high",
         "maturity": "production",
         "team": "inventory-team",
-        "owner": "inventory.manager@bookverse.com"
+        "owner": "inventory.manager@bookverse.example.com"
     },
     "platform": {
         "application_key": "bookverse-platform",
@@ -55,7 +55,7 @@ APP_DEFINITIONS = {
         "criticality": "high",
         "maturity": "production",
         "team": "platform-team",
-        "owner": "platform.manager@bookverse.com"
+        "owner": "platform.manager@bookverse.example.com"
     },
     "recommendations": {
         "application_key": "bookverse-recommendations",
@@ -64,7 +64,7 @@ APP_DEFINITIONS = {
         "criticality": "medium",
         "maturity": "production",
         "team": "ai-ml-team",
-        "owner": "recommendations.manager@bookverse.com"
+        "owner": "recommendations.manager@bookverse.example.com"
     },
     "web": {
         "application_key": "bookverse-web",
@@ -73,7 +73,26 @@ APP_DEFINITIONS = {
         "criticality": "medium",
         "maturity": "production",
         "team": "web-team",
-        "owner": "web.manager@bookverse.com"
+        "owner": "web.manager@bookverse.example.com"
+    },
+    # FIXME: Again, this is a hack until a better way can be found to handle this
+    "golden-image-base": {
+        "application_key": "golden-image-base",
+        "application_name": "Golden Images Base Image",
+        "description": "The base golden image from which all other images should be built.",
+        "criticality": "high",
+        "maturity": "production",
+        "team": "golden-images-team",
+        "owner": "golden-images.manager@bookverse.example.com"
+    },
+    "golden-image-pypi": {
+        "application_key": "golden-image-pypi",
+        "application_name": "Golden Images PyPi Image",
+        "description": "The pypi golden image from which all other python/pypi images should be built.",
+        "criticality": "high",
+        "maturity": "production",
+        "team": "golden-images-team",
+        "owner": "golden-images.manager@bookverse.example.com"
     }
 }
 

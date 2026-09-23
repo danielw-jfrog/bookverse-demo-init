@@ -57,6 +57,37 @@ predefined_roles = {
         "environments": [
             "PROD"
         ]
+    },
+    "cicd_pipeline_gi": {
+        "name": "cicd_pipeline_gi",
+        "description": "Role for operations by the CI/CD Pipeline.",
+        "type": "CUSTOM",
+        "actions": [
+            "ANNOTATE_BUILD",
+            "ANNOTATE_RELEASE_BUNDLE",
+            "ANNOTATE_REPOSITORY",
+            "MANAGE_XRAY_MD_BUILD",
+            "MANAGE_XRAY_MD_RELEASE_BUNDLE",
+            "MANAGE_XRAY_MD_REPOSITORY",
+            "BIND_APPLICATION",
+            "CREATE_APPLICATION",
+            "CREATE_RELEASE_BUNDLE",
+            "DELETE_APPLICATION",
+            "DELETE_BUILD",
+            "DELETE_OVERWRITE_REPOSITORY",
+            "DELETE_RELEASE_BUNDLE",
+            "DEPLOY_BUILD",
+            "DEPLOY_CACHE_REPOSITORY",
+            "PROMOTE_APPLICATION",
+            "READ_APPLICATION",
+            "READ_BUILD",
+            "READ_RELEASE_BUNDLE",
+            "READ_REPOSITORY"
+        ],
+        "environments": [
+            "{pkey}-DEV",
+            "PROD"
+        ]
     }
 }
 

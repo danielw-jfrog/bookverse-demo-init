@@ -29,7 +29,6 @@ def main():
 
     parser.add_argument("service_name")
     parser.add_argument("package_type")
-    parser.add_argument("stage_name")
 
     args = parser.parse_args()
 

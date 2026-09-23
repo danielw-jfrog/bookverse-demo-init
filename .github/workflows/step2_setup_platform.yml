@@ -157,13 +157,13 @@ jobs:
 
       - name: Create Remote Repositories
         run: |
-          python ./scripts/create_remote_repository.py "pypi" "https://pypi.org" --pypi_registry_url "https://pypi.org/simple"
-          python ./scripts/create_remote_repository.py "alpine" "https://dl-cdn.alpinelinux.org/alpine"
+          python ./scripts/create_remote_repository.py "pypi" "DEV" "https://pypi.org" --pypi_registry_url "https://pypi.org/simple"
+          python ./scripts/create_remote_repository.py "alpine" "DEV" "https://dl-cdn.alpinelinux.org/alpine"
 
       - name: Create Custom Roles
         run: |
           echo "Creating custom project roles"
-          python ./scripts/create_role.py "cicd_pipeline"
+          python ./scripts/create_role.py "cicd_pipeline_gi"
 
       - name: Create Users
         run: |
@@ -366,9 +366,9 @@ jobs:
         run: |
           # Create proxy repositories for npm, PyPI, and other dependency sources
           #./.github/scripts/setup/create_dependency_repos.sh
-          python ./scripts/create_remote_repository.py "pypi" "https://pypi.org" --pypi_registry_url "https://pypi.org/simple"
-          python ./scripts/create_remote_repository.py "npm" "https://registry.npmjs.org"
-          python ./scripts/create_remote_repository.py "docker" "https://registry-1.docker.io"
+          python ./scripts/create_remote_repository.py "pypi" "DEV" "https://pypi.org" --pypi_registry_url "https://pypi.org/simple"
+          python ./scripts/create_remote_repository.py "npm" "DEV" "https://registry.npmjs.org"
+          python ./scripts/create_remote_repository.py "docker" "DEV" "https://registry-1.docker.io"
 
 #      # FIXME: Can this be converted to JF CLI?
 #      # FIXME: Do we need to prepopulate the remote caches?  Or can we just let the first pull handle this?

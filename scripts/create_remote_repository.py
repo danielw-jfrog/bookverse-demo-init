@@ -28,6 +28,7 @@ def main():
                         help = "Short version of the project name used for identifying the project.")
 
     parser.add_argument("package_type")
+    parser.add_argument("stage_name")
     parser.add_argument("external_url")
     parser.add_argument("--pypi_registry_url")
 
@@ -50,6 +51,7 @@ def main():
 
     package_type = str(args.package_type).lower()
     external_url = str(args.external_url)
+    stage_name = str(args.stage_name) # NOT LOWER
 
     pypi_registry_url = None
     if package_type == "pypi":
@@ -70,7 +72,7 @@ def main():
     except NotFoundException:
         try:
             logging.info("  Creating Repository: %s - %s", project_key, repo_name)
-            create_remote_repository(tmp_login_data, project_key, repo_name, package_type, external_url, pypi_registry_url)
+            create_remote_repository(tmp_login_data, project_key, repo_name, stage_name, package_type, external_url, pypi_registry_url)
         except Exception as ex:
             raise ex
     except Exception as ex:
