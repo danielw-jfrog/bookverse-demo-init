@@ -146,6 +146,7 @@ jobs:
       - name: Create Lifecycle Stages
         run: |
           python ./scripts/create_lifecycle_stage.py "DEV"
+          python ./scripts/update_lifecycle.py "DEV"
 
       # Create the remote repos for the Alpine Packages & Python packages
 
@@ -181,19 +182,34 @@ jobs:
             gh secret set "${role}_password" --body "${password}" --repo "${GH_REPOSITORY_OWNER}/bookverse-golden-images"
           done
 
-      - name: Create AppTrust Applications
-        run: |
-          echo "Creating AppTrust applications."
-          # FIXME: Hard coded data in script
-          python ./scripts/create_application.py "golden-images-base"
-          python ./scripts/create_application.py "golden-images-pypi"
-
       - name: Assign Project Roles to Users
         run: |
           echo "Assigning project roles to users."
           python ./scripts/add_user_to_project_role.py "golden-images.developer@bookverse.example.com" "Developer"
           python ./scripts/add_user_to_project_role.py "golden-images.manager@bookverse.example.com" "Release Manager"
           python ./scripts/add_user_to_project_role.py "golden-images.pipeline@bookverse.example.com" "cicd_pipeline_gi"
+
+      - name: Create AppTrust Applications
+        run: |
+          echo "Creating AppTrust applications."
+          # FIXME: Hard coded data in script
+          python ./scripts/create_application.py "golden-images-base"
+          python ./scripts/create_application.py "golden-images-pypi"
+          done
+
+      - name: Create AppTrust Lifecycle Policies
+        run: |
+          # Create and configure all BookVerse unified policies for lifecycle management
+          #./.github/scripts/setup/create_policies.sh
+          echo "Creating the lifecycle rules and policies"
+          python ./scripts/create_lifecycle_policies.py "lifecycle_policies_golden_images.json"
+
+      - name: Configure OIDC Integration
+        run: |
+          # Establish OIDC trust relationships between GitHub Actions and JFrog Platform
+          #./.github/scripts/setup/create_oidc.sh
+          echo "Creating the OIDC Integrations and Identity Mappings"
+          python ./scripts/create_oidc_integration.py "golden-images"
 
   setup-bookverse:
     runs-on: ubuntu-latest
@@ -430,7 +446,7 @@ jobs:
           # Create and configure all BookVerse unified policies for lifecycle management
           #./.github/scripts/setup/create_policies.sh
           echo "Creating the lifecycle rules and policies"
-          python ./scripts/create_lifecycle_policies.py
+          python ./scripts/create_lifecycle_policies.py "lifecycle_policies_bookverse.json"
 
       - name: Configure OIDC Integration
         run: |
