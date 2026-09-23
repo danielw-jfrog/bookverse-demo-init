@@ -106,7 +106,7 @@ jobs:
           version: 2.121.0
 
       - name: Validate Inputs
-        env:
+        #env:
           #JFROG_URL: ${{ vars.JFROG_URL }}
           #JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
         run: |
