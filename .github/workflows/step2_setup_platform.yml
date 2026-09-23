@@ -89,7 +89,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Setup Golden Images Project
     env:
-      # FIXME: Should probably make multiple project key variables
       PROJECT_KEY: "bvgi"
 
     steps:
@@ -108,9 +107,8 @@ jobs:
 
       - name: Validate Inputs
         env:
-          JFROG_URL: ${{ vars.JFROG_URL }}
-          JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
-          #PROJECT_KEY: ${{ vars.PROJECT_KEY }}
+          #JFROG_URL: ${{ vars.JFROG_URL }}
+          #JFROG_ADMIN_TOKEN: ${{ secrets.JFROG_ADMIN_TOKEN }}
         run: |
           # Validate the JFrog URL
           if [[ -z "${JFROG_URL}" ]]; then
@@ -161,6 +159,41 @@ jobs:
         run: |
           python ./scripts/create_remote_repository.py "pypi" "https://pypi.org" --pypi_registry_url "https://pypi.org/simple"
           python ./scripts/create_remote_repository.py "alpine" "https://dl-cdn.alpinelinux.org/alpine"
+
+      - name: Create Custom Roles
+        run: |
+          echo "Creating custom project roles"
+          python ./scripts/create_role.py "cicd_pipeline"
+
+      - name: Create Users
+        run: |
+          # FIXME: This will overwrite the passwords in the github actions secrets on each run.  Need to update the passwords in JFrog too.
+          echo "Creating users for Golden Images"
+          # Set secrets and variables for project users
+          ROLES="developer manager pipeline"
+          for role in ${ROLES}; do
+            password="$(python ./scripts/gen_random_password.py)"
+            useremail="golden-images.${role}@bookverse.example.com"
+            # Mask the secret value
+            #echo "::add-mask::${password}"
+            python ./scripts/create_user.py "${useremail}" "${password}" "${useremail}"
+            gh variable set "${role}_username" --body "${useremail}" --repo "${GH_REPOSITORY_OWNER}/bookverse-golden-images"
+            gh secret set "${role}_password" --body "${password}" --repo "${GH_REPOSITORY_OWNER}/bookverse-golden-images"
+          done
+
+      - name: Create AppTrust Applications
+        run: |
+          echo "Creating AppTrust applications."
+          # FIXME: Hard coded data in script
+          python ./scripts/create_application.py "golden-image-base"
+          python ./scripts/create_application.py "golden-image-pypi"
+
+      - name: Assign Project Roles to Users
+        run: |
+          echo "Assigning project roles to users."
+          python ./scripts/add_user_to_project_role.py "golden-images.developer@bookverse.example.com" "Developer"
+          python ./scripts/add_user_to_project_role.py "golden-images.manager@bookverse.example.com" "Release Manager"
+          python ./scripts/add_user_to_project_role.py "golden-images.pipeline@bookverse.example.com" "cicd_pipeline"
 
   setup-bookverse:
     runs-on: ubuntu-latest
@@ -388,6 +421,7 @@ jobs:
           #./.github/scripts/setup/create_applications.sh
           echo "Creating AppTrust applications."
           for item in ${COMPONENTS}; do
+            # FIXME: Hard coded data in script
             python ./scripts/create_application.py "${item}"
           done
 
