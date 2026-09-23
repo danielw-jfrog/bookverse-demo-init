@@ -382,7 +382,7 @@ jobs:
             python ./scripts/add_user_to_project_role.py "${item}.pipeline@bookverse.example.com" "cicd_pipeline"
           done
 
-      - name: Create Applications
+      - name: Create AppTrust Applications
         run: |
           # Create AppTrust applications for each microservice with lifecycle configuration
           #./.github/scripts/setup/create_applications.sh
@@ -391,18 +391,18 @@ jobs:
             python ./scripts/create_application.py "${item}"
           done
 
-      - name: Create Unified Policies
+      - name: Create AppTrust Lifecycle Policies
         run: |
           # Create and configure all BookVerse unified policies for lifecycle management
           #./.github/scripts/setup/create_policies.sh
           echo "Creating the lifecycle rules and policies"
           python ./scripts/create_lifecycle_policies.py
 
-      - name: Configure Security Integration
+      - name: Configure OIDC Integration
         run: |
           # Establish OIDC trust relationships between GitHub Actions and JFrog Platform
           #./.github/scripts/setup/create_oidc.sh
-          echo "Creating the OIDC Integrations and Identity Mappings
+          echo "Creating the OIDC Integrations and Identity Mappings"
           for item in ${COMPONENTS}; do
             python ./scripts/create_oidc_integration.py "${item}"
           done
