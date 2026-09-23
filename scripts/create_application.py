@@ -76,7 +76,7 @@ APP_DEFINITIONS = {
         "owner": "web.manager@bookverse.example.com"
     },
     # FIXME: Again, this is a hack until a better way can be found to handle this
-    "golden-image-base": {
+    "golden-images-base": {
         "application_key": "golden-image-base",
         "application_name": "Golden Images Base Image",
         "description": "The base golden image from which all other images should be built.",
@@ -85,7 +85,7 @@ APP_DEFINITIONS = {
         "team": "golden-images-team",
         "owner": "golden-images.manager@bookverse.example.com"
     },
-    "golden-image-pypi": {
+    "golden-images-pypi": {
         "application_key": "golden-image-pypi",
         "application_name": "Golden Images PyPi Image",
         "description": "The pypi golden image from which all other python/pypi images should be built.",
