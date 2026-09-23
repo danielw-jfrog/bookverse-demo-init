@@ -42,9 +42,13 @@ def create_application(login_data, project_key, application_key, application_nam
     make_api_request(login_data, 'POST', req_url, req_data)
 
 def update_application(login_data, project_key, application_name, application_data):
-    pass
+    raise NotImplemented
 
-def delete_application(login_data, project_key, application_name):
-    pass
+def delete_application(login_data, application_key, asynchronous = False):
+    req_url = "/apptrust/api/v1/applications/{}?async={}".format(
+        application_key,
+        "true" if asynchronous else "false"
+    )
+    make_api_request(login_data, 'DELETE', req_url)
 
 ### CLASSES ###
