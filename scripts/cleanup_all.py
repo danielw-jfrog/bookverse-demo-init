@@ -10,8 +10,7 @@ from api_helpers.exceptions import NotFoundException
 
 from api_helpers.applications import list_applications, delete_application
 from api_helpers.application_versions import list_application_versions, delete_application_version
-
-from api_helpers.repositories import get_repository, create_remote_repository
+from api_helpers.repositories import list_repositories, delete_repository
 
 ### GLOBALS ###
 
@@ -30,6 +29,8 @@ def main():
 
     parser.add_argument("--project_key", default = os.getenv("PROJECT_KEY", None),
                         help = "Short version of the project name used for identifying the project.")
+
+    # FIXME: Should probably add a dry run option...
 
     args = parser.parse_args()
 
@@ -72,11 +73,65 @@ def main():
                 delete_application_version(tmp_login_data, app_key, app_ver)
 
         # Clean up applications
+        logging.info("Cleaning up AppTrust Applications")
         for app_key in app_keys:
-            logging.info("Deleting Application: %s", app_key)
+            logging.info("  Deleting Application: %s", app_key)
             delete_application(tmp_login_data, app_key)
 
         # Clean up repositories (virtual, remote, federated, local)
+        logging.info("Cleaning up Repositories")
+        repo_keys_virtual = []
+        repo_keys_remote = []
+        repo_keys_federated = []
+        repo_keys_local = []
+        repo_list = list_repositories(tmp_login_data)
+        logging.debug("repo_list: %s", repo_list)
+        if "VIRTUAL" in repo_list:
+            for item in repo_list["VIRTUAL"]:
+                if "projectKey" in item and item["projectKey"] == project_key:
+                    repo_keys_virtual.append(item["key"])
+        logging.debug("  repo_keys_virtual: (%d) %s", len(repo_keys_virtual), repo_keys_virtual)
+        if "REMOTE" in repo_list:
+            for item in repo_list["REMOTE"]:
+                if "projectKey" in item and item["projectKey"] == project_key:
+                    repo_keys_remote.append(item["key"])
+        logging.debug("  repo_keys_remote: (%d) %s", len(repo_keys_remote), repo_keys_remote)
+        if "FEDERATED" in repo_list:
+            for item in repo_list["FEDERATED"]:
+                if "projectKey" in item and item["projectKey"] == project_key:
+                    repo_keys_federated.append(item["key"])
+        logging.debug("  repo_keys_federated: (%d) %s", len(repo_keys_federated), repo_keys_federated)
+        if "LOCAL" in repo_list:
+            for item in repo_list["LOCAL"]:
+                if "projectKey" in item and item["projectKey"] == project_key:
+                    repo_keys_local.append(item["key"])
+        logging.debug("  repo_keys_local: (%d) %s", len(repo_keys_local), repo_keys_local)
+        for repo_key in repo_keys_virtual:
+            logging.info("  Deleting VIRTUAL repository: %s", repo_key)
+            delete_repository(tmp_login_data, repo_key)
+        for repo_key in repo_keys_remote:
+            logging.info("  Deleting REMOTE repository: %s", repo_key)
+            delete_repository(tmp_login_data, repo_key)
+        for repo_key in repo_keys_federated:
+            logging.info("  Deleting FEDERATED repository: %s", repo_key)
+            delete_repository(tmp_login_data, repo_key)
+        for repo_key in repo_keys_local:
+            logging.info("  Deleting LOCAL repository: %s", repo_key)
+            delete_repository(tmp_login_data, repo_key)
+
+        # Clean up stages
+
+        # Clean up OIDC Integrations
+
+        # Clean up lifecycle policies
+
+        # Clean up lifecycle rules
+
+        # Clean up users
+
+        # Clean up roles
+
+        # Clean up project
 
     except Exception as ex:
         logging.error(ex)
