@@ -9,7 +9,9 @@ from .make_api_request import make_api_request
 
 ### FUNCTIONS ###
 def list_projects(login_data):
-    pass
+    req_url = "/access/api/v1/projects"
+    resp = make_api_request(login_data, 'GET', req_url)
+    return json.loads(resp)
 
 def get_project(login_data, project_key):
     req_url = "/access/api/v1/projects/{}".format(project_key)
@@ -32,9 +34,10 @@ def create_project(login_data, project_key, project_name):
     make_api_request(login_data, 'POST', req_url, req_data)
 
 def update_project(login_data, project_key, project_data):
-    pass
+    raise NotImplemented
 
 def delete_project(login_data, project_key):
-    pass
+    req_url = "/access/api/v1/projects/{}".format(project_key)
+    make_api_request(login_data, 'DELETE', req_url)
 
 ### CLASSES ###

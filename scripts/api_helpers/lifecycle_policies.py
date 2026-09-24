@@ -48,12 +48,11 @@ def create_lifecycle_policy(login_data, project_key, policy_name, description, s
     }
     make_api_request(login_data, 'POST', req_url, req_data)
 
-def update_lifecycle_policys(login_data, project_key, policy_name, policy_data):
-    # NOTE: Project Key should be None for global policys.
+def update_lifecycle_policy(login_data, policy_id, policy_data):
     raise NotImplemented
 
-def delete_lifecycle_policys(login_data, project_key, policy_name):
-    # NOTE: Project Key should be None for global policys.
-    raise NotImplemented
+def delete_lifecycle_policy(login_data, policy_id):
+    req_url = "/unifiedpolicy/api/v1/policies/{}".format(policy_id)
+    make_api_request(login_data, 'DELETE', req_url)
 
 ### CLASSES ###

@@ -8,9 +8,11 @@ from .make_api_request import make_api_request
 ### GLOBALS ###
 
 ### FUNCTIONS ###
-def list_users(login_data):
+def list_users(login_data, project_key = None):
     # FIXME: Add all of the available options
     req_url = "/access/api/v2/users"
+    if project_key is not None:
+        req_url = "{}?project_key={}".format(req_url, project_key)
     resp = make_api_request(login_data, 'GET', req_url)
     return json.loads(resp)
 
@@ -38,7 +40,13 @@ def update_user(login_data, username, user_data):
     raise NotImplemented
 
 def delete_user(login_data, username):
-    raise NotImplemented
+    req_url = "/access/api/v2/users/{}".format(username)
+    make_api_request(login_data, 'DELETE', req_url)
+
+def list_project_users(login_data, project_key):
+    req_url = "/access/api/v1/projects/{}/users".format(project_key)
+    resp = make_api_request(login_data, 'GET', req_url)
+    return json.loads(resp)
 
 def assign_roles_to_user(login_data, project_key, username, role_list):
     # NOTE: Project Key should be None for global roles.

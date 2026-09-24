@@ -31,13 +31,12 @@ def create_oidc_integration(login_data, oidc_name, provider_type, issuer_url, au
     req_url = "/access/api/v1/oidc"
     make_api_request(login_data, 'POST', req_url, req_data)
 
-def update_oidc_integration(login_data, project_key, role_name, role_data):
-    # NOTE: Project Key should be None for global oidc integrations.
+def update_oidc_integration(login_data, oidc_name, oidc_data):
     raise NotImplemented
 
-def delete_oidc_intergration(login_data, project_key, role_name):
-    # NOTE: Project Key should be None for global oidc integrations.
-    raise NotImplemented
+def delete_oidc_integration(login_data, oidc_name):
+    req_url = "/access/api/v1/oidc/{}".format(oidc_name)
+    make_api_request(login_data, 'DELETE', req_url)
 
 # OIDC Identity Mappings
 def list_oidc_identity_mappings(login_data, project_key, provider_name):
@@ -65,12 +64,11 @@ def create_oidc_identity_mapping(login_data, provider_name, mapping_name, descri
     req_url = "/access/api/v1/oidc/{}/identity_mappings".format(provider_name)
     make_api_request(login_data, 'POST', req_url, req_data)
 
-def update_oidc_identity_mapping(login_data, project_key, role_name, role_data):
-    # NOTE: Project Key should be None for global oidc identity mapping.
+def update_oidc_identity_mapping(login_data, provider_name, mapping_name, mapping_data):
     raise NotImplemented
 
-def delete_oidc_identity_mapping(login_data, project_key, role_name):
-    # NOTE: Project Key should be None for global oidc identity mapping.
-    raise NotImplemented
+def delete_oidc_identity_mapping(login_data, provider_name, mapping_name):
+    req_url = "/access/api/v1/oidc/{}/identity_mappings/{}".format(provider_name, mapping_name)
+    make_api_request(login_data, 'DELETE', req_url)
 
 ### CLASSES ###

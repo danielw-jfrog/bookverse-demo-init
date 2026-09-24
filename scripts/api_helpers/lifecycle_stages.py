@@ -10,7 +10,12 @@ from .make_api_request import make_api_request
 ### FUNCTIONS ###
 def list_lifecycle_stages(login_data, project_key):
     # NOTE: Project Key should be None for global stages.
-    pass
+    # FIXME: Support other options
+    req_url = "/access/api/v2/stages"
+    if project_key is not None:
+        req_url = "{}?project_key={}".format(req_url, project_key)
+    resp = make_api_request(login_data, 'GET', req_url)
+    return json.loads(resp)
 
 def get_lifecycle_stage(login_data, project_key, stage_name):
     # NOTE: Project Key should be None for global stages.
@@ -34,13 +39,16 @@ def create_lifecycle_stage(login_data, project_key, stage_name):
     req_data["category"] = "promote"
     make_api_request(login_data, 'POST', req_url, req_data)
 
-def update_lifecycle_stages(login_data, project_key, stage_name, stage_data):
+def update_lifecycle_stage(login_data, project_key, stage_name, stage_data):
     # NOTE: Project Key should be None for global stages.
-    pass
+    raise NotImplemented
 
-def delete_lifecycle_stages(login_data, project_key, stage_name):
+def delete_lifecycle_stage(login_data, project_key, stage_name):
     # NOTE: Project Key should be None for global stages.
-    pass
+    req_url = "/access/api/v2/stages/{}".format(stage_name)
+    if project_key is not None:
+        req_url = "{}?project_key={}".format(req_url, project_key)
+    make_api_request(login_data, 'DELETE', req_url)
 
 def set_lifecycle(login_data, project_key, stage_list):
     req_url = "/access/api/v2/lifecycle/?project_key={}".format(project_key)

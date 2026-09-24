@@ -43,6 +43,7 @@ def update_lifecycle_rule(login_data, rule_id):
     raise NotImplemented
 
 def delete_lifecycle_rule(login_data, rule_id):
-    raise NotImplemented
+    req_url = "/unifiedpolicy/api/v1/rules/{}".format(rule_id)
+    make_api_request(login_data, 'GET', req_url)
 
 ### CLASSES ###

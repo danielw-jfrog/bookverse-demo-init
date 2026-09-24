@@ -8,9 +8,13 @@ from .make_api_request import make_api_request
 ### GLOBALS ###
 
 ### FUNCTIONS ###
-def list_roles(login_data, project_key):
+def list_roles(login_data, project_key = None):
     # NOTE: Project Key should be None for global roles.
-    pass
+    req_url = "/access/api/v1/roles"
+    if project_key is not None:
+        req_url = "/access/api/v1/projects/{}/roles".format(project_key)
+    resp = make_api_request(login_data, 'GET', req_url)
+    return json.loads(resp)
 
 def get_role(login_data, project_key, role_name):
     # NOTE: Project Key should be None for global roles.
@@ -36,10 +40,13 @@ def create_role(login_data, project_key, role_name, description, actions_list, e
 
 def update_role(login_data, project_key, role_name, role_data):
     # NOTE: Project Key should be None for global roles.
-    pass
+    raise NotImplemented
 
 def delete_role(login_data, project_key, role_name):
     # NOTE: Project Key should be None for global roles.
-    pass
+    req_url = "/access/api/v1/roles/{}".format(role_name)
+    if project_key is not None:
+        req_url = "/access/api/v1/projects/{}/roles/{}".format(project_key, role_name)
+    make_api_request(login_data, 'DELETE', req_url)
 
 ### CLASSES ###
