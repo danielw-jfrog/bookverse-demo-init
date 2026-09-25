@@ -71,6 +71,8 @@ def main():
         # FIXME: Check the data for the Repository and update if needed.
     except NotFoundException:
         try:
+            if stage_name != "PROD":
+                stage_name = "{}-{}".format(project_key, stage_name)
             logging.info("  Creating Repository: %s - %s", project_key, repo_name)
             create_remote_repository(tmp_login_data, project_key, repo_name, stage_name, package_type, external_url, pypi_registry_url)
         except Exception as ex:
