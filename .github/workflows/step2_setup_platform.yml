@@ -158,6 +158,7 @@ jobs:
 
       - name: Create Remote Repositories
         run: |
+          python ./scripts/create_remote_repository.py "docker" "DEV" "https://registry-1.docker.io"
           python ./scripts/create_remote_repository.py "pypi" "DEV" "https://files.pythonhosted.org" --pypi_registry_url "https://pypi.org/simple"
           python ./scripts/create_remote_repository.py "npm" "DEV" "https://registry.npmjs.org"
           python ./scripts/create_remote_repository.py "alpine" "DEV" "https://dl-cdn.alpinelinux.org/alpine"
