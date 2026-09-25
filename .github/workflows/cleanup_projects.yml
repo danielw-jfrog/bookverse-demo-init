@@ -1,4 +1,4 @@
-name: '🗑️ Cleanup (Preview & Execute)'
+name: Cleanup Projects
 
 on:
   workflow_dispatch:
