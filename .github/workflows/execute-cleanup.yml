@@ -31,6 +31,150 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  cleanup-globals:
+    runs-on: ubuntu-latest
+    name: Cleanup Bookverse Project
+    env:
+      # FIXME: Should probably make multiple project key variables
+      PROJECT_KEY: "bvglobals"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v5
+        with:
+          version: 2.121.0
+
+      - name: Validate Inputs
+        run: |
+          # Validate the JFrog URL
+          if [[ -z "${JFROG_URL}" ]]; then
+            echo "ERROR: JFROG_URL variable not set."
+            exit 1
+          fi
+          
+          # Validate the JFrog Admin Token
+          if [[ -z "${JFROG_ADMIN_TOKEN}" ]]; then
+            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
+            exit 1
+          fi
+          
+          # Validate the JFrog Project Key
+          if [[ -z "${PROJECT_KEY}" ]]; then
+            echo "ERROR: PROJECT_KEY variable not set."
+            exit 1
+          fi
+          
+          # Validate the GitHub Token
+          if [[ -z "${GH_TOKEN}" ]]; then
+            echo "ERROR: GH_TOKEN secret not set."
+            exit 1
+          fi
+          
+          # Validate mode input and confirmation
+          if [[ "${{ inputs.mode }}" == "preview" ]]; then
+            echo "PREVIEW MODE: Will discover and show resources that would be deleted"
+            echo "No actual deletions will be performed"
+          else
+            if [[ "${{ inputs.confirm_cleanup }}" != "DELETE" ]]; then
+              echo "Confirmation failed. You must type 'DELETE' exactly to proceed with actual cleanup."
+              echo "   Current input: '${{ inputs.confirm_cleanup }}'"
+              echo "   To preview resources without deletion, use 'preview' mode instead."
+              exit 1
+            else
+              echo "EXECUTE MODE: Confirmation verified, proceeding with actual cleanup"
+            fi
+          fi
+
+      - name: Verify JFrog Platform Connectivity
+        run: |
+          echo "Checking JFrog Platform access from the JF CLI."
+          jf rt ping
+
+      - name: Run Cleanup Script
+        run: |
+          echo "Running cleanup script."
+          python ./scripts/cleanup_all.py
+  
+  cleanup-golden-images:
+    runs-on: ubuntu-latest
+    name: Cleanup Bookverse Project
+    env:
+      # FIXME: Should probably make multiple project key variables
+      PROJECT_KEY: "bvgi"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v5
+        with:
+          version: 2.121.0
+
+      - name: Validate Inputs
+        run: |
+          # Validate the JFrog URL
+          if [[ -z "${JFROG_URL}" ]]; then
+            echo "ERROR: JFROG_URL variable not set."
+            exit 1
+          fi
+          
+          # Validate the JFrog Admin Token
+          if [[ -z "${JFROG_ADMIN_TOKEN}" ]]; then
+            echo "ERROR: JFROG_ADMIN_TOKEN secret not set."
+            exit 1
+          fi
+          
+          # Validate the JFrog Project Key
+          if [[ -z "${PROJECT_KEY}" ]]; then
+            echo "ERROR: PROJECT_KEY variable not set."
+            exit 1
+          fi
+          
+          # Validate the GitHub Token
+          if [[ -z "${GH_TOKEN}" ]]; then
+            echo "ERROR: GH_TOKEN secret not set."
+            exit 1
+          fi
+          
+          # Validate mode input and confirmation
+          if [[ "${{ inputs.mode }}" == "preview" ]]; then
+            echo "PREVIEW MODE: Will discover and show resources that would be deleted"
+            echo "No actual deletions will be performed"
+          else
+            if [[ "${{ inputs.confirm_cleanup }}" != "DELETE" ]]; then
+              echo "Confirmation failed. You must type 'DELETE' exactly to proceed with actual cleanup."
+              echo "   Current input: '${{ inputs.confirm_cleanup }}'"
+              echo "   To preview resources without deletion, use 'preview' mode instead."
+              exit 1
+            else
+              echo "EXECUTE MODE: Confirmation verified, proceeding with actual cleanup"
+            fi
+          fi
+
+      - name: Verify JFrog Platform Connectivity
+        run: |
+          echo "Checking JFrog Platform access from the JF CLI."
+          jf rt ping
+
+      - name: Run Cleanup Script
+        run: |
+          echo "Running cleanup script."
+          python ./scripts/cleanup_all.py
+  
   cleanup-bookverse:
     runs-on: ubuntu-latest
     name: Cleanup Bookverse Project
