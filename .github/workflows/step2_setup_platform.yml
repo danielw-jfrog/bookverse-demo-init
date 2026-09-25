@@ -159,6 +159,7 @@ jobs:
       - name: Create Remote Repositories
         run: |
           python ./scripts/create_remote_repository.py "pypi" "DEV" "https://pypi.org" --pypi_registry_url "https://pypi.org/simple"
+          python ./scripts/create_remote_repository.py "npm" "DEV" "https://registry.npmjs.org"
           python ./scripts/create_remote_repository.py "alpine" "DEV" "https://dl-cdn.alpinelinux.org/alpine"
 
       - name: Create Custom Roles
@@ -208,7 +209,7 @@ jobs:
           # Establish OIDC trust relationships between GitHub Actions and JFrog Platform
           #./.github/scripts/setup/create_oidc.sh
           echo "Creating the OIDC Integrations and Identity Mappings"
-          python ./scripts/create_oidc_integration.py "golden-images"
+          python ./scripts/create_oidc_integration.py "${GH_REPOSITORY_OWNER}" "golden-images"
 
   setup-bookverse:
     runs-on: ubuntu-latest
@@ -453,7 +454,7 @@ jobs:
           #./.github/scripts/setup/create_oidc.sh
           echo "Creating the OIDC Integrations and Identity Mappings"
           for item in ${COMPONENTS}; do
-            python ./scripts/create_oidc_integration.py "${item}"
+            python ./scripts/create_oidc_integration.py "${GH_REPOSITORY_OWNER}" "${item}"
           done
 
 

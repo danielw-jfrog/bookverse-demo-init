@@ -29,6 +29,7 @@ def main():
     parser.add_argument("--token_issuer", default = os.getenv("GH_REPOSITORY_OWNER", None),
                         help = "The token issuer for OIDC, which is usually the repository owner.")
 
+    parser.add_argument("repo_owner")
     parser.add_argument("component")
     #parser.add_argument("email")
 
@@ -104,6 +105,9 @@ def main():
         # # FIXME: This just checks for existence, not whether the rule values match.
         if integ_name not in oidc_maps:
             logging.info("Creating OIDC Mapping: %s", integ_name)
+            scope = "applied-permissions/roles:{}:cicd_pipeline".format(project_key)
+            if project_key == "bgvi":
+                scope = "applied-permissions/roles:bvgi:cicd_pipeline_gi"
             create_oidc_identity_mapping(
                 tmp_login_data,
                 integ_name,
@@ -111,10 +115,10 @@ def main():
                 "Identity mapping for {}".format(integ_name),
                 1,
                 {
-                    "repository": "bookverse-{}".format(args.component)
+                    "repository": "{}/bookverse-{}".format(args.repo_owner, args.component)
                 },
                 {
-                    "scope": "applied-permissions/roles:{}:cicd_pipeline".format(project_key)
+                    "scope": scope
                 }
             )
     except Exception as ex:
