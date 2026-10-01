@@ -93,6 +93,15 @@ APP_DEFINITIONS = {
         "maturity": "production",
         "team": "golden-images-team",
         "owner": "golden-images.manager@bookverse.example.com"
+    },
+    "golden-images-npm": {
+        "application_key": "golden-image-npm",
+        "application_name": "Golden Images NPM Image",
+        "description": "The npm golden image from which all other nodejs/npm images should be built.",
+        "criticality": "high",
+        "maturity": "production",
+        "team": "golden-images-team",
+        "owner": "golden-images.manager@bookverse.example.com"
     }
 }
 

@@ -86,7 +86,8 @@ predefined_roles = {
         ],
         "environments": [
             "{pkey}-DEV",
-            "PROD"
+            "PROD",
+            "DEV" # NOTE: Global DEV Stage is needed for the bvgi-build-info repository.
         ]
     }
 }

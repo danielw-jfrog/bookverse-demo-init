@@ -197,6 +197,7 @@ jobs:
           # FIXME: Hard coded data in script
           python ./scripts/create_application.py "golden-images-base"
           python ./scripts/create_application.py "golden-images-pypi"
+          python ./scripts/create_application.py "golden-images-npm"
 
       - name: Create AppTrust Lifecycle Policies
         run: |
