@@ -44,7 +44,7 @@ def create_remote_repository(login_data, project_key, repository_name, stage_nam
     req_data = {
         "rclass": "remote",
         "key": repository_name,
-        "package_type": package_type,
+        "packageType": package_type,
         "url": external_url,
         "listRemoteFolderItems": True
     }
