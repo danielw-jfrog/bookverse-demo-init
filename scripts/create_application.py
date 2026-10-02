@@ -77,7 +77,7 @@ APP_DEFINITIONS = {
     },
     # FIXME: Again, this is a hack until a better way can be found to handle this
     "golden-images-base": {
-        "application_key": "golden-image-base",
+        "application_key": "golden-images-base",
         "application_name": "Golden Images Base Image",
         "description": "The base golden image from which all other images should be built.",
         "criticality": "high",
@@ -86,7 +86,7 @@ APP_DEFINITIONS = {
         "owner": "golden-images.manager@bookverse.example.com"
     },
     "golden-images-pypi": {
-        "application_key": "golden-image-pypi",
+        "application_key": "golden-images-pypi",
         "application_name": "Golden Images PyPi Image",
         "description": "The pypi golden image from which all other python/pypi images should be built.",
         "criticality": "high",
@@ -95,7 +95,7 @@ APP_DEFINITIONS = {
         "owner": "golden-images.manager@bookverse.example.com"
     },
     "golden-images-npm": {
-        "application_key": "golden-image-npm",
+        "application_key": "golden-images-npm",
         "application_name": "Golden Images NPM Image",
         "description": "The npm golden image from which all other nodejs/npm images should be built.",
         "criticality": "high",
