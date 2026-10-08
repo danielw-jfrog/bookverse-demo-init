@@ -106,7 +106,7 @@ def main():
         if integ_name not in oidc_maps:
             logging.info("Creating OIDC Mapping: %s", integ_name)
             scope = "applied-permissions/roles:{}:cicd_pipeline".format(project_key)
-            if project_key == "bgvi":
+            if project_key == "bvgi":
                 scope = "applied-permissions/roles:bvgi:cicd_pipeline_gi"
             create_oidc_identity_mapping(
                 tmp_login_data,
