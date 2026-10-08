@@ -113,7 +113,8 @@ def main():
         if "LOCAL" in repo_list:
             for item in repo_list["LOCAL"]:
                 if "projectKey" in item and item["projectKey"] == project_key:
-                    repo_keys_local.append(item["key"])
+                    if "build-info" not in item["key"]:
+                        repo_keys_local.append(item["key"])
         logging.debug("  repo_keys_local: (%d) %s", len(repo_keys_local), repo_keys_local)
         for repo_key in repo_keys_virtual:
             logging.info("  Deleting VIRTUAL repository: %s", repo_key)
